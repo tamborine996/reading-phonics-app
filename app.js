@@ -5,7 +5,7 @@ let wordPacks = [
     "title": "P1: 0A. YEAR 1 HIGH FREQUENCY - Pack 1",
     "description": "100 words to know by end of Year 1 (Pack 1 of 4)",
     "words": [
-      "a", "about", "all", "an", "and", "are", "as", "asked", "at", "back",
+      "ab", "about", "all", "an", "and", "are", "as", "asked", "at", "back",
       "be", "big", "but", "by", "called", "came", "can", "children", "come", "could",
       "dad", "day", "do", "don't", "down", "for", "from", "get", "go", "got"
     ]
