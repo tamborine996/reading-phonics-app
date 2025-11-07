@@ -12,6 +12,7 @@ export function initAuthUI(): void {
   const googleSignInBtn = document.getElementById('googleSignInBtn');
   const skipAuthBtn = document.getElementById('skipAuthBtn');
   const signOutBtn = document.getElementById('signOutBtn');
+  const signInBtn = document.getElementById('signInBtn');
 
   if (googleSignInBtn) {
     googleSignInBtn.onclick = handleGoogleSignIn;
@@ -23,6 +24,10 @@ export function initAuthUI(): void {
 
   if (signOutBtn) {
     signOutBtn.onclick = handleSignOut;
+  }
+
+  if (signInBtn) {
+    signInBtn.onclick = handleGoogleSignIn;
   }
 }
 
@@ -95,6 +100,9 @@ function skipAuth(): void {
   authScreen?.classList.add('hidden');
   homeScreen?.classList.remove('hidden');
 
+  // Update user bar to show sign-in option
+  updateUserBar();
+
   // Trigger home screen rendering
   const event = new Event('auth-skipped');
   window.dispatchEvent(event);
@@ -128,14 +136,25 @@ async function handleSignOut(): Promise<void> {
 export function updateUserBar(): void {
   const userBar = document.getElementById('userBar');
   const userEmail = document.getElementById('userEmail');
+  const signInBar = document.getElementById('signInBar');
 
   const currentUser = authService.getCurrentUser();
 
   if (currentUser && userBar && userEmail) {
+    // User is authenticated - show user bar, hide sign-in bar
     userEmail.textContent = currentUser.email;
     userBar.style.display = 'flex';
-  } else if (userBar) {
-    userBar.style.display = 'none';
+    if (signInBar) {
+      signInBar.style.display = 'none';
+    }
+  } else {
+    // User is not authenticated - hide user bar, show sign-in bar
+    if (userBar) {
+      userBar.style.display = 'none';
+    }
+    if (signInBar) {
+      signInBar.style.display = 'flex';
+    }
   }
 }
 
