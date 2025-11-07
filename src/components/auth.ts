@@ -160,8 +160,9 @@ export function updateUserBar(): void {
 
 /**
  * Handle OAuth callback after redirect
+ * Returns true if callback was processed
  */
-export async function handleOAuthCallback(): Promise<void> {
+export async function handleOAuthCallback(): Promise<boolean> {
   // Check if we're returning from OAuth
   const hashParams = new URLSearchParams(window.location.hash.substring(1));
   const accessToken = hashParams.get('access_token');
@@ -172,8 +173,8 @@ export async function handleOAuthCallback(): Promise<void> {
     // Clear auth_skipped since user signed in
     localStorage.removeItem('auth_skipped');
 
-    // Small delay to let Supabase process the session
-    await new Promise((resolve) => setTimeout(resolve, 500));
+    // Longer delay to let Supabase fully process the session
+    await new Promise((resolve) => setTimeout(resolve, 1000));
 
     // Remove hash from URL
     window.history.replaceState(null, '', window.location.pathname);
@@ -188,5 +189,8 @@ export async function handleOAuthCallback(): Promise<void> {
     updateUserBar();
 
     logger.info('OAuth sign in successful!');
+    return true;
   }
+
+  return false;
 }

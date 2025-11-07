@@ -58,7 +58,7 @@ export async function init(): Promise<void> {
     }
 
     // Handle OAuth callback if returning from Google
-    await handleOAuthCallback();
+    const isOAuthCallback = await handleOAuthCallback();
 
     // Initialize auth if Supabase is configured
     await authService.initialize();
@@ -67,8 +67,10 @@ export async function init(): Promise<void> {
     setupEventListeners();
     initAuthUI();
 
-    // Show appropriate screen (auth or home)
-    showInitialScreen();
+    // Show appropriate screen (auth or home) - but skip if OAuth just processed
+    if (!isOAuthCallback) {
+      showInitialScreen();
+    }
 
     // Render home screen content (will be shown if authenticated or skipped)
     renderSubPackList(wordPacks);
