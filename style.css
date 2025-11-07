@@ -477,6 +477,12 @@ h1 {
     font-size: 1.05rem;
 }
 
+.pack-label {
+    color: #333;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
 .word-preview {
     color: #666;
     font-size: 0.9rem;

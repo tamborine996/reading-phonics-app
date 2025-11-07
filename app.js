@@ -165,6 +165,7 @@ function renderPackTable(packs) {
             <thead>
                 <tr>
                     <th onclick="sortPacks('id')" class="sortable">Pack <span class="sort-icon">⇅</span></th>
+                    <th onclick="sortPacks('label')" class="sortable">Label <span class="sort-icon">⇅</span></th>
                     <th onclick="sortPacks('words')" class="sortable">Word Preview <span class="sort-icon">⇅</span></th>
                     <th onclick="sortPacks('count')" class="sortable">Count <span class="sort-icon">⇅</span></th>
                     <th onclick="sortPacks('lastReviewed')" class="sortable">Last Reviewed <span class="sort-icon">⇅</span></th>
@@ -186,9 +187,16 @@ function renderPackTable(packs) {
         // Get first 4 words as preview
         const wordPreview = pack.words.slice(0, 4).join(', ') + (pack.words.length > 4 ? '...' : '');
 
+        // Create clean label from category (remove numbers and "Pack X")
+        let cleanLabel = pack.category
+            .replace(/^P\d+:\s*/, '')           // Remove "P1: "
+            .replace(/^\d+[A-D]?\.\s*/, '')     // Remove "1." or "0A."
+            .replace(/\s*-\s*Pack\s*\d+$/, ''); // Remove " - Pack 1"
+
         html += `
             <tr data-pack-id="${pack.id}">
                 <td class="pack-number">P${pack.id}</td>
+                <td class="pack-label">${cleanLabel}</td>
                 <td class="word-preview">${wordPreview}</td>
                 <td class="word-count">${totalWords}</td>
                 <td>${lastReviewed}</td>
