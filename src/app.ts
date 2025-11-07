@@ -43,6 +43,14 @@ export async function init(): Promise<void> {
   try {
     logger.info('Initializing application');
 
+    // Initialize Supabase if configured
+    const { env, isSupabaseConfigured } = await import('@/env');
+    if (isSupabaseConfigured()) {
+      const { supabaseService } = await import('@/services/supabase.service');
+      supabaseService.initialize(env.SUPABASE_URL!, env.SUPABASE_ANON_KEY!);
+      logger.info('Supabase initialized successfully');
+    }
+
     // Initialize auth if Supabase is configured
     await authService.initialize();
 
