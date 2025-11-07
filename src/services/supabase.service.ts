@@ -168,6 +168,33 @@ export class SupabaseService {
   }
 
   /**
+   * Sign in with Google OAuth
+   */
+  async signInWithGoogle(): Promise<void> {
+    if (!this.client) throw new Error('Supabase not initialized');
+
+    try {
+      const { error } = await this.client.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: window.location.origin,
+        },
+      });
+
+      if (error) {
+        logger.error('Google sign in failed', error);
+        throw error;
+      }
+
+      // Redirect will happen automatically
+      logger.info('Redirecting to Google for authentication...');
+    } catch (error) {
+      logger.error('Google sign in error', error);
+      throw error;
+    }
+  }
+
+  /**
    * Get all pack progress for current user
    */
   async getUserProgress(userId: string): Promise<Record<number, PackProgress>> {

@@ -544,6 +544,104 @@ h1 {
     background: #ff5252;
 }
 
+/* Auth Screen */
+.auth-container {
+    max-width: 450px;
+    margin: 40px auto;
+    background: white;
+    padding: 50px 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    text-align: center;
+}
+
+.btn-google {
+    width: 100%;
+    background: white;
+    color: #3c4043;
+    border: 2px solid #dadce0;
+    padding: 18px 24px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.btn-google:hover {
+    background: #f8f9fa;
+    border-color: #d2d3d4;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.google-icon {
+    width: 24px;
+    height: 24px;
+}
+
+.btn-skip {
+    width: 100%;
+    background: transparent;
+    color: #667eea;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-skip:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.auth-note {
+    margin-top: 30px;
+    color: #666;
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+/* User Bar */
+.user-bar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+    padding: 12px 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 12px;
+}
+
+.user-email {
+    color: white;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.btn-sign-out {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-sign-out:hover {
+    background: white;
+    color: #667eea;
+    border-color: white;
+}
+
 /* Misc Updates */
 .hidden {
     display: none !important;

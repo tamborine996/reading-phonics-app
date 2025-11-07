@@ -14,6 +14,12 @@ import {
   showScreen,
 } from '@/components/ui';
 import { renderParentView } from '@/components/ui';
+import {
+  initAuthUI,
+  showInitialScreen,
+  handleOAuthCallback,
+  updateUserBar,
+} from '@/components/auth';
 
 /**
  * Application state
@@ -51,14 +57,29 @@ export async function init(): Promise<void> {
       logger.info('Supabase initialized successfully');
     }
 
+    // Handle OAuth callback if returning from Google
+    await handleOAuthCallback();
+
     // Initialize auth if Supabase is configured
     await authService.initialize();
 
     // Set up event listeners
     setupEventListeners();
+    initAuthUI();
 
-    // Render home screen
+    // Show appropriate screen (auth or home)
+    showInitialScreen();
+
+    // Render home screen content (will be shown if authenticated or skipped)
     renderSubPackList(wordPacks);
+
+    // Update user bar if authenticated
+    updateUserBar();
+
+    // Listen for auth skip event
+    window.addEventListener('auth-skipped', () => {
+      renderSubPackList(wordPacks);
+    });
 
     logger.info('Application initialized successfully');
   } catch (error) {
