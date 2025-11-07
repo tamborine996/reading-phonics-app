@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(where:*)",
+      "Bash(py:*)",
+      "Bash(/c/Users/mqc20/AppData/Local/Programs/Python/Python313/python.exe:*)",
+      "WebFetch(domain:assets.publishing.service.gov.uk)",
+      "WebFetch(domain:planbee.com)",
+      "WebFetch(domain:www.oxfordowl.co.uk)",
+      "Bash(python:*)",
+      "WebFetch(domain:code.claude.com)",
+      "WebFetch(domain:github.com)",
+      "Bash(netlify:*)",
+      "Bash(npm --version)",
+      "Bash(npm install:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

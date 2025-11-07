@@ -1,0 +1,33 @@
+DUPLICATE WORDS REPORT
+==================================================
+
+Total duplicate words found: 7
+
+'busy' appears in:
+  - 0B. YEAR 2 COMMON EXCEPTION - Level 2
+  - 0C. YEAR 3/4 COMMON EXCEPTION - Level 2
+
+'children' appears in:
+  - 0A. YEAR 1 HIGH FREQUENCY - Level 2
+  - 0B. YEAR 2 COMMON EXCEPTION - Level 2
+
+'could' appears in:
+  - 0A. YEAR 1 HIGH FREQUENCY - Level 1A
+  - 0B. YEAR 2 COMMON EXCEPTION - Level 1
+
+'mr' appears in:
+  - 0A. YEAR 1 HIGH FREQUENCY - Level 1A
+  - 0B. YEAR 2 COMMON EXCEPTION - Level 1
+
+'mrs' appears in:
+  - 0A. YEAR 1 HIGH FREQUENCY - Level 1A
+  - 0B. YEAR 2 COMMON EXCEPTION - Level 1
+
+'old' appears in:
+  - 0A. YEAR 1 HIGH FREQUENCY - Level 1A
+  - 0B. YEAR 2 COMMON EXCEPTION - Level 1
+
+'people' appears in:
+  - 0A. YEAR 1 HIGH FREQUENCY - Level 1
+  - 0B. YEAR 2 COMMON EXCEPTION - Level 1
+
