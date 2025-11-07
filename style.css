@@ -471,6 +471,25 @@ h1 {
     color: #333;
 }
 
+.pack-number {
+    font-weight: 600;
+    color: #667eea;
+    font-size: 1.05rem;
+}
+
+.word-preview {
+    color: #666;
+    font-size: 0.9rem;
+    font-style: italic;
+    max-width: 300px;
+}
+
+.word-count {
+    color: #999;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
 .progress-cell {
     display: flex;
     flex-direction: column;

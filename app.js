@@ -164,9 +164,9 @@ function renderPackTable(packs) {
         <table class="pack-table">
             <thead>
                 <tr>
-                    <th onclick="sortPacks('id')" class="sortable">Pack # <span class="sort-icon">⇅</span></th>
-                    <th onclick="sortPacks('title')" class="sortable">Title <span class="sort-icon">⇅</span></th>
-                    <th onclick="sortPacks('words')" class="sortable">Words <span class="sort-icon">⇅</span></th>
+                    <th onclick="sortPacks('id')" class="sortable">Pack <span class="sort-icon">⇅</span></th>
+                    <th onclick="sortPacks('words')" class="sortable">Word Preview <span class="sort-icon">⇅</span></th>
+                    <th onclick="sortPacks('count')" class="sortable">Count <span class="sort-icon">⇅</span></th>
                     <th onclick="sortPacks('lastReviewed')" class="sortable">Last Reviewed <span class="sort-icon">⇅</span></th>
                     <th onclick="sortPacks('progress')" class="sortable">Progress <span class="sort-icon">⇅</span></th>
                     <th>Actions</th>
@@ -183,11 +183,14 @@ function renderPackTable(packs) {
         const lastReviewed = progress.lastReviewed ? formatDate(progress.lastReviewed) : 'Never';
         const trickyCount = pack.words.filter((_, idx) => progress.words[idx] === 'tricky').length;
 
+        // Get first 4 words as preview
+        const wordPreview = pack.words.slice(0, 4).join(', ') + (pack.words.length > 4 ? '...' : '');
+
         html += `
             <tr data-pack-id="${pack.id}">
-                <td>P${pack.id}</td>
-                <td class="pack-title">${pack.category}</td>
-                <td>${totalWords}</td>
+                <td class="pack-number">P${pack.id}</td>
+                <td class="word-preview">${wordPreview}</td>
+                <td class="word-count">${totalWords}</td>
                 <td>${lastReviewed}</td>
                 <td>
                     <div class="progress-cell">
