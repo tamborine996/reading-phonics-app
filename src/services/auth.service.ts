@@ -43,9 +43,12 @@ export class AuthService {
 
         // Sync local progress to database
         await this.syncLocalProgressToDatabase();
+      } else {
+        logger.info('No user session found (user not logged in)');
       }
     } catch (error) {
-      logger.error('Failed to initialize auth', error);
+      // This is expected when no one is logged in - not an error
+      logger.info('No active user session');
     }
   }
 

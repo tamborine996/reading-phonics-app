@@ -47,6 +47,11 @@ export class SupabaseService {
       const { data, error } = await this.client.auth.getUser();
 
       if (error) {
+        // AuthSessionMissingError is expected when not logged in - not an actual error
+        if (error.name === 'AuthSessionMissingError' || error.message.includes('session missing')) {
+          logger.info('No user session (not logged in)');
+          return null;
+        }
         logger.error('Failed to get current user', error);
         return null;
       }
@@ -62,6 +67,10 @@ export class SupabaseService {
         updatedAt: data.user.updated_at || data.user.created_at,
       };
     } catch (error) {
+      // Session missing is normal when not logged in
+      if (error instanceof Error && error.message.includes('session missing')) {
+        return null;
+      }
       logger.error('Error getting current user', error);
       return null;
     }
