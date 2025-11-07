@@ -3,6 +3,11 @@
 ## Overview
 This project provides a comprehensive phonics word bank for teaching reading, along with an interactive web app for daily word practice. The word bank contains 3,383 unique words organized into 130 packs of ~30 words each, covering all major phonics patterns from Year 1 through Year 6.
 
+## Live Application
+**URL**: https://creative-marzipan-00a78e.netlify.app
+**GitHub**: https://github.com/tamborine996/reading-phonics-app
+**Status**: Live and auto-deploying via Netlify
+
 ## Files
 
 ### Web App (NEW!)
@@ -17,7 +22,23 @@ This project provides a comprehensive phonics word bank for teaching reading, al
 
 ### Python Scripts
 
-#### 1. create_simple_packs.py (CURRENT - RECOMMENDED)
+#### 1. sync_excel_from_app.py (CURRENT - PRIMARY WORKFLOW)
+**Purpose**: Syncs Excel file to match what's live in app.js
+
+**Architecture**: app.js is the source of truth. Excel mirrors what's live.
+
+**Usage**:
+```bash
+python sync_excel_from_app.py
+```
+
+**Output**:
+- Updates Phonics_Word_Bank.xlsx to match app.js data
+- Ensures Excel always shows what's actually deployed
+
+**When to use**: After editing app.js and before committing changes
+
+#### 2. create_simple_packs.py (LEGACY - Initial Setup)
 **Purpose**: Creates clean, simple word packs for daily practice
 
 **Features**:
@@ -28,31 +49,15 @@ This project provides a comprehensive phonics word bank for teaching reading, al
 - Skips tiny categories (<10 words)
 - Generates 130 total packs from 3,383 unique words
 
-**Usage**:
-```bash
-python create_simple_packs.py
-```
+**Note**: Used for initial organization. Now use sync_excel_from_app.py for updates.
 
-**Output**:
-- Updates Phonics_Word_Bank.xlsx with clean pack organization
-
-#### 2. extract_first_packs.py
+#### 3. extract_first_packs.py (LEGACY)
 **Purpose**: Extracts word packs from Excel to JSON format for web app
 
-**Usage**:
-```bash
-python extract_first_packs.py
-```
-
-**Output**:
-- Creates word_packs.json with selected packs
-
-#### 3. reorganize_with_levels.py (LEGACY)
-**Purpose**: Older script that organized by difficulty levels (Level 1/2/3)
-- Created complex naming (Level 1A, Level 1B, Level 3 - Level 3, etc.)
-- Not recommended - replaced by create_simple_packs.py
+**Note**: Replaced by new workflow. app.js is now edited directly.
 
 #### 4. Other Legacy Scripts
+- reorganize_with_levels.py
 - split_existing_wordbank.py
 - create_split_wordbank.py
 - create_segmented_wordbank.py
@@ -110,7 +115,29 @@ To add all 130 packs to the web app:
 
 ## Recent Updates
 
-### Latest Session (2025-11-06)
+### Latest Session (2025-11-07) - Deployment & Workflow
+
+#### Production Deployment
+- Deployed to Netlify: https://creative-marzipan-00a78e.netlify.app
+- GitHub repository: https://github.com/tamborine996/reading-phonics-app
+- Auto-deployment pipeline: GitHub → Netlify (30 second deploy time)
+- Free tier hosting (sufficient for family use)
+
+#### Architecture Changes
+- **app.js is now source of truth** (what's live on the website)
+- **Excel mirrors app.js** (for easy overview/reference)
+- Created sync_excel_from_app.py to keep Excel in sync
+- Sequential pack numbering: P1, P2, P3... P130
+- Controlled deployment workflow (no accidental pushes)
+
+#### Workflow Established
+1. Edit app.js (make changes)
+2. Run sync script (update Excel)
+3. Commit to git
+4. Push to GitHub
+5. Auto-deploy to Netlify
+
+### Previous Session (2025-11-06)
 
 #### Phase 1: Initial Organization
 - Reorganized word bank with difficulty-based splitting
@@ -142,18 +169,47 @@ Install with:
 pip install openpyxl
 ```
 
-## How to Use
+## How to Make Updates (Current Workflow)
 
-### To reorganize the word bank:
-1. Ensure Phonics_Word_Bank.xlsx exists in the project directory
-2. Run: `python reorganize_with_levels.py`
-3. Review the updated Phonics_Word_Bank.xlsx
-4. Check Duplicate_Report.txt for any duplicates removed
+### Making Changes to Word Packs
 
-### To modify word lists:
-1. Edit the word lists in create_segmented_wordbank.py
-2. Run the script to generate a new word bank
-3. Then run reorganize_with_levels.py to apply difficulty sorting
+**IMPORTANT**: app.js is the source of truth. Excel mirrors what's live.
+
+#### Step-by-Step Process:
+
+1. **Edit app.js**
+   - Open `app.js` in your editor
+   - Modify the `wordPacks` array (add/remove/change words)
+   - Save the file
+
+2. **Sync Excel** (keeps Excel as a mirror)
+   ```bash
+   python sync_excel_from_app.py
+   ```
+   - This updates Excel to match app.js
+   - Excel now shows what will be live
+
+3. **Commit Changes**
+   ```bash
+   git add app.js Phonics_Word_Bank.xlsx
+   git commit -m "Your descriptive message"
+   ```
+
+4. **Deploy**
+   ```bash
+   git push origin master
+   ```
+   - GitHub receives the push
+   - Netlify auto-deploys (takes ~30 seconds)
+   - Site is live at https://creative-marzipan-00a78e.netlify.app
+
+### Why This Workflow?
+
+- **app.js = Live data** (what users see)
+- **Excel = Reference/overview** (always matches live)
+- **No accidental deployments** (you control when to push)
+- **Single source of truth** (app.js)
+- **Easy overview** (Excel for quick viewing)
 
 ## Notes
 - All scripts preserve word integrity (no hyphens or modifications)

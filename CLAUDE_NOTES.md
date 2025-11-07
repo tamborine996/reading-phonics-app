@@ -1,5 +1,67 @@
 # Claude Development Notes
 
+## Current Architecture (2025-11-07)
+
+### Live Deployment
+- **Live URL**: https://creative-marzipan-00a78e.netlify.app
+- **GitHub Repo**: https://github.com/tamborine996/reading-phonics-app
+- **Hosting**: Netlify (free tier)
+- **Auto-deploy**: Enabled (GitHub webhook → Netlify)
+- **Deploy time**: ~30 seconds from push to live
+
+### Source of Truth Architecture
+
+**Key Decision**: app.js is the source of truth, Excel mirrors what's live.
+
+**Reasoning**:
+- User wanted to avoid accidental deployments from Excel changes
+- Excel used for overview/reference, not editing
+- Controlled deployment workflow (explicit git push)
+- No risk of experimental Excel changes going live
+
+**Data Flow**:
+```
+app.js (source of truth)
+  ↓
+sync_excel_from_app.py (sync script)
+  ↓
+Phonics_Word_Bank.xlsx (mirror)
+  ↓
+git commit + push
+  ↓
+GitHub
+  ↓
+Netlify (webhook triggered)
+  ↓
+Live site updated
+```
+
+### Workflow (Standard Operating Procedure)
+
+1. **Edit app.js** - Modify wordPacks array
+2. **Run sync**: `python sync_excel_from_app.py`
+3. **Commit**: `git add . && git commit -m "message"`
+4. **Push**: `git push origin master`
+5. **Wait 30s** - Site auto-updates
+
+### Key Files
+
+- **app.js** - Source of truth (what users see)
+- **Phonics_Word_Bank.xlsx** - Mirror (for reference/overview)
+- **sync_excel_from_app.py** - Sync script (Excel ← app.js)
+- **index.html** - Web app structure
+- **style.css** - Child-friendly design
+- **netlify.toml** - Netlify configuration
+
+### Pack Numbering
+
+Sequential numbering added: P1, P2, P3... P130
+- Makes tracking easier
+- Clear progression
+- Easy to reference
+
+---
+
 ## Project History
 
 ### Session 1: Initial Setup & Word Bank Creation

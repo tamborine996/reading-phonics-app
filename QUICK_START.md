@@ -2,41 +2,72 @@
 
 ## What You Have Now
 
-### 📊 Word Bank
-- **Phonics_Word_Bank.xlsx** - 130 packs, ~30 words each, 3,383 total unique words
-- Clean organization: "Category - Pack 1", "Category - Pack 2", etc.
-- No duplicates, no tiny categories
-
-### 🌐 Web App
-- **index.html** - Open this in a browser to use the app!
-- Works offline, saves progress automatically
+### 🌐 Live Web App
+- **URL**: https://creative-marzipan-00a78e.netlify.app
+- **Status**: Live and deployed on Netlify (free tier)
+- **Auto-deploys**: Every push to GitHub triggers deployment (~30 seconds)
 - Currently loaded with first 4 packs (100 words)
+
+### 📊 Word Bank
+- **Phonics_Word_Bank.xlsx** - Mirrors what's live in the app
+- 130 packs total, currently 4 packs deployed
+- Sequential numbering: P1, P2, P3, P4
+- ~30 words each, 3,383 total unique words
+
+### 🔄 Architecture
+- **app.js** = Source of truth (what's live)
+- **Excel** = Mirror (shows what's live)
+- **GitHub** = Code repository
+- **Netlify** = Hosting & auto-deployment
 
 ## Using the Web App
 
-1. **Open**: Double-click `index.html` or drag it into a browser
+1. **Visit**: https://creative-marzipan-00a78e.netlify.app
 2. **Practice**: Click a pack, read words, mark as "Got it!" or "Tricky"
 3. **Review**: At the end, review tricky words
 4. **Parent View**: Click parent button to see progress
 
-## Next Session Tasks
+## Making Updates (Simple Workflow)
 
-### Option A: Expand to All 130 Packs
-1. Edit `extract_first_packs.py` line 24: change `range(2, 6)` to `range(2, ws.max_row + 1)`
-2. Run: `python extract_first_packs.py`
-3. Copy JSON from `word_packs.json` into `app.js` (replace wordPacks array)
+### To Change Word Packs:
 
-### Option B: Add Features
+1. **Edit app.js**
+   - Open `app.js` in your editor
+   - Modify the `wordPacks` array
+   - Save the file
+
+2. **Sync Excel** (keep Excel as mirror)
+   ```bash
+   python sync_excel_from_app.py
+   ```
+
+3. **Deploy**
+   ```bash
+   git add app.js Phonics_Word_Bank.xlsx
+   git commit -m "Your message"
+   git push origin master
+   ```
+
+4. **Wait ~30 seconds** - Site auto-updates!
+
+### Next Session Tasks
+
+#### Option A: Expand to All 130 Packs
+- Currently: 4 packs deployed
+- To expand: Add more packs to wordPacks array in app.js
+- Run sync script, commit, push
+
+#### Option B: Add Features
 See CLAUDE_NOTES.md "Next Steps / TODO" section for ideas:
 - Audio pronunciation
 - Shuffle mode
 - Progress export
 - More gamification
 
-### Option C: Adjust Pack Sizes
-Edit `create_simple_packs.py`:
-- Change `pack_size = 30` to your preferred size
-- Run script to regenerate word bank
+#### Option C: Customize Packs
+- Edit wordPacks array in app.js directly
+- Adjust words, titles, descriptions
+- Use sync script to update Excel
 
 ## Important Files
 
@@ -48,19 +79,22 @@ Edit `create_simple_packs.py`:
 
 ## Key Scripts
 
-- **create_simple_packs.py** - Main organization script (CURRENT)
-- **extract_first_packs.py** - Export to JSON
-- **reorganize_with_levels.py** - Legacy (don't use)
+- **sync_excel_from_app.py** - Sync Excel from app.js (CURRENT WORKFLOW)
+- **create_simple_packs.py** - Initial pack organization (LEGACY)
+- **extract_first_packs.py** - Export to JSON (LEGACY)
+- **reorganize_with_levels.py** - Level-based organization (LEGACY)
 
 ## Testing Checklist
 
 Before showing to your daughter:
-- [ ] Open index.html - does it show 4 packs?
-- [ ] Click Pack 1 - does it show words?
+- [ ] Visit https://creative-marzipan-00a78e.netlify.app
+- [ ] Does it show 4 packs (P1-P4)?
+- [ ] Click P1 - does it show words?
 - [ ] Mark some words as "Tricky" - do they appear in review?
 - [ ] Complete a pack - does completion screen show stats?
 - [ ] Check Parent View - does it show tricky words?
 - [ ] Close browser and reopen - is progress saved?
+- [ ] Try on phone/tablet - does it work?
 
 ## Contact / Feedback
 
