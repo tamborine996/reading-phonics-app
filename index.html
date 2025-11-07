@@ -8,51 +8,51 @@
 </head>
 <body>
     <!-- Home Screen -->
-    <div id="homeScreen" class="screen active">
+    <div id="homeScreen" class="screen">
         <div class="container">
             <h1>📚 Word Practice</h1>
-            <p class="subtitle">Choose a pack to practice</p>
+            <p class="subtitle">Choose a pack to practice - organized by difficulty</p>
 
             <div id="packList" class="pack-list">
-                <!-- Packs will be loaded here -->
+                <!-- Sub-packs and tables will be loaded here -->
             </div>
 
-            <button class="btn-secondary" onclick="showParentView()">
+            <button class="btn-secondary parent-btn" id="parentBtn">
                 👨‍👩‍👧 Parent View
             </button>
         </div>
     </div>
 
     <!-- Practice Screen -->
-    <div id="practiceScreen" class="screen">
+    <div id="practiceScreen" class="screen hidden">
         <div class="container">
             <div class="header">
-                <button class="btn-back" onclick="goHome()">← Back</button>
+                <button class="btn-back" id="backBtn">← Back</button>
                 <div class="progress-info">
                     <span id="wordCounter">1 / 30</span>
                 </div>
             </div>
 
-            <h2 id="packTitle" class="pack-title">Pack 1</h2>
+            <h2 id="packTitle" class="pack-title-practice">Pack 1</h2>
 
             <div class="word-display">
                 <div id="currentWord" class="word">loading</div>
             </div>
 
             <div class="button-group">
-                <button class="btn-large btn-tricky" onclick="markWord('tricky')">
+                <button class="btn-large btn-tricky" id="trickyBtn">
                     😕 Tricky
                 </button>
-                <button class="btn-large btn-got-it" onclick="markWord('got-it')">
+                <button class="btn-large btn-got-it" id="gotItBtn">
                     ✓ Got it!
                 </button>
             </div>
 
             <div class="navigation">
-                <button class="btn-nav" onclick="previousWord()" id="prevBtn">
+                <button class="btn-nav" id="prevBtn">
                     ← Previous
                 </button>
-                <button class="btn-nav" onclick="nextWord()" id="nextBtn">
+                <button class="btn-nav" id="nextBtn">
                     Next →
                 </button>
             </div>
@@ -60,32 +60,16 @@
     </div>
 
     <!-- Complete Screen -->
-    <div id="completeScreen" class="screen">
+    <div id="completeScreen" class="screen hidden">
         <div class="container">
-            <h1>🎉 Pack Complete!</h1>
+            <h1 id="completeTitle">🎉 Pack Complete!</h1>
 
-            <div class="stats">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalWords">30</div>
-                    <div class="stat-label">Total Words</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="trickyWords">0</div>
-                    <div class="stat-label">Tricky Words</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-number" id="gotItWords">0</div>
-                    <div class="stat-label">Got It!</div>
-                </div>
+            <div id="completeStats" class="complete-stats">
+                <!-- Stats will be loaded here -->
             </div>
 
-            <div id="trickyWordsList" class="tricky-list"></div>
-
             <div class="button-group">
-                <button class="btn-secondary" onclick="reviewTricky()">
-                    🔄 Review Tricky Words
-                </button>
-                <button class="btn-primary" onclick="goHome()">
+                <button class="btn-primary" id="homeBtn">
                     ← Back to Packs
                 </button>
             </div>
@@ -93,16 +77,14 @@
     </div>
 
     <!-- Parent View -->
-    <div id="parentScreen" class="screen">
+    <div id="parentScreen" class="screen hidden">
         <div class="container">
             <div class="header">
-                <button class="btn-back" onclick="goHome()">← Back</button>
+                <button class="btn-back" onclick="showScreen('homeScreen')">← Back</button>
             </div>
 
-            <h1>👨‍👩‍👧 Parent Dashboard</h1>
-
-            <div id="parentStats" class="parent-stats">
-                <!-- Stats will be loaded here -->
+            <div id="parentContent" class="parent-content">
+                <!-- Parent stats will be loaded here -->
             </div>
         </div>
     </div>

@@ -359,7 +359,262 @@ h1 {
     margin-bottom: 10px;
 }
 
+/* Sub-Packs */
+.sub-pack {
+    background: white;
+    border-radius: 15px;
+    padding: 25px;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.sub-pack-header {
+    margin-bottom: 20px;
+}
+
+.sub-pack-header h2 {
+    color: #667eea;
+    font-size: 1.8rem;
+    margin-bottom: 8px;
+}
+
+.sub-pack-header p {
+    color: #666;
+    font-size: 1rem;
+    margin-bottom: 15px;
+}
+
+/* Tricky Review Buttons */
+.tricky-review-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-bottom: 15px;
+}
+
+.tricky-review-btn:hover {
+    background: #ff5252;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+.tricky-review-btn.global {
+    width: 100%;
+    padding: 20px;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.tricky-review-btn.subpack {
+    display: inline-block;
+}
+
+/* Pack Table */
+.pack-table-container {
+    overflow-x: auto;
+}
+
+.pack-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+.pack-table thead {
+    background: #f8f9fa;
+}
+
+.pack-table th {
+    padding: 15px 12px;
+    text-align: left;
+    font-weight: 600;
+    color: #333;
+    border-bottom: 2px solid #667eea;
+}
+
+.pack-table th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.pack-table th.sortable:hover {
+    background: #e9ecef;
+}
+
+.sort-icon {
+    font-size: 0.8rem;
+    color: #999;
+    margin-left: 4px;
+}
+
+.pack-table tbody tr {
+    border-bottom: 1px solid #e0e0e0;
+    transition: background 0.2s ease;
+}
+
+.pack-table tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.pack-table td {
+    padding: 12px;
+}
+
+.pack-title {
+    font-weight: 500;
+    color: #333;
+}
+
+.progress-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.progress-bar-small {
+    width: 100px;
+    height: 6px;
+    background: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.actions-cell {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn.practice {
+    background: #667eea;
+    color: white;
+}
+
+.action-btn.practice:hover {
+    background: #5568d3;
+}
+
+.action-btn.review-tricky {
+    background: #ff6b6b;
+    color: white;
+}
+
+.action-btn.review-tricky:hover {
+    background: #ff5252;
+}
+
+/* Misc Updates */
+.hidden {
+    display: none !important;
+}
+
+.pack-title-practice {
+    color: white;
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+}
+
+.parent-btn {
+    margin-top: 20px;
+}
+
+.parent-content {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.parent-content h2 {
+    color: #667eea;
+    margin-bottom: 20px;
+}
+
+.parent-content h3 {
+    color: #333;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    font-size: 1.3rem;
+}
+
+.parent-content ul {
+    list-style: none;
+    padding: 0;
+}
+
+.parent-content li {
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+    color: #666;
+}
+
+.parent-content li strong {
+    color: #667eea;
+}
+
+.complete-stats {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.complete-stats p {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.complete-stats p:last-child {
+    margin-bottom: 0;
+}
+
+.container {
+    max-width: 1200px;
+}
+
 /* Responsive */
+@media (max-width: 768px) {
+    .container {
+        max-width: 100%;
+    }
+
+    .pack-table {
+        font-size: 0.85rem;
+    }
+
+    .pack-table th,
+    .pack-table td {
+        padding: 10px 8px;
+    }
+
+    .actions-cell {
+        flex-direction: column;
+    }
+
+    .action-btn {
+        width: 100%;
+    }
+}
+
 @media (max-width: 600px) {
     h1 {
         font-size: 2rem;
@@ -380,5 +635,13 @@ h1 {
     .btn-large {
         font-size: 1.2rem;
         padding: 20px;
+    }
+
+    .pack-table-container {
+        overflow-x: scroll;
+    }
+
+    .pack-table {
+        min-width: 600px;
     }
 }
