@@ -16,11 +16,22 @@ export class SupabaseService {
    * Initialize Supabase client with credentials
    * Note: In production, these should be environment variables
    */
-  initialize(supabaseUrl: string, supabaseKey: string): void {
+  async initialize(supabaseUrl: string, supabaseKey: string): Promise<void> {
     try {
       this.client = createClient(supabaseUrl, supabaseKey);
       this.initialized = true;
       logger.info('Supabase client initialized successfully');
+
+      // If there's an OAuth hash in the URL, let Supabase process it
+      if (window.location.hash && window.location.hash.includes('access_token')) {
+        logger.info('OAuth tokens detected, establishing session...');
+        const { data, error } = await this.client.auth.getSession();
+        if (error) {
+          logger.error('Failed to establish OAuth session', error);
+        } else if (data.session) {
+          logger.info('OAuth session established successfully');
+        }
+      }
     } catch (error) {
       logger.error('Failed to initialize Supabase client', error);
       throw error;

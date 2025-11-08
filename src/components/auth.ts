@@ -168,27 +168,18 @@ export async function handleOAuthCallback(): Promise<boolean> {
   const accessToken = hashParams.get('access_token');
 
   if (accessToken) {
-    logger.info('OAuth callback detected, processing...');
+    logger.info('OAuth callback detected, letting Supabase process session...');
 
     // Clear auth_skipped since user signed in
     localStorage.removeItem('auth_skipped');
 
-    // Longer delay to let Supabase fully process the session
-    await new Promise((resolve) => setTimeout(resolve, 1000));
+    // DON'T remove hash yet - Supabase needs it to establish session
+    // The hash will be handled by Supabase client automatically
 
-    // Remove hash from URL
-    window.history.replaceState(null, '', window.location.pathname);
+    // Give Supabase time to process the OAuth tokens and establish session
+    await new Promise((resolve) => setTimeout(resolve, 2000));
 
-    // Show home screen
-    const authScreen = document.getElementById('authScreen');
-    const homeScreen = document.getElementById('homeScreen');
-
-    authScreen?.classList.add('hidden');
-    homeScreen?.classList.remove('hidden');
-
-    updateUserBar();
-
-    logger.info('OAuth sign in successful!');
+    logger.info('OAuth processing complete');
     return true;
   }
 
