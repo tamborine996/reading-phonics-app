@@ -261,6 +261,8 @@ export class SupabaseService {
           completed: progress.completed,
           last_reviewed: progress.lastReviewed,
           synced_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,pack_id'
         });
 
       if (error) {
