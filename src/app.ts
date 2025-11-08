@@ -104,6 +104,7 @@ function setupEventListeners(): void {
     backBtn.onclick = () => {
       appState.reset();
       showScreen('homeScreen');
+      renderSubPackList(wordPacks); // Refresh pack list to show updated tricky counts
     };
   }
 
@@ -135,6 +136,7 @@ function setupEventListeners(): void {
     homeBtn.onclick = () => {
       appState.reset();
       showScreen('homeScreen');
+      renderSubPackList(wordPacks); // Refresh pack list to show updated tricky counts
     };
   }
 
