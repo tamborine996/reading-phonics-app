@@ -67,8 +67,12 @@ export async function init(): Promise<void> {
     setupEventListeners();
     initAuthUI();
 
-    // Show appropriate screen (auth or home) - but skip if OAuth just processed
-    if (!isOAuthCallback) {
+    // Show appropriate screen
+    if (isOAuthCallback) {
+      // After OAuth, show home screen
+      showScreen('homeScreen');
+    } else {
+      // Normal flow - show auth or home based on state
       showInitialScreen();
     }
 
