@@ -2,7 +2,21 @@
   publish = "dist"
   command = "npm run build"
 
+# Ensure Node 18+ for Vite compatibility
+[build.environment]
+  NODE_VERSION = "18"
+
+# Make sure environment variables are available during build
+[context.production]
+  command = "npm run build"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+# Cache headers for better performance
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
