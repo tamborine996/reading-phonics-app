@@ -204,7 +204,7 @@ export class SupabaseService {
       const { data, error } = await this.client
         .from(SUPABASE_CONFIG.TABLE_NAMES.PACK_PROGRESS)
         .select('*')
-        .eq('userId', userId);
+        .eq('user_id', userId);
 
       if (error) {
         logger.error('Failed to fetch user progress', error);
@@ -214,10 +214,10 @@ export class SupabaseService {
       const progress: Record<number, PackProgress> = {};
 
       data?.forEach((row: DatabasePackProgress) => {
-        progress[row.packId] = {
+        progress[row.pack_id] = {
           words: row.words,
           completed: row.completed,
-          lastReviewed: row.lastReviewed,
+          lastReviewed: row.last_reviewed,
         };
       });
 
@@ -243,12 +243,12 @@ export class SupabaseService {
       const { error } = await this.client
         .from(SUPABASE_CONFIG.TABLE_NAMES.PACK_PROGRESS)
         .upsert({
-          userId,
-          packId,
+          user_id: userId,
+          pack_id: packId,
           words: progress.words,
           completed: progress.completed,
-          lastReviewed: progress.lastReviewed,
-          syncedAt: new Date().toISOString(),
+          last_reviewed: progress.lastReviewed,
+          synced_at: new Date().toISOString(),
         });
 
       if (error) {

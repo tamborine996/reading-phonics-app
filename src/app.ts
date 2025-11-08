@@ -140,6 +140,12 @@ function setupEventListeners(): void {
     parentBtn.onclick = () => renderParentView(wordPacks);
   }
 
+  // Parent view back button
+  const parentBackBtn = document.getElementById('parentBackBtn');
+  if (parentBackBtn) {
+    parentBackBtn.onclick = () => showScreen('homeScreen');
+  }
+
   logger.info('Event listeners set up successfully');
 }
 

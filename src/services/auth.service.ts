@@ -41,7 +41,8 @@ export class AuthService {
         this.currentUser = user;
         logger.info('User authenticated', { email: user.email });
 
-        // Sync local progress to database
+        // Load server progress first, then sync local changes
+        await this.loadProgressFromDatabase();
         await this.syncLocalProgressToDatabase();
       } else {
         logger.info('No user session found (user not logged in)');
@@ -74,7 +75,7 @@ export class AuthService {
       this.currentUser = user;
       logger.info('User signed up and authenticated', { email });
 
-      // Sync any existing local progress
+      // For new users, just sync local progress (nothing to load from server yet)
       await this.syncLocalProgressToDatabase();
 
       return user;
@@ -102,7 +103,8 @@ export class AuthService {
       this.currentUser = user;
       logger.info('User signed in', { email });
 
-      // Sync local progress with database
+      // Load server progress first, then sync local changes
+      await this.loadProgressFromDatabase();
       await this.syncLocalProgressToDatabase();
 
       return user;

@@ -58,10 +58,14 @@ export interface User {
   updatedAt: string;
 }
 
-export interface DatabasePackProgress extends PackProgress {
-  userId: string;
-  packId: number;
-  syncedAt: string;
+// Database representation (snake_case as stored in Supabase)
+export interface DatabasePackProgress {
+  user_id: string;
+  pack_id: number;
+  words: WordStatus;
+  completed: boolean;
+  last_reviewed: string | null;
+  synced_at: string;
 }
 
 export type Screen = 'home' | 'practice' | 'complete' | 'parent';
