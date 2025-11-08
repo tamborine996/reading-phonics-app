@@ -157,6 +157,18 @@ function setupEventListeners(): void {
     parentBackBtn.onclick = () => showScreen('homeScreen');
   }
 
+  // Sheraz button
+  const sherazBtn = document.getElementById('sherazBtn');
+  if (sherazBtn) {
+    sherazBtn.onclick = () => showScreen('sherazScreen');
+  }
+
+  // Sheraz back button
+  const sherazBackBtn = document.getElementById('sherazBackBtn');
+  if (sherazBackBtn) {
+    sherazBackBtn.onclick = () => showScreen('homeScreen');
+  }
+
   logger.info('Event listeners set up successfully');
 }
 
