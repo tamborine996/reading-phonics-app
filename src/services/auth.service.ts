@@ -131,7 +131,7 @@ export class AuthService {
   /**
    * Sync local progress to database
    */
-  private async syncLocalProgressToDatabase(): Promise<void> {
+  async syncLocalProgressToDatabase(): Promise<void> {
     try {
       if (!this.currentUser) {
         logger.warn('No user authenticated, skipping sync');

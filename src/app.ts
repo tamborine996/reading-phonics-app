@@ -295,6 +295,11 @@ function markWord(status: 'tricky' | 'mastered'): void {
       storageService.updateWordStatus(appState.currentPack.id, word, status);
     }
 
+    // Sync to Supabase if user is authenticated
+    authService.syncLocalProgressToDatabase().catch((error) => {
+      logger.error('Failed to sync progress after marking word', error);
+    });
+
     // Move to next word or show completion
     const words = appState.reviewMode
       ? appState.reviewWords
