@@ -22,15 +22,13 @@ export class SupabaseService {
       this.initialized = true;
       logger.info('Supabase client initialized successfully');
 
-      // If there's an OAuth hash in the URL, let Supabase process it
+      // Supabase automatically processes OAuth tokens from URL hash
+      // Just give it a moment to complete if tokens are present
       if (window.location.hash && window.location.hash.includes('access_token')) {
-        logger.info('OAuth tokens detected, establishing session...');
-        const { data, error } = await this.client.auth.getSession();
-        if (error) {
-          logger.error('Failed to establish OAuth session', error);
-        } else if (data.session) {
-          logger.info('OAuth session established successfully');
-        }
+        logger.info('OAuth tokens detected, waiting for Supabase auto-processing...');
+        // Small delay to let Supabase finish its automatic OAuth handling
+        await new Promise(resolve => setTimeout(resolve, 500));
+        logger.info('OAuth processing time complete');
       }
     } catch (error) {
       logger.error('Failed to initialize Supabase client', error);

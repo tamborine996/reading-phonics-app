@@ -168,18 +168,13 @@ export async function handleOAuthCallback(): Promise<boolean> {
   const accessToken = hashParams.get('access_token');
 
   if (accessToken) {
-    logger.info('OAuth callback detected, letting Supabase process session...');
+    logger.info('OAuth callback detected');
 
     // Clear auth_skipped since user signed in
     localStorage.removeItem('auth_skipped');
 
-    // DON'T remove hash yet - Supabase needs it to establish session
-    // The hash will be handled by Supabase client automatically
-
-    // Give Supabase time to process the OAuth tokens and establish session
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-
-    logger.info('OAuth processing complete');
+    // Supabase has already processed the OAuth tokens automatically during initialization
+    // No need to wait or do anything else here
     return true;
   }
 
