@@ -49,6 +49,11 @@ export async function init(): Promise<void> {
   try {
     logger.info('Initializing application');
 
+    // Initialize text-to-speech
+    const { speechService } = await import('@/utils/speech');
+    speechService.initialize();
+    logger.info('Speech service initialized');
+
     // Initialize Supabase if configured
     const { env, isSupabaseConfigured } = await import('@/env');
     if (isSupabaseConfigured()) {

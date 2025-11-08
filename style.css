@@ -149,8 +149,10 @@ h1 {
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
     min-height: 250px;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
+    gap: 20px;
 }
 
 .word {
@@ -167,6 +169,28 @@ h1 {
 
 .word.tricky {
     color: #ff6b6b;
+}
+
+.btn-speaker {
+    background: #667eea;
+    color: white;
+    border: none;
+    padding: 16px 24px;
+    border-radius: 50px;
+    font-size: 1.8rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.btn-speaker:hover {
+    background: #5568d3;
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+}
+
+.btn-speaker:active {
+    transform: scale(0.95);
 }
 
 .button-group {

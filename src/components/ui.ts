@@ -6,6 +6,7 @@ import type { WordPack } from '@/types';
 import { storageService } from '@/services/storage.service';
 import { extractCleanLabel, getWordPreview, formatDate, groupPacksBySubPack } from '@/utils/helpers';
 import { logger } from '@/utils/logger';
+import { speechService } from '@/utils/speech';
 import type { AppState } from '../app';
 
 /**
@@ -208,6 +209,19 @@ export function renderPracticeScreen(appState: AppState): void {
   if (nextBtn) {
     nextBtn.disabled = appState.currentWordIndex === words.length - 1;
   }
+
+  // Set up speaker button
+  const speakerBtn = document.getElementById('speakerBtn');
+  if (speakerBtn) {
+    speakerBtn.onclick = () => {
+      speechService.speak(currentWord);
+      logger.info('Speaking word via button click', { word: currentWord });
+    };
+  }
+
+  // Auto-speak the word when it first appears (optional)
+  // Uncomment the line below if you want automatic speech
+  // speechService.speak(currentWord);
 }
 
 /**
