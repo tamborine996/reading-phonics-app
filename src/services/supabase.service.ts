@@ -183,10 +183,13 @@ export class SupabaseService {
     if (!this.client) throw new Error('Supabase not initialized');
 
     try {
+      // Get the full base URL including any subdirectories (like /reading-phonics-app/)
+      const baseUrl = window.location.origin + window.location.pathname;
+
       const { error } = await this.client.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin,
+          redirectTo: baseUrl,
         },
       });
 
