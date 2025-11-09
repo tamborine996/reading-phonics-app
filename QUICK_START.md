@@ -1,106 +1,130 @@
 # Quick Start Guide
 
-## What You Have Now
+## Current Project Status (2025-01-08)
 
-### 🌐 Live Web App
-- **URL**: https://creative-marzipan-00a78e.netlify.app
-- **Status**: Live and deployed on Netlify (free tier)
-- **Auto-deploys**: Every push to GitHub triggers deployment (~30 seconds)
-- Currently loaded with first 4 packs (100 words)
+###  Live App
+- **URL**: https://tamborine996.github.io/reading-phonics-app/
+- **Hosting**: GitHub Pages (unlimited free deployments)
+- **All 130 packs** deployed and working
+- **Features**: Text-to-speech, cloud sync, OAuth, progress tracking
 
-### 📊 Word Bank
-- **Phonics_Word_Bank.xlsx** - Mirrors what's live in the app
-- 130 packs total, currently 4 packs deployed
-- Sequential numbering: P1, P2, P3, P4
-- ~30 words each, 3,383 total unique words
+## For Users (Parents/Children)
 
-### 🔄 Architecture
-- **app.js** = Source of truth (what's live)
-- **Excel** = Mirror (shows what's live)
-- **GitHub** = Code repository
-- **Netlify** = Hosting & auto-deployment
+### Using the App
+1. Visit https://tamborine996.github.io/reading-phonics-app/
+2. Choose: Sign in with Google (syncs progress) OR Skip (local-only)
+3. Select a word pack to practice
+4. Read words, mark as "Tricky" or "Got it!"
+5. Click 🔊 speaker button to hear word pronounced
+6. Review tricky words anytime
+7. Check "Parent View" to see progress
 
-## Using the Web App
+### Features
+- ✅ 130 word packs (3,383 words total)
+- ✅ Cloud sync across devices (when signed in)
+- ✅ Text-to-speech (British English)
+- ✅ Progress tracking
+- ✅ Works on phone, tablet, desktop
 
-1. **Visit**: https://creative-marzipan-00a78e.netlify.app
-2. **Practice**: Click a pack, read words, mark as "Got it!" or "Tricky"
-3. **Review**: At the end, review tricky words
-4. **Parent View**: Click parent button to see progress
+## For Developers
 
-## Making Updates (Simple Workflow)
+### Getting Started
+```bash
+# Clone and install
+git clone https://github.com/tamborine996/reading-phonics-app.git
+cd reading-phonics-app
+npm install
 
-### To Change Word Packs:
+# Create .env file
+VITE_SUPABASE_URL=your_url
+VITE_SUPABASE_ANON_KEY=your_key
 
-1. **Edit app.js**
-   - Open `app.js` in your editor
-   - Modify the `wordPacks` array
-   - Save the file
+# Run locally
+npm run dev  # Opens at localhost:3000
+```
 
-2. **Sync Excel** (keep Excel as mirror)
-   ```bash
-   python sync_excel_from_app.py
-   ```
+### Making Changes
 
-3. **Deploy**
-   ```bash
-   git add app.js Phonics_Word_Bank.xlsx
-   git commit -m "Your message"
-   git push origin master
-   ```
+**To edit word packs:**
+1. Edit `src/data/wordPacks.ts` (this is the source of truth)
+2. Test locally: `npm run dev`
+3. Run checks: `npm run type-check && npm run test:run`
+4. Commit and push
+5. GitHub Actions auto-deploys in ~30-40 seconds
 
-4. **Wait ~30 seconds** - Site auto-updates!
+**To add features:**
+1. Follow TypeScript patterns in `src/`
+2. Add tests in `*.test.ts` files
+3. Update documentation
+4. Commit, push, auto-deploy
 
-### Next Session Tasks
+### Key Commands
+```bash
+npm run dev          # Development server
+npm test             # Run tests (watch mode)
+npm run test:run     # Run tests once
+npm run type-check   # TypeScript validation
+npm run build        # Production build
+```
 
-#### Option A: Expand to All 130 Packs
-- Currently: 4 packs deployed
-- To expand: Add more packs to wordPacks array in app.js
-- Run sync script, commit, push
+### Project Structure
+```
+src/
+├── data/wordPacks.ts       # ← Source of truth for all word data
+├── components/             # UI rendering
+├── services/               # Business logic (auth, storage, database)
+├── utils/                  # Helpers, logging, speech
+└── app.ts                  # Main entry point
+```
 
-#### Option B: Add Features
-See CLAUDE_NOTES.md "Next Steps / TODO" section for ideas:
-- Audio pronunciation
-- Shuffle mode
-- Progress export
-- More gamification
+## Tech Stack Summary
 
-#### Option C: Customize Packs
-- Edit wordPacks array in app.js directly
-- Adjust words, titles, descriptions
-- Use sync script to update Excel
+- **Frontend**: TypeScript + Vite + HTML/CSS
+- **Database**: Supabase (PostgreSQL)
+- **Auth**: Google OAuth via Supabase
+- **Hosting**: GitHub Pages
+- **CI/CD**: GitHub Actions
+- **TTS**: Web Speech API
 
-## Important Files
+## Important Notes
 
-- **README.md** - Full project documentation
-- **CLAUDE_NOTES.md** - Detailed technical notes for Claude
-- **WEB_APP_README.md** - Web app specific docs
-- **Phonics_Word_Bank.xlsx** - The data
-- **index.html** - The app
+### Data Source of Truth
+**File**: `src/data/wordPacks.ts`
 
-## Key Scripts
+This TypeScript file contains all 130 packs. There are no Python scripts or Excel files to maintain anymore. Just edit this file, test, and push.
 
-- **sync_excel_from_app.py** - Sync Excel from app.js (CURRENT WORKFLOW)
-- **create_simple_packs.py** - Initial pack organization (LEGACY)
-- **extract_first_packs.py** - Export to JSON (LEGACY)
-- **reorganize_with_levels.py** - Level-based organization (LEGACY)
+### Environment Variables
+Stored in GitHub Secrets for deployment:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
 
-## Testing Checklist
+For local development, create `.env` file in root.
 
-Before showing to your daughter:
-- [ ] Visit https://creative-marzipan-00a78e.netlify.app
-- [ ] Does it show 4 packs (P1-P4)?
-- [ ] Click P1 - does it show words?
-- [ ] Mark some words as "Tricky" - do they appear in review?
-- [ ] Complete a pack - does completion screen show stats?
-- [ ] Check Parent View - does it show tricky words?
-- [ ] Close browser and reopen - is progress saved?
-- [ ] Try on phone/tablet - does it work?
+### Deployment
+- Push to `master` branch → GitHub Actions builds → Deploys to GitHub Pages
+- Takes 30-40 seconds
+- Hard refresh browser (Ctrl+Shift+R) after deployment
 
-## Contact / Feedback
+## Next Steps / Ideas
 
-If you need to continue development or have issues, share:
-- This folder
-- README.md
-- CLAUDE_NOTES.md
+**Potential Features**:
+- [ ] Progress export (PDF/CSV)
+- [ ] Custom user-created packs
+- [ ] Multiple child profiles
+- [ ] Achievement badges
+- [ ] Word shuffle mode
+- [ ] Spelling tests
+- [ ] Dark mode
+- [ ] PWA (installable app)
 
-Everything is documented!
+## Need Help?
+
+1. Check **README.md** - Full documentation
+2. Check **CLAUDE_NOTES.md** - Technical deep-dive
+3. Check browser console for errors ([INFO]/[WARN]/[ERROR] logs)
+4. GitHub Issues: https://github.com/tamborine996/reading-phonics-app/issues
+
+---
+
+**Last Updated**: 2025-01-08
+**Version**: 2.0 (TypeScript + Supabase + GitHub Pages)

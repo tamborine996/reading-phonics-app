@@ -1,326 +1,315 @@
 # Claude Development Notes
 
-## Current Architecture (2025-11-07)
+## Quick Context for Future Sessions
 
-### Live Deployment
-- **Live URL**: https://creative-marzipan-00a78e.netlify.app
-- **GitHub Repo**: https://github.com/tamborine996/reading-phonics-app
-- **Hosting**: Netlify (free tier)
-- **Auto-deploy**: Enabled (GitHub webhook → Netlify)
-- **Deploy time**: ~30 seconds from push to live
+**Project**: Reading Phonics App - TypeScript web app for teaching phonics to children
+**Live URL**: https://tamborine996.github.io/reading-phonics-app/
+**GitHub**: https://github.com/tamborine996/reading-phonics-app
+**Last Major Update**: 2025-01-08
 
-### Source of Truth Architecture
+## Current Architecture (v2.0)
 
-**Key Decision**: app.js is the source of truth, Excel mirrors what's live.
+### Tech Stack
+- **Frontend**: TypeScript + Vite + HTML/CSS
+- **Database**: Supabase (PostgreSQL with Row Level Security)
+- **Auth**: Google OAuth via Supabase
+- **Deployment**: GitHub Pages (auto-deploy via GitHub Actions)
+- **TTS**: Web Speech API (browser native)
+- **Testing**: Vitest
+- **Linting**: ESLint
 
-**Reasoning**:
-- User wanted to avoid accidental deployments from Excel changes
-- Excel used for overview/reference, not editing
-- Controlled deployment workflow (explicit git push)
-- No risk of experimental Excel changes going live
+### Key Design Decisions
 
-**Data Flow**:
+**Why TypeScript**: Type safety, better IDE support, catches errors at compile time
+**Why Supabase**: Free tier, OAuth built-in, PostgreSQL, Row Level Security, real-time capabilities
+**Why GitHub Pages**: Unlimited free deployments, no build minute limits (previous host: Netlify ran out of credits)
+**Why Vite**: Fast development server, optimal production builds, modern tooling
+**Why localStorage + Supabase**: Offline-first approach, works without auth, syncs when available
+
+### Data Flow
+
 ```
-app.js (source of truth)
+User marks word
   ↓
-sync_excel_from_app.py (sync script)
+Save to localStorage (immediate)
   ↓
-Phonics_Word_Bank.xlsx (mirror)
+If authenticated: Save to Supabase (real-time)
   ↓
-git commit + push
-  ↓
-GitHub
-  ↓
-Netlify (webhook triggered)
-  ↓
-Live site updated
+Database sync complete
 ```
 
-### Workflow (Standard Operating Procedure)
+**Source of Truth**: `src/data/wordPacks.ts` (all 130 packs defined here)
+**No Python scripts** - TypeScript file is the only source to edit
+**No Excel files** - Legacy from original architecture, no longer used
 
-1. **Edit app.js** - Modify wordPacks array
-2. **Run sync**: `python sync_excel_from_app.py`
-3. **Commit**: `git add . && git commit -m "message"`
-4. **Push**: `git push origin master`
-5. **Wait 30s** - Site auto-updates
+## Project Structure
 
-### Key Files
+```
+src/
+├── components/
+│   ├── auth.ts              # Auth UI, OAuth callbacks, sign in/out
+│   └── ui.ts                # Pack lists, practice screen, completion screen
+├── constants/
+│   └── config.ts            # Supabase table names, constants
+├── data/
+│   └── wordPacks.ts         # SOURCE OF TRUTH - All 130 packs
+├── services/
+│   ├── auth.service.ts      # Authentication logic
+│   ├── storage.service.ts   # LocalStorage management
+│   └── supabase.service.ts  # Database operations
+├── types/
+│   └── index.ts             # TypeScript type definitions
+├── utils/
+│   ├── helpers.ts           # Pack grouping, date formatting
+│   ├── logger.ts            # Console logging with [INFO]/[WARN]/[ERROR]
+│   ├── speech.ts            # Text-to-speech service
+│   └── validation.ts        # Email validation
+├── app.ts                   # Main entry point, event listeners
+└── env.ts                   # Environment variable access
+```
 
-- **app.js** - Source of truth (what users see)
-- **Phonics_Word_Bank.xlsx** - Mirror (for reference/overview)
-- **sync_excel_from_app.py** - Sync script (Excel ← app.js)
-- **index.html** - Web app structure
-- **style.css** - Child-friendly design
-- **netlify.toml** - Netlify configuration
+## Database Schema (Supabase)
 
-### Pack Numbering
+### Table: `pack_progress`
 
-Sequential numbering added: P1, P2, P3... P130
-- Makes tracking easier
-- Clear progression
-- Easy to reference
+| Column | Type | Description |
+|--------|------|-------------|
+| user_id | uuid | FK to auth.users(id) |
+| pack_id | integer | Pack number (1-130) |
+| words | jsonb | {"word": "tricky" \| "mastered"} |
+| completed | boolean | Pack marked complete |
+| last_reviewed | timestamp | Last practice date |
+| synced_at | timestamp | Last sync time |
+
+**Primary Key**: `(user_id, pack_id)`
+
+### Row Level Security (RLS) Policies
+- SELECT: `auth.uid() = user_id`
+- INSERT: `auth.uid() = user_id`
+- UPDATE: `auth.uid() = user_id`
+- DELETE: `auth.uid() = user_id`
+
+Users can only access their own data.
+
+## Authentication Flow
+
+1. **First Visit**: Show auth screen
+2. **Options**:
+   - Sign in with Google (OAuth) → Cloud sync
+   - Skip auth → LocalStorage only
+3. **OAuth Flow**:
+   - User clicks "Sign in with Google"
+   - Redirect to Google
+   - Google redirects to app with OAuth tokens in URL hash
+   - Supabase auto-processes tokens (NO manual getSession())
+   - User authenticated
+   - Load database progress → Merge with local → Sync local to database
+4. **Authenticated Use**:
+   - Every word mark → Save to localStorage + Supabase
+   - Progress syncs across all devices
+5. **Sign Out**:
+   - Clear local session
+   - Data remains in database
+   - Can sign in again to restore
+
+**Critical OAuth Fix**: Let Supabase auto-process OAuth tokens. Don't call `getSession()` manually or it causes double-processing and 401 errors.
+
+## Key Features
+
+### 1. Word Packs (130 packs, 3,383 words)
+- Organized by phonics patterns
+- Year 1-6 curriculum coverage
+- ~26 words per pack
+- Grouped by sub-packs (Year 1, Year 2, Short Vowels, etc.)
+
+### 2. Text-to-Speech
+- Web Speech API
+- Prefers British English (en-GB)
+- Falls back to any English voice
+- Speech rate: 0.9x (slower for learning)
+- Click 🔊 speaker button
+
+### 3. Progress Tracking
+- **Local**: Immediate save to localStorage
+- **Cloud**: Real-time save to Supabase (if authenticated)
+- **Merge**: Database precedence when signing in
+- **Tricky Words**: Three review modes (global, sub-pack, individual pack)
+
+### 4. Parent Dashboard
+- View all packs and progress percentages
+- See tricky words by pack
+- Last reviewed dates
+- Completion status
+
+## Deployment Pipeline
+
+### GitHub Actions Workflow
+File: `.github/workflows/deploy.yml`
+
+Triggered on push to `master`:
+1. Checkout code
+2. Setup Node.js 18
+3. Install dependencies (with caching via package-lock.json)
+4. Build project with environment variables from GitHub Secrets
+5. Deploy to GitHub Pages
+
+**Environment Variables** (stored in GitHub Secrets):
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+**Deploy Time**: ~30-40 seconds from push to live
+
+### Supabase Configuration
+**Important**: Supabase Site URL must match deployment URL:
+- Current: `https://tamborine996.github.io/reading-phonics-app/`
+- OAuth redirects to this URL
+- Mismatch causes 404/500 errors
+
+## Common Development Tasks
+
+### Adding New Word Pack
+1. Edit `src/data/wordPacks.ts`
+2. Add new pack object with id, category, subPack, words
+3. Test locally: `npm run dev`
+4. Type check: `npm run type-check`
+5. Commit and push → Auto-deploys
+
+### Adding New Feature
+1. Create files in appropriate `src/` directory
+2. Follow existing TypeScript patterns
+3. Add tests in `*.test.ts` files
+4. Update types in `src/types/index.ts` if needed
+5. Test, type-check, commit, push
+
+### Debugging
+- Check browser console for `[INFO]`, `[WARN]`, `[ERROR]` logs
+- All major operations are logged
+- Supabase errors logged with full context
+- OAuth flow extensively logged
+
+## Historical Context
+
+### Evolution of Architecture
+
+**v1.0 (Nov 2025)**: Simple JavaScript + Netlify
+- Plain JavaScript (app.js)
+- LocalStorage only
+- 4 packs deployed
+- Python scripts to manage Excel ↔ JSON
+- Netlify deployment
+
+**v2.0 (Dec 2025 - Jan 2026)**: TypeScript + Supabase + GitHub Pages
+- Complete TypeScript rewrite
+- Modular architecture
+- Supabase integration
+- Google OAuth
+- All 130 packs
+- Text-to-speech
+- GitHub Pages (unlimited deployments)
+- Removed Python/Excel dependency
+
+### Why Migration from Netlify to GitHub Pages
+- Netlify: 300 build minutes/month limit (ran out in one day)
+- GitHub Pages: Unlimited deployments
+- Both are free, but GitHub Pages has no build limits
+- Migration successful, OAuth working, faster deploys
+
+### Key Problems Solved
+
+**Problem**: OAuth 401 errors after Google sign-in
+**Solution**: Stop calling `getSession()` manually, let Supabase auto-process tokens
+
+**Problem**: Purple screen after OAuth (all screens hidden)
+**Solution**: Explicitly call `showScreen('homeScreen')` after OAuth callback
+
+**Problem**: Tricky word counts not updating
+**Solution**: Re-render pack list when clicking Back/Home buttons
+
+**Problem**: Unmarking tricky words not syncing to database
+**Solution**: Call `syncLocalProgressToDatabase()` immediately after marking any word
+
+**Problem**: Supabase upsert 409 Conflict errors
+**Solution**: Add `onConflict: 'user_id,pack_id'` parameter to upsert
+
+**Problem**: Sheraz Bhai test page (removed)
+**Solution**: Created and then removed test page for user's cousin - cleaned up in final state
+
+## Testing Strategy
+
+### Unit Tests (Vitest)
+- Service logic tests
+- Helper function tests
+- Validation tests
+
+### Manual Testing Checklist
+- [ ] All 130 packs load
+- [ ] Words mark as tricky/mastered
+- [ ] Progress persists after reload
+- [ ] TTS works (speaker button)
+- [ ] OAuth flow completes successfully
+- [ ] Progress syncs to Supabase
+- [ ] Tricky review shows correct words
+- [ ] Parent view shows all data
+- [ ] Mobile/tablet responsive
+- [ ] Cross-browser compatible
+
+## User Preferences & Feedback
+
+### What User Values
+- **NOT interested in localStorage** - wants cloud sync as primary
+- **Wants unlimited deployments** - moved from Netlify to GitHub Pages
+- **Real-time sync** - implemented immediate Supabase sync on every word mark
+- **Simple workflow** - removed Python scripts, Excel files
+- **Child-friendly design** - large text, simple buttons, purple theme
+
+## Future Enhancement Ideas
+
+### Requested/Discussed
+- Progress export to PDF/CSV
+- Custom user-created packs
+- Multiple child profiles
+- Achievement badges
+- Spelling tests
+- Dark mode
+
+### Technical Improvements
+- Service worker for offline support
+- PWA (installable app)
+- Better error boundaries
+- Loading states
+
+## Important Files for Claude
+
+When starting a new session, read these files to understand the project:
+1. **README.md** - Comprehensive documentation
+2. **QUICK_START.md** - Quick reference
+3. **This file (CLAUDE_NOTES.md)** - Technical context
+4. **src/data/wordPacks.ts** - Data structure
+5. **src/app.ts** - Main application flow
+6. **src/types/index.ts** - Type definitions
+
+## Common Gotchas
+
+1. **Environment Variables**: Must be in GitHub Secrets for deployment
+2. **OAuth Redirect URL**: Must match Supabase Site URL exactly
+3. **Base Path**: Vite config has `base: '/reading-phonics-app/'` for GitHub Pages
+4. **Hard Refresh**: Users need Ctrl+Shift+R after deployment to bypass cache
+5. **Snake Case vs Camel Case**: Database uses snake_case, TypeScript uses camelCase - map carefully
+6. **Double OAuth Processing**: NEVER call `getSession()` manually, Supabase does it automatically
+
+## Session Summary Template
+
+When wrapping up a session, document:
+- What was built/fixed
+- Files modified
+- Deployment status
+- Testing completed
+- Known issues (if any)
+- Next steps
 
 ---
 
-## Project History
-
-### Session 1: Initial Setup & Word Bank Creation
-Created comprehensive phonics word bank with multiple Python scripts for organization and management.
-
-### Session 2: Complete Rebuild & Web App (2025-11-06)
-
-This session involved three major phases:
-
-#### PHASE 1: Difficulty-Based Organization (Initial Attempt)
-**Problem**: User wanted daily packs of ~30 words, but initial reorganization created:
-- 297 sections with confusing names like "Level 3 - Level 3"
-- Tiny categories with 1-2 words
-- Overly complex structure
-
-**Script**: reorganize_with_levels.py
-- Syllable counting and difficulty scoring
-- Created Level 1/2/3 splits
-- Result: Too complex, not user-friendly
-
-#### PHASE 2: Simplified Pack Organization (Solution)
-**User Feedback**: "Take a step back - I just want packs of 30 words for daily challenges, no tiny categories"
-
-**Created**: create_simple_packs.py
-- Consolidates all Level/Part variations into base categories
-- Creates clean packs of ~30 words each
-- Simple naming: "Category - Pack 1", "Category - Pack 2"
-- Skips categories with <10 words (too small)
-- Automatically removes duplicates using sets
-
-**Results**:
-```
-Total packs: 130
-Total unique words: 3,383
-Categories processed: 46
-Pack size: ~30 words (range: 10-35)
-Skipped: 2 tiny categories (TH voiced: 2 words, Y as /i/: 3 words)
-```
-
-**Key Improvement**: From 297 confusing sections → 130 clean, simple packs
-
-#### PHASE 3: Web App Development
-
-**Research**: Searched for best practices in educational word learning apps
-- Simple, focused interface (one word at a time)
-- Large tappable buttons for children
-- Short sessions (8-12 min attention span)
-- Parent involvement features
-- Visual progress tracking
-- Gamification with feedback
-
-**Created Web App** with:
-1. **index.html** - Main app structure
-2. **style.css** - Child-friendly design (purple gradient, large text, animations)
-3. **app.js** - Full functionality with embedded data
-4. **word_packs.json** - JSON data (for reference)
-
-**Features Implemented**:
-- Large word display (4rem font)
-- Two-button interface: "😕 Tricky" and "✓ Got it!"
-- Progress counter (e.g., "15 / 30")
-- Auto-save to localStorage
-- Review mode for tricky words
-- Parent dashboard showing difficult words
-- Completion screen with stats
-- Responsive design for tablets/phones
-- Works completely offline
-
-**Initial Load**: First 4 packs (100 Year 1 high-frequency words)
-
-**Technical Solution**: Embedded data directly in JavaScript to avoid CORS issues when opening HTML files locally
-
-#### Scripts Created This Session
-1. **create_simple_packs.py** - Main reorganization (CURRENT RECOMMENDED)
-2. **extract_first_packs.py** - Export Excel to JSON
-3. **analyze_current.py** - Analysis tool for checking word bank structure
-4. **count_words.py** - Word counting utility
-5. **preview_excel.py** - Preview Excel contents
-
-#### Files Generated
-1. **Phonics_Word_Bank.xlsx** - Clean 130-pack organization
-2. **index.html** - Web app
-3. **style.css** - Styling
-4. **app.js** - Application logic
-5. **word_packs.json** - JSON data
-6. **WEB_APP_README.md** - Web app documentation
-7. **Duplicate_Report.txt** - Duplicate analysis (from Phase 1)
-
-## Technical Details
-
-### Word Pack Organization (create_simple_packs.py)
-```python
-# Consolidate all words by base category
-word_collections = defaultdict(set)  # Automatic duplicate removal
-
-# Process each base category
-for base_category in sorted(word_collections.keys()):
-    words = sorted(list(word_collections[base_category]))
-
-    # Skip tiny categories (<10 words)
-    if word_count < 10:
-        continue
-
-    # Split into packs of 30
-    pack_size = 30
-    num_packs = (word_count + pack_size - 1) // pack_size
-
-    # Create packs with simple naming
-    for pack_num in range(num_packs):
-        pack_words = words[start:end]
-        name = f"{base_category} - Pack {pack_num + 1}"
-```
-
-### Web App Architecture
-
-**Data Storage**: localStorage (browser-based, persistent)
-```javascript
-// Progress structure
-{
-  "packId": {
-    "words": {
-      "0": "got-it",
-      "1": "tricky",
-      ...
-    },
-    "completed": false
-  }
-}
-```
-
-**Screen Flow**:
-1. Home Screen → Pack List with progress bars
-2. Practice Screen → One word at a time, mark as got-it/tricky
-3. Complete Screen → Show stats, list tricky words
-4. Review Mode → Practice only tricky words
-5. Parent Screen → Overview of all progress
-
-**Key Design Decisions**:
-- Embedded data in JS (no CORS issues)
-- Single-page app (no routing needed)
-- localStorage for persistence (no backend)
-- Large touch targets (min 30px padding)
-- Auto-advance after marking word
-- Previous/Next navigation available
-
-## Word Bank Structure
-
-### Categories (in order)
-1. 0A-0D: High Frequency & Exception Words (Years 1-6)
-2. 1: Short Vowels (a, e, i, o, u)
-3. 2: Consonant Blends (L/R/S/3-letter)
-4. 3: Digraphs (ch, sh, th, wh, ph, ck, ng, qu)
-5. 4: Long Vowels (a_e, i_e, o_e, u_e, e_e)
-6. 5: Vowel Teams (ai, ay, ee, ea, oa, ow, etc.)
-7. 6: R-Controlled Vowels (ar, or, er, ir, ur)
-8. 7-15: Advanced patterns (dge, tch, silent letters, soft c/g, prefixes, suffixes)
-
-### Total Word Count
-Approximately 3,000+ unique words across all categories
-
-## Future Enhancements (Ideas)
-
-### Potential Improvements
-1. Add frequency-based sorting within difficulty levels
-2. Include phonetic transcription for tricky words
-3. Tag words with multiple valid categorizations
-4. Add example sentences for context
-5. Create visual/audio companion materials
-6. Export to different formats (JSON, CSV, flashcard apps)
-7. Add progress tracking features
-8. Create themed word lists (animals, colors, etc.)
-
-### Script Optimizations
-1. Cache syllable counts for performance
-2. Add configurable difficulty thresholds
-3. Support custom word grouping rules
-4. Add validation for word bank integrity
-5. Create merge/update utilities for adding new words
-
-## Dependencies
-```
-openpyxl==3.1.2 (or latest)
-```
-
-## File Locations
-All files in: `C:\Users\mqc20\Downloads\Projects\Reading app\`
-
-## Running Scripts
-Use Python 3.13:
-```bash
-/c/Users/mqc20/AppData/Local/Programs/Python/Python313/python.exe script_name.py
-```
-
-## Important Notes
-
-### Duplicate Handling
-- First occurrence is kept
-- Subsequent occurrences removed
-- High-frequency/exception words always preserved
-- Report generated for review
-
-### Word Preservation
-- NO hyphens added to words
-- NO modifications to spelling
-- Original capitalization in proper nouns preserved
-- Commas used as delimiters only
-
-### Section Sizing
-- Target: ~35 words per section
-- Prevents overwhelming display
-- Maintains readability in Excel
-
-## Next Steps / TODO
-
-### Immediate Next Steps
-- [ ] Expand web app to include all 130 packs (currently only 4)
-- [ ] Test web app with child to gather feedback
-- [ ] Consider adjusting pack sizes based on usage (currently ~30 words)
-
-### Feature Enhancements
-- [ ] Add audio pronunciation for each word (text-to-speech API)
-- [ ] Add "shuffle" mode to randomize word order
-- [ ] Add timer/session length tracking
-- [ ] Export progress reports (CSV/PDF for parent review)
-- [ ] Add motivational rewards/badges (gamification)
-- [ ] Dark mode option
-- [ ] Customize button colors/themes
-
-### Advanced Features
-- [ ] Spaced repetition algorithm (show tricky words more frequently)
-- [ ] Multi-child support (different profiles)
-- [ ] Example sentences for context
-- [ ] Word definitions/images
-- [ ] Printable worksheet generator
-- [ ] Mobile app version (React Native/PWA)
-- [ ] Sync across devices (requires backend)
-
-### Data & Analytics
-- [ ] Track time spent per word
-- [ ] Identify patterns in difficult words
-- [ ] Generate difficulty recommendations
-- [ ] Historical progress graphs
-- [ ] Compare to age-appropriate benchmarks
-
-## How to Expand Web App to All Packs
-
-1. Edit `extract_first_packs.py`:
-```python
-# Change this line:
-for row in range(2, 6):  # First 4 packs
-# To this:
-for row in range(2, ws.max_row + 1):  # All packs
-```
-
-2. Run script:
-```bash
-python extract_first_packs.py
-```
-
-3. Copy JSON output from word_packs.json into app.js wordPacks array
-
-4. Done! App automatically handles any number of packs
+**Last Updated**: 2025-01-08
+**Version**: 2.0
+**Status**: Production-ready, all features working
+**Next Session**: Pick from Future Enhancement Ideas or user requests
