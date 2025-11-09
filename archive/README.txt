@@ -8,6 +8,8 @@ These files are kept for historical reference only and are **not maintained**.
 
 - **WEB_APP_README.txt** - Old web app documentation (pre-TypeScript rewrite)
 - **WORKFLOW.txt** - Old workflow guide (when Python scripts and Excel were used)
+- **SUPABASE_SETUP_COMPLETE.txt** - Supabase setup completion document (historical)
+- **TYPESCRIPT_MIGRATION.txt** - TypeScript migration guide (completed, now in README.md)
 
 ## Current Documentation
 
