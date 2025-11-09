@@ -1,5 +1,22 @@
 # Reading Phonics App
 
+## 🚨 CRITICAL SECURITY NOTICE
+
+**⚠️ ROW LEVEL SECURITY (RLS) MUST BE ENABLED BEFORE USE ⚠️**
+
+If you're deploying this app with Supabase, **RLS policies must be enabled** or all users will see each other's progress data.
+
+**Action Required:**
+1. Read `SECURITY_FIX.md` immediately
+2. Run the SQL commands in your Supabase SQL Editor
+3. Verify with: `npm run check:rls`
+
+**Status Check:**
+- Run `npm run check:rls` to verify RLS is enabled
+- All tests should pass before allowing users to sign in
+
+---
+
 ## Overview
 A modern, child-friendly web application for practicing phonics words with cloud sync capabilities. The app features 130 word packs containing 3,383 unique words organized by phonics patterns, covering Year 1 through Year 6 curriculum.
 

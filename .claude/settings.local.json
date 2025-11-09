@@ -5,7 +5,16 @@
       "Bash(gh run list:*)",
       "Bash(gh run view:*)",
       "Bash(gh api:*)",
-      "Bash(git mv:*)"
+      "Bash(git mv:*)",
+      "Bash(npm run type-check:*)",
+      "Bash(npm run build)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(gh run watch:*)",
+      "Bash(npx claude-code-templates@latest --agent=development-team/frontend-developer --yes)",
+      "WebFetch(domain:tamborine996.github.io)",
+      "Bash(npm install)"
     ],
     "deny": [],
     "ask": []
