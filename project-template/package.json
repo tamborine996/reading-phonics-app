@@ -1,0 +1,32 @@
+{
+  "name": "my-project",
+  "version": "1.0.0",
+  "description": "Project with Supabase + RLS enabled from day 1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest --run",
+    "type-check": "tsc --noEmit",
+    "db:migrate": "npx supabase db push",
+    "db:reset": "npx supabase db reset",
+    "db:diff": "npx supabase migration new",
+    "db:local": "npx supabase start",
+    "db:local:stop": "npx supabase stop",
+    "check:rls": "tsx scripts/verify-rls.ts",
+    "setup": "./scripts/setup-project.sh"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "pg": "^8.16.3",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vitest": "^1.2.0"
+  }
+}
