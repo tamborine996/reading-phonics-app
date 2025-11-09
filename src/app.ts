@@ -49,6 +49,11 @@ export async function init(): Promise<void> {
   try {
     logger.info('Initializing application');
 
+    // Initialize settings
+    const { settingsService } = await import('@/services/settings.service');
+    settingsService.initialize();
+    logger.info('Settings service initialized');
+
     // Initialize text-to-speech
     const { speechService } = await import('@/utils/speech');
     speechService.initialize();
@@ -69,7 +74,7 @@ export async function init(): Promise<void> {
     await authService.initialize();
 
     // Set up event listeners
-    setupEventListeners();
+    await setupEventListeners();
     initAuthUI();
 
     // Show appropriate screen
@@ -102,7 +107,7 @@ export async function init(): Promise<void> {
 /**
  * Setup event listeners
  */
-function setupEventListeners(): void {
+async function setupEventListeners(): Promise<void> {
   // Back button
   const backBtn = document.getElementById('backBtn');
   if (backBtn) {
@@ -155,6 +160,23 @@ function setupEventListeners(): void {
   const parentBackBtn = document.getElementById('parentBackBtn');
   if (parentBackBtn) {
     parentBackBtn.onclick = () => showScreen('homeScreen');
+  }
+
+  // Syllable toggle
+  const syllableToggle = document.getElementById('syllableToggle') as HTMLInputElement;
+  if (syllableToggle) {
+    // Set initial state from settings
+    const { settingsService } = await import('@/services/settings.service');
+    syllableToggle.checked = settingsService.get('showSyllables');
+
+    syllableToggle.onchange = () => {
+      settingsService.set('showSyllables', syllableToggle.checked);
+      // If currently in practice mode, re-render to show/hide syllables
+      if (appState.currentPack) {
+        renderPracticeScreen(appState);
+      }
+      logger.info('Syllable display toggled', { enabled: syllableToggle.checked });
+    };
   }
 
   logger.info('Event listeners set up successfully');

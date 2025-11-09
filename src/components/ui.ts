@@ -4,9 +4,11 @@
 
 import type { WordPack } from '@/types';
 import { storageService } from '@/services/storage.service';
+import { settingsService } from '@/services/settings.service';
 import { extractCleanLabel, getWordPreview, formatDate, groupPacksBySubPack } from '@/utils/helpers';
 import { logger } from '@/utils/logger';
 import { speechService } from '@/utils/speech';
+import { formatWordWithSyllables } from '@/utils/syllables';
 import type { AppState } from '../app';
 
 /**
@@ -180,7 +182,14 @@ export function renderPracticeScreen(appState: AppState): void {
   // Update current word
   const currentWordEl = document.getElementById('currentWord');
   if (currentWordEl) {
-    currentWordEl.textContent = currentWord;
+    // Format word with syllables if enabled
+    const settings = settingsService.getSettings();
+    const formattedWord = formatWordWithSyllables(
+      currentWord,
+      settings.syllableSeparator,
+      settings.showSyllables
+    );
+    currentWordEl.innerHTML = formattedWord;
 
     // Add visual class based on status
     const progress = appState.reviewMode
