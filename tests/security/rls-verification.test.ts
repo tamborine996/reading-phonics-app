@@ -40,7 +40,7 @@ describe('RLS Security Verification', () => {
     // This query checks if RLS is enabled
     // If RLS is disabled, this will return data even without auth
     // If RLS is enabled, this will return an error or empty data
-    const { data, error } = await supabase
+    const { data: rows, error } = await supabase
       .from('pack_progress')
       .select('*')
       .limit(1);
@@ -48,17 +48,17 @@ describe('RLS Security Verification', () => {
     // Without authentication, we should get an error or no data (RLS blocking)
     // If we get data back, RLS is NOT working properly
     console.log('🔒 RLS Test Result:', {
-      hasData: !!data && data.length > 0,
+      hasData: !!rows && rows.length > 0,
       hasError: !!error,
       error: error?.message
     });
 
     // RLS should either return empty data or an auth error
-    if (data && data.length > 0) {
+    if (rows && rows.length > 0) {
       console.error('🚨 SECURITY ISSUE: Retrieved data without authentication!');
       console.error('   This means RLS is NOT enabled properly.');
       console.error('   Run SECURITY_FIX.md instructions immediately.');
-      expect(data.length).toBe(0); // This will fail to alert you
+      expect(rows.length).toBe(0); // This will fail to alert you
     } else {
       console.log('✅ RLS appears to be working - no data without auth');
       expect(true).toBe(true);
@@ -72,7 +72,7 @@ describe('RLS Security Verification', () => {
     }
 
     // Try to insert data without authentication
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('pack_progress')
       .insert({
         user_id: '00000000-0000-0000-0000-000000000000', // Fake UUID
@@ -104,7 +104,7 @@ describe('RLS Security Verification', () => {
     }
 
     // Try to update data without authentication
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('pack_progress')
       .update({ completed: true })
       .eq('pack_id', 1);
@@ -131,7 +131,7 @@ describe('RLS Security Verification', () => {
     }
 
     // Try to delete data without authentication
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('pack_progress')
       .delete()
       .eq('pack_id', 1);
@@ -195,3 +195,5 @@ describe('Manual Multi-User Test Instructions', () => {
     expect(true).toBe(true);
   });
 });
+
+
