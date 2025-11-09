@@ -14,7 +14,18 @@
       "Bash(gh run watch:*)",
       "Bash(npx claude-code-templates@latest --agent=development-team/frontend-developer --yes)",
       "WebFetch(domain:tamborine996.github.io)",
-      "Bash(npm install)"
+      "Bash(npm install)",
+      "Bash(npm install:*)",
+      "Bash(npx supabase login)",
+      "Bash(cat:*)",
+      "Bash(set SUPABASE_ACCESS_TOKEN=sbp_1c6689e96dc992dc51a5d8676f67c8610cf5ad47:*)",
+      "Bash(npx supabase:*)",
+      "Bash(export SUPABASE_ACCESS_TOKEN=sbp_1c6689e96dc992dc51a5d8676f67c8610cf5ad47)",
+      "Bash(export SUPABASE_DB_URL=\"postgresql://postgres:qjeHVLTmT6SGs4xN@db.lgcfmzksdpnolwjwavwt.supabase.co:5432/postgres\")",
+      "Bash(npm run enable:rls:*)",
+      "Bash(npm run check:rls:*)",
+      "Bash(export VITE_SUPABASE_URL=\"https://lgcfmzksdpnolwjwavwt.supabase.co\")",
+      "Bash(export VITE_SUPABASE_ANON_KEY:*)"
     ],
     "deny": [],
     "ask": []

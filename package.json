@@ -12,6 +12,7 @@
     "test:ui": "vitest --ui",
     "test:security": "vitest --run tests/security",
     "check:rls": "tsx scripts/check-rls-status.ts",
+    "enable:rls": "tsx scripts/enable-rls-direct.ts",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,html}\"",
