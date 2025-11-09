@@ -1,218 +1,475 @@
-# Reading App - Phonics Word Bank Project
+# Reading Phonics App
 
 ## Overview
-This project provides a comprehensive phonics word bank for teaching reading, along with an interactive web app for daily word practice. The word bank contains 3,383 unique words organized into 130 packs of ~30 words each, covering all major phonics patterns from Year 1 through Year 6.
+A modern, child-friendly web application for practicing phonics words with cloud sync capabilities. The app features 130 word packs containing 3,383 unique words organized by phonics patterns, covering Year 1 through Year 6 curriculum.
 
 ## Live Application
-**URL**: https://creative-marzipan-00a78e.netlify.app
-**GitHub**: https://github.com/tamborine996/reading-phonics-app
-**Status**: Live and auto-deploying via Netlify
+- **URL**: https://tamborine996.github.io/reading-phonics-app/
+- **GitHub**: https://github.com/tamborine996/reading-phonics-app
+- **Hosting**: GitHub Pages (unlimited free deployments)
+- **Auto-Deploy**: GitHub Actions workflow (deploys in ~30-40 seconds)
 
-## Files
+## Features
 
-### Web App (NEW!)
-- **index.html** - Main web application for word practice
-- **style.css** - Child-friendly UI styling (purple gradient, large buttons)
-- **app.js** - Application logic and progress tracking
-- **word_packs.json** - Word data in JSON format (for reference)
+### Core Functionality
+- ✅ **130 Complete Word Packs** - All phonics patterns from Year 1-6
+- ✅ **Text-to-Speech** - Click 🔊 to hear words pronounced (British English voice)
+- ✅ **Cloud Sync with Supabase** - Progress syncs across all devices
+- ✅ **Google OAuth Authentication** - Secure sign-in
+- ✅ **Real-time Progress Tracking** - Immediate database synchronization
+- ✅ **Tricky Word Review** - Practice words marked as difficult
+- ✅ **Parent Dashboard** - View child's progress and tricky words
+- ✅ **Responsive Design** - Works on desktop, tablet, and mobile
+- ✅ **Offline Capable** - Can work without internet (localStorage fallback)
 
-### Word Bank
-- **Phonics_Word_Bank.xlsx** - Main word bank organized into 130 simple packs (~30 words each)
-- **Duplicate_Report.txt** - Report of duplicate words found across categories
+### User Experience
+- **Large, Clear Word Display** - Easy for children to read
+- **Simple Two-Button Interface** - "Tricky" or "Got it!"
+- **Visual Progress Tracking** - See completion percentages
+- **Pack Filtering** - Organized by sub-packs (Year 1, Year 2, etc.)
+- **Review Modes** - Review all tricky words, by sub-pack, or by individual pack
+- **Child-Friendly Design** - Purple gradient, smooth animations
 
-### Python Scripts
+## Tech Stack
 
-#### 1. sync_excel_from_app.py (CURRENT - PRIMARY WORKFLOW)
-**Purpose**: Syncs Excel file to match what's live in app.js
+### Frontend
+- **TypeScript** - Type-safe development
+- **Vite** - Fast build tool and dev server
+- **HTML5/CSS3** - Semantic markup and modern styling
+- **Web Speech API** - Text-to-speech functionality
 
-**Architecture**: app.js is the source of truth. Excel mirrors what's live.
+### Backend & Database
+- **Supabase** - PostgreSQL database, authentication, real-time sync
+- **Row Level Security** - User data isolation
+- **Google OAuth** - Secure authentication flow
 
-**Usage**:
+### Development Tools
+- **Vitest** - Unit testing framework
+- **ESLint** - Code quality and consistency
+- **Git** - Version control
+- **GitHub Actions** - CI/CD pipeline
+
+## Project Structure
+
+```
+reading-phonics-app/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml           # GitHub Actions deployment
+├── src/
+│   ├── components/
+│   │   ├── auth.ts             # Authentication UI and handlers
+│   │   └── ui.ts               # Main UI rendering functions
+│   ├── constants/
+│   │   └── config.ts           # Supabase configuration
+│   ├── data/
+│   │   └── wordPacks.ts        # All 130 word packs (SOURCE OF TRUTH)
+│   ├── services/
+│   │   ├── auth.service.ts     # Authentication service
+│   │   ├── storage.service.ts  # LocalStorage management
+│   │   └── supabase.service.ts # Supabase database operations
+│   ├── types/
+│   │   └── index.ts            # TypeScript type definitions
+│   ├── utils/
+│   │   ├── helpers.ts          # Utility functions
+│   │   ├── logger.ts           # Logging utility
+│   │   ├── speech.ts           # Text-to-speech service
+│   │   └── validation.ts       # Input validation
+│   ├── app.ts                  # Main application entry point
+│   └── env.ts                  # Environment variables
+├── public/
+│   └── (static assets)
+├── index.html                  # Main HTML file
+├── style.css                   # Global styles
+├── vite.config.ts             # Vite configuration
+├── tsconfig.json              # TypeScript configuration
+├── package.json               # Dependencies and scripts
+└── .env                       # Environment variables (not committed)
+```
+
+## Getting Started
+
+### Prerequisites
 ```bash
-python sync_excel_from_app.py
+# Node.js 18+ required
+node --version  # Should be 18.0.0 or higher
+npm --version   # Should be 8.0.0 or higher
 ```
 
-**Output**:
-- Updates Phonics_Word_Bank.xlsx to match app.js data
-- Ensures Excel always shows what's actually deployed
+### Installation
 
-**When to use**: After editing app.js and before committing changes
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/tamborine996/reading-phonics-app.git
+   cd reading-phonics-app
+   ```
 
-#### 2. create_simple_packs.py (LEGACY - Initial Setup)
-**Purpose**: Creates clean, simple word packs for daily practice
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-**Features**:
-- Consolidates all "Level" variations into base categories
-- Creates packs of ~30 words each
-- Removes all duplicates automatically
-- Simple naming: "Category - Pack 1", "Category - Pack 2", etc.
-- Skips tiny categories (<10 words)
-- Generates 130 total packs from 3,383 unique words
+3. **Set up environment variables**
+   ```bash
+   # Create .env file in root directory
+   VITE_SUPABASE_URL=your_supabase_url
+   VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+   ```
 
-**Note**: Used for initial organization. Now use sync_excel_from_app.py for updates.
+4. **Run development server**
+   ```bash
+   npm run dev
+   # Opens at http://localhost:3000
+   ```
 
-#### 3. extract_first_packs.py (LEGACY)
-**Purpose**: Extracts word packs from Excel to JSON format for web app
-
-**Note**: Replaced by new workflow. app.js is now edited directly.
-
-#### 4. Other Legacy Scripts
-- reorganize_with_levels.py
-- split_existing_wordbank.py
-- create_split_wordbank.py
-- create_segmented_wordbank.py
-
-These contain historical word bank data and alternative organization approaches.
-
-## Web App - Quick Start
-
-### How to Use
-1. Open `index.html` in any modern web browser (Chrome, Firefox, Edge, Safari)
-2. The app works completely offline - no internet needed!
-3. Select a pack to start practicing
-4. Mark each word as "Got it!" or "Tricky"
-5. Review tricky words at the end
-6. Parents can click "Parent View" to see progress
-
-### Features
-- **Large, clear word display** - Easy for children to read
-- **Simple two-button interface** - "Got it!" or "Tricky"
-- **Automatic progress saving** - Uses browser localStorage
-- **Visual progress tracking** - See words completed
-- **Review mode** - Practice tricky words again
-- **Parent dashboard** - Track which words need practice
-- **Child-friendly design** - Purple gradient, animations, large text
-
-### Current Status
-- Currently loaded with first 4 packs (100 Year 1 high-frequency words)
-- Can easily expand to all 130 packs (see instructions below)
-
-### Expanding to All Packs
-To add all 130 packs to the web app:
-1. Modify `extract_first_packs.py` to extract all rows (change `range(2, 6)` to `range(2, ws.max_row + 1)`)
-2. Run the script to generate full JSON
-3. Copy the JSON data into `app.js` wordPacks array
-4. Done! App handles any number of packs automatically
-
-## Word Bank Organization
-
-### Categories Included (130 Packs Total)
-1. **High Frequency Words** (Year 1) - 4 packs
-2. **Common Exception Words** (Years 2-6) - 11 packs
-3. **Short Vowels** (a, e, i, o, u) - 13 packs
-4. **Consonant Blends** (L/R/S/3-letter) - 8 packs
-5. **Digraphs** (ch, sh, th, wh, ph) - 12 packs
-6. **Long Vowels & Vowel Teams** - 19 packs
-7. **R-Controlled Vowels** (ar, or, er, ir, ur) - 15 packs
-8. **Advanced Patterns** - 48 packs
-
-### Pack Organization
-- Each pack contains ~30 words (some have fewer: 10-29)
-- Words organized by phonics pattern, not difficulty
-- Simple naming: "Category - Pack 1", "Category - Pack 2"
-- No tiny packs (minimum 10 words per pack)
-- All duplicates removed
-
-## Recent Updates
-
-### Latest Session (2025-11-07) - Deployment & Workflow
-
-#### Production Deployment
-- Deployed to Netlify: https://creative-marzipan-00a78e.netlify.app
-- GitHub repository: https://github.com/tamborine996/reading-phonics-app
-- Auto-deployment pipeline: GitHub → Netlify (30 second deploy time)
-- Free tier hosting (sufficient for family use)
-
-#### Architecture Changes
-- **app.js is now source of truth** (what's live on the website)
-- **Excel mirrors app.js** (for easy overview/reference)
-- Created sync_excel_from_app.py to keep Excel in sync
-- Sequential pack numbering: P1, P2, P3... P130
-- Controlled deployment workflow (no accidental pushes)
-
-#### Workflow Established
-1. Edit app.js (make changes)
-2. Run sync script (update Excel)
-3. Commit to git
-4. Push to GitHub
-5. Auto-deploy to Netlify
-
-### Previous Session (2025-11-06)
-
-#### Phase 1: Initial Organization
-- Reorganized word bank with difficulty-based splitting
-- Found and removed 7 duplicate words: could, old, children, mr, mrs, people, busy
-- Created 297 sections (too complex with Level 1A/1B/Level 3 - Level 3, etc.)
-
-#### Phase 2: Simplified Reorganization
-- Completely rebuilt with simple approach
-- 130 clean packs, ~30 words each
-- Simple naming: "Category - Pack 1", "Category - Pack 2"
-- Removed confusing "Level" naming scheme
-- Eliminated all 1-2 word tiny categories
-
-#### Phase 3: Web App Development
-- Created interactive web app for word practice
-- Child-friendly interface with large buttons
-- Progress tracking with localStorage
-- Parent dashboard to view difficult words
-- Currently loaded with first 4 packs (100 words)
-- Fully functional and tested
-
-## Dependencies
-```
-openpyxl
-```
-
-Install with:
+### Build for Production
 ```bash
-pip install openpyxl
+npm run build
+# Output in dist/ directory
 ```
 
-## How to Make Updates (Current Workflow)
+### Run Tests
+```bash
+npm test          # Watch mode
+npm run test:run  # Run once
+```
+
+### Type Checking
+```bash
+npm run type-check
+```
+
+## Deployment
+
+### Automatic Deployment (Current Setup)
+1. Push to `master` branch
+2. GitHub Actions workflow triggers automatically
+3. Vite builds the project with environment variables from GitHub Secrets
+4. Deploys to GitHub Pages
+5. Live in ~30-40 seconds at https://tamborine996.github.io/reading-phonics-app/
+
+### Manual Deployment
+```bash
+# Build the project
+npm run build
+
+# The dist/ folder can be deployed to any static host:
+# - GitHub Pages
+# - Netlify
+# - Vercel
+# - AWS S3
+# - etc.
+```
+
+## Database Schema (Supabase)
+
+### Tables
+
+#### `pack_progress`
+Stores user progress for each word pack.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `user_id` | uuid | References auth.users(id) |
+| `pack_id` | integer | Word pack identifier (1-130) |
+| `words` | jsonb | Word statuses: {"word": "tricky" or "mastered"} |
+| `completed` | boolean | Whether pack is marked complete |
+| `last_reviewed` | timestamp | Last time pack was practiced |
+| `synced_at` | timestamp | Last sync time |
+
+**Primary Key**: `(user_id, pack_id)`
+
+### Row Level Security Policies
+- Users can only read/write their own progress
+- INSERT/UPDATE/DELETE restricted to authenticated users
+- SELECT restricted to user's own records
+
+## Data Management
+
+### Word Packs - Source of Truth
+
+**File**: `src/data/wordPacks.ts`
+
+This TypeScript file contains all 130 word packs and is the single source of truth for word data.
+
+```typescript
+export const wordPacks: WordPack[] = [
+  {
+    id: 1,
+    category: "Year 1 High Frequency Words - Pack 1",
+    subPack: "Year 1 - High Frequency Words",
+    words: ["the", "and", "a", "to", ...]
+  },
+  // ... 129 more packs
+];
+```
 
 ### Making Changes to Word Packs
 
-**IMPORTANT**: app.js is the source of truth. Excel mirrors what's live.
+1. **Edit** `src/data/wordPacks.ts`
+2. **Test** locally with `npm run dev`
+3. **Type Check** with `npm run type-check`
+4. **Run Tests** with `npm test`
+5. **Commit** changes
+6. **Push** to GitHub - auto-deploys
 
-#### Step-by-Step Process:
+**Note**: There are no Python scripts or Excel files to maintain. The TypeScript file is the only source of truth.
 
-1. **Edit app.js**
-   - Open `app.js` in your editor
-   - Modify the `wordPacks` array (add/remove/change words)
-   - Save the file
+## Word Pack Organization
 
-2. **Sync Excel** (keeps Excel as a mirror)
-   ```bash
-   python sync_excel_from_app.py
-   ```
-   - This updates Excel to match app.js
-   - Excel now shows what will be live
+### Total Coverage
+- **130 Packs**
+- **3,383 Unique Words**
+- **~26 words per pack** (range: 10-35)
 
-3. **Commit Changes**
-   ```bash
-   git add app.js Phonics_Word_Bank.xlsx
-   git commit -m "Your descriptive message"
-   ```
+### Categories by Sub-Pack
 
-4. **Deploy**
-   ```bash
-   git push origin master
-   ```
-   - GitHub receives the push
-   - Netlify auto-deploys (takes ~30 seconds)
-   - Site is live at https://creative-marzipan-00a78e.netlify.app
+1. **Year 1 - High Frequency Words** (4 packs)
+   - Pack 1-4: Essential sight words
 
-### Why This Workflow?
+2. **Year 2-6 - Common Exception Words** (11 packs)
+   - Pack 5-15: Exception words by year level
 
-- **app.js = Live data** (what users see)
-- **Excel = Reference/overview** (always matches live)
-- **No accidental deployments** (you control when to push)
-- **Single source of truth** (app.js)
-- **Easy overview** (Excel for quick viewing)
+3. **Short Vowels** (13 packs)
+   - Pack 16-28: a, e, i, o, u patterns
 
-## Notes
-- All scripts preserve word integrity (no hyphens or modifications)
-- Duplicate detection is case-insensitive
-- High-frequency and exception words are preserved even if duplicated
-- Maximum ~35 words per section for readability
+4. **Consonant Blends** (8 packs)
+   - Pack 29-36: L-blends, R-blends, S-blends, 3-letter blends
+
+5. **Digraphs** (12 packs)
+   - Pack 37-48: ch, sh, th, wh, ph patterns
+
+6. **Long Vowels & Vowel Teams** (19 packs)
+   - Pack 49-67: a-e, ai, ay, ee, ea, oa, ow, ue, ew, etc.
+
+7. **R-Controlled Vowels** (15 packs)
+   - Pack 68-82: ar, or, er, ir, ur patterns
+
+8. **Advanced Patterns** (48 packs)
+   - Pack 83-130: ough, augh, silent letters, soft c/g, etc.
+
+## Authentication Flow
+
+### First Visit (Unauthenticated)
+1. User sees auth screen
+2. Options:
+   - Sign in with Google (OAuth)
+   - Continue without signing in (localStorage only)
+
+### Google OAuth Flow
+1. Click "Sign in with Google"
+2. Redirect to Google authentication
+3. Google redirects back with OAuth tokens
+4. Supabase processes tokens automatically
+5. User authenticated → progress syncs to database
+
+### Authenticated Experience
+- Progress saves to Supabase in real-time
+- Data syncs across all devices
+- LocalStorage used as fallback/cache
+
+### Sign Out
+- User data remains in database
+- LocalStorage cleared on device
+- Can sign back in anytime to restore progress
+
+## Features in Detail
+
+### Text-to-Speech
+- Uses browser's Web Speech API
+- Prefers British English voice (en-GB)
+- Falls back to any English voice if unavailable
+- Speech rate: 0.9x (slightly slower for learning)
+- Click 🔊 button to hear word
+
+### Progress Tracking
+- **Local**: Saves to browser localStorage immediately
+- **Cloud**: Syncs to Supabase on every word mark (if authenticated)
+- **Merge Strategy**: Database takes precedence when signing in
+
+### Tricky Word Review
+Three review modes:
+1. **Global Review**: All tricky words across all packs
+2. **Sub-Pack Review**: Tricky words within a sub-pack (e.g., "Year 1")
+3. **Pack Review**: Tricky words within a single pack
+
+### Parent Dashboard
+- View all packs with progress
+- See tricky words by pack
+- Last reviewed timestamps
+- Completion percentages
+
+## Development Workflow
+
+### Daily Development
+```bash
+# Start dev server
+npm run dev
+
+# Run tests in watch mode
+npm test
+
+# Type check
+npm run type-check
+```
+
+### Before Committing
+```bash
+# Run all checks
+npm run type-check
+npm run test:run
+npm run build
+
+# If all pass, commit and push
+git add .
+git commit -m "Descriptive message"
+git push
+```
+
+### GitHub Actions Auto-Deploy
+The `.github/workflows/deploy.yml` file handles:
+1. Checkout code
+2. Setup Node.js
+3. Install dependencies with caching
+4. Build with environment variables from secrets
+5. Deploy to GitHub Pages
+
+**Environment Variables** are stored in GitHub Secrets:
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+
+## Browser Compatibility
+
+### Supported Browsers
+- Chrome 90+
+- Firefox 88+
+- Safari 14+
+- Edge 90+
+
+### Required Features
+- ES6+ JavaScript
+- LocalStorage API
+- Web Speech API (for text-to-speech)
+- Flexbox and Grid CSS
+
+### Graceful Degradation
+- If Web Speech API unavailable, speaker button won't show
+- If localStorage unavailable, warns user
+- If Supabase unavailable, uses localStorage only
+
+## Troubleshooting
+
+### Common Issues
+
+**Issue**: Changes not showing after deployment
+**Solution**: Hard refresh browser (Ctrl+Shift+R or Cmd+Shift+R)
+
+**Issue**: OAuth redirect fails with 404
+**Solution**: Check Supabase Site URL matches deployment URL
+
+**Issue**: Progress not syncing
+**Solution**: Check browser console for errors, verify Supabase credentials
+
+**Issue**: Text-to-speech not working
+**Solution**: Check browser compatibility, try different browser
+
+**Issue**: Build fails in GitHub Actions
+**Solution**: Verify GitHub Secrets are set correctly
+
+### Debugging
+
+Enable detailed logging by checking browser console:
+- `[INFO]` - Normal operations
+- `[WARN]` - Warnings (non-critical)
+- `[ERROR]` - Errors (requires attention)
+
+## Testing Checklist
+
+Before showing to users:
+- [ ] All 130 packs load correctly
+- [ ] Can mark words as tricky/mastered
+- [ ] Progress persists after page reload
+- [ ] Text-to-speech works (click speaker button)
+- [ ] Google sign-in flow works
+- [ ] Progress syncs to Supabase when authenticated
+- [ ] Tricky word review shows correct words
+- [ ] Parent view displays all progress
+- [ ] Works on mobile/tablet
+- [ ] Works on different browsers
+
+## Performance
+
+### Bundle Size (Production)
+- **Main JS**: ~150KB (gzipped)
+- **CSS**: ~15KB (gzipped)
+- **Total**: ~165KB + HTML
+
+### Load Times
+- **First Paint**: < 1s
+- **Interactive**: < 1.5s
+- **Full Load**: < 2s
+
+### Optimizations
+- Vite code splitting
+- Tree shaking
+- Minification
+- Lazy loading of Supabase (only when configured)
+
+## Security
+
+### Data Protection
+- User authentication via Supabase (OAuth 2.0)
+- Row Level Security policies in database
+- Environment variables for sensitive keys
+- HTTPS only (enforced by GitHub Pages)
+
+### Privacy
+- No analytics or tracking
+- No third-party scripts (except Supabase)
+- User data stored only in Supabase (user-controlled)
+- Can use app without authentication (local-only mode)
+
+## Future Enhancements
+
+### Planned Features
+- [ ] Progress export to PDF/CSV
+- [ ] Customizable packs (let users create their own)
+- [ ] Multiple child profiles
+- [ ] Achievement badges
+- [ ] Word shuffle mode
+- [ ] Audio recording (record child reading words)
+- [ ] Spelling tests
+- [ ] Dark mode
+
+### Architecture Improvements
+- [ ] Service worker for true offline support
+- [ ] Progressive Web App (PWA) with install prompt
+- [ ] Better error boundaries
+- [ ] Improved loading states
+
+## Contributing
+
+This is a personal educational project. If continuing development:
+
+1. Read this README fully
+2. Check `CLAUDE_NOTES.md` for technical details
+3. Review `QUICK_START.md` for quick reference
+4. Follow the established patterns in codebase
+5. Write tests for new features
+6. Update documentation when making changes
+
+## License
+
+Personal/Educational use only.
+
+## Contact
+
+For questions or issues with the project, check:
+- GitHub Issues: https://github.com/tamborine996/reading-phonics-app/issues
+- This README
+- CLAUDE_NOTES.md for technical deep-dive
+
+---
+
+**Last Updated**: 2025-01-08
+**Version**: 2.0 (TypeScript + Supabase + GitHub Pages)
