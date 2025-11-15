@@ -159,64 +159,59 @@
 
     <!-- Practice Screen -->
     <div id="practiceScreen" class="screen hidden">
-        <div class="container">
-            <!-- Visual Progress Bar -->
-            <div class="practice-progress-bar">
-                <div class="practice-progress-fill" id="practiceProgressFill" style="width: 0%"></div>
+        <!-- Progress Bar (Ultra-thin, Apple style) -->
+        <div class="practice-progress-bar-apple">
+            <div class="practice-progress-fill-apple" id="practiceProgressFill" style="width: 0%"></div>
+        </div>
+
+        <!-- Fixed Header -->
+        <div class="practice-header-apple">
+            <button class="btn-back-apple" id="backBtn">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <path d="M12 16L6 10L12 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span>Back</span>
+            </button>
+            <div class="progress-info-apple">
+                <span id="wordCounter" class="word-counter-apple">1 / 30</span>
+            </div>
+            <button class="btn-settings-apple" id="syllableToggleBtn" title="Toggle syllables">
+                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                    <circle cx="10" cy="10" r="3" stroke="currentColor" stroke-width="1.5"/>
+                    <path d="M10 1V3M10 17V19M19 10H17M3 10H1M16.5 3.5L15 5M5 15L3.5 16.5M16.5 16.5L15 15M5 5L3.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+            </button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="practice-content-apple">
+            <h2 id="packTitle" class="pack-title-apple">Pack 1</h2>
+
+            <!-- Swipe Hint -->
+            <div class="swipe-hint-apple" id="swipeHint" style="display: none;">
+                Swipe to navigate
             </div>
 
-            <div class="header">
-                <button class="btn-back" id="backBtn">← Back</button>
-                <div class="progress-info">
-                    <span id="wordCounter">1 / 30</span>
-                </div>
+            <!-- Word Card (Tap to speak) -->
+            <div class="word-card-apple" id="wordCard">
+                <div id="currentWord" class="word-apple">loading</div>
+                <div class="tap-hint-apple">Tap to hear</div>
             </div>
 
-            <h2 id="packTitle" class="pack-title-practice">Pack 1</h2>
-
-            <!-- Swipe Hint (shows briefly on first load) -->
-            <div class="swipe-hint" id="swipeHint" style="display: none;">
-                ← Swipe to navigate →
+            <!-- Progress Dots -->
+            <div class="progress-dots-apple">
+                <div class="dot-track" id="dotTrack"></div>
             </div>
+        </div>
 
-            <div class="word-display">
-                <div id="currentWord" class="word">loading</div>
-                <button class="btn-speaker" id="speakerBtn" title="Listen to word">
-                    🔊
-                </button>
-            </div>
-
-            <!-- Syllable Toggle Button -->
-            <div class="syllable-toggle-container">
-                <button class="btn-syllable-toggle" id="syllableToggleBtn" title="Show/hide syllable breaks for multisyllabic words">
-                    <span id="syllableToggleIcon">💡</span> <span id="syllableToggleText">Show Syllables</span>
-                </button>
-            </div>
-
-            <!-- Quick Review Button -->
-            <div class="quick-review-container" id="quickReviewContainer" style="display: none;">
-                <button class="btn-quick-review" id="quickReviewBtn">
-                    📝 Quick Review (<span id="quickReviewCount">0</span> words)
-                </button>
-            </div>
-
-            <div class="button-group">
-                <button class="btn-large btn-tricky" id="trickyBtn">
-                    😕 Tricky
-                </button>
-                <button class="btn-large btn-got-it" id="gotItBtn">
-                    ✓ Got it!
-                </button>
-            </div>
-
-            <div class="navigation">
-                <button class="btn-nav" id="prevBtn">
-                    ← Previous
-                </button>
-                <button class="btn-nav" id="nextBtn">
-                    Next →
-                </button>
-            </div>
+        <!-- Fixed Footer with Actions -->
+        <div class="practice-footer-apple">
+            <button class="action-btn-apple action-tricky-apple" id="trickyBtn">
+                <span class="btn-text-apple">Need Practice</span>
+            </button>
+            <button class="action-btn-apple action-got-it-apple" id="gotItBtn">
+                <span class="btn-text-apple">Got It</span>
+            </button>
         </div>
     </div>
 

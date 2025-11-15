@@ -1922,3 +1922,371 @@ html {
     opacity: 0.4;
     cursor: not-allowed;
 }
+
+/* ============================================
+   APPLE-STYLE PRACTICE SCREEN
+   Ultra-clean, minimal, iOS-inspired design
+   ============================================ */
+
+/* Apple Design System Variables */
+:root {
+    --apple-blue: #007AFF;
+    --apple-green: #34C759;
+    --apple-red: #FF3B30;
+    --apple-orange: #FF9500;
+    --apple-gray: #8E8E93;
+    --apple-gray-light: #C7C7CC;
+    --apple-gray-bg: #F2F2F7;
+    --apple-white: #FFFFFF;
+    --apple-black: #000000;
+    --apple-text-primary: #000000;
+    --apple-text-secondary: #3C3C43;
+    --apple-text-tertiary: #8E8E93;
+    --apple-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    --apple-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+/* Practice Screen Container */
+#practiceScreen {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+    background: var(--apple-gray-bg);
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+/* Progress Bar - Ultra thin, iOS style */
+.practice-progress-bar-apple {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: rgba(0, 0, 0, 0.05);
+    z-index: 1000;
+}
+
+.practice-progress-fill-apple {
+    height: 100%;
+    background: var(--apple-blue);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Fixed Header */
+.practice-header-apple {
+    position: fixed;
+    top: 2px;
+    left: 0;
+    right: 0;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+    background: var(--apple-gray-bg);
+    z-index: 999;
+    border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Back Button - iOS style */
+.btn-back-apple {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: none;
+    border: none;
+    color: var(--apple-blue);
+    font-size: 17px;
+    font-weight: 400;
+    cursor: pointer;
+    padding: 8px 12px 8px 8px;
+    margin-left: -8px;
+    border-radius: 8px;
+    transition: background 0.2s ease;
+}
+
+.btn-back-apple:hover {
+    background: rgba(0, 122, 255, 0.08);
+}
+
+.btn-back-apple:active {
+    background: rgba(0, 122, 255, 0.15);
+    transform: scale(0.97);
+    transition: transform 0.1s ease;
+}
+
+.btn-back-apple svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Progress Info */
+.progress-info-apple {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.word-counter-apple {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--apple-text-secondary);
+    letter-spacing: -0.2px;
+}
+
+/* Settings Button */
+.btn-settings-apple {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: none;
+    border: none;
+    color: var(--apple-gray);
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.btn-settings-apple:hover {
+    background: rgba(0, 0, 0, 0.05);
+    color: var(--apple-blue);
+}
+
+.btn-settings-apple:active {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(0.95);
+}
+
+.btn-settings-apple svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Main Content Area */
+.practice-content-apple {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 72px 20px 120px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Pack Title */
+.pack-title-apple {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--apple-text-secondary);
+    margin: 0 0 24px 0;
+    text-align: center;
+    letter-spacing: -0.2px;
+}
+
+/* Swipe Hint */
+.swipe-hint-apple {
+    font-size: 13px;
+    color: var(--apple-text-tertiary);
+    text-align: center;
+    margin-bottom: 16px;
+    animation: fadeInOut-apple 3s ease-in-out;
+}
+
+@keyframes fadeInOut-apple {
+    0% { opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+/* Word Card - Hero element */
+.word-card-apple {
+    background: var(--apple-white);
+    border-radius: 20px;
+    padding: 60px 40px;
+    box-shadow: var(--apple-shadow-lg);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    min-width: 280px;
+    max-width: 400px;
+    width: calc(100% - 40px);
+    margin: 0 auto;
+}
+
+.word-card-apple:active {
+    transform: scale(0.98);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Word Display */
+.word-apple {
+    font-size: 56px;
+    font-weight: 700;
+    color: var(--apple-black);
+    text-align: center;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin: 0;
+    word-wrap: break-word;
+}
+
+/* Tap Hint */
+.tap-hint-apple {
+    font-size: 13px;
+    color: var(--apple-text-tertiary);
+    text-align: center;
+    margin-top: 20px;
+    font-weight: 400;
+}
+
+/* Progress Dots */
+.progress-dots-apple {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+}
+
+.dot-track {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+}
+
+.progress-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--apple-gray-light);
+    transition: all 0.3s ease;
+}
+
+.progress-dot.active {
+    width: 8px;
+    height: 8px;
+    background: var(--apple-blue);
+}
+
+/* Fixed Footer */
+.practice-footer-apple {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 12px 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom));
+    background: var(--apple-gray-bg);
+    border-top: 0.5px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    gap: 12px;
+    z-index: 999;
+}
+
+/* Action Buttons */
+.action-btn-apple {
+    flex: 1;
+    height: 52px;
+    border-radius: 12px;
+    border: none;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: -0.3px;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.action-btn-apple:active {
+    transform: scale(0.97);
+}
+
+/* Tricky Button */
+.action-tricky-apple {
+    background: var(--apple-white);
+    color: var(--apple-orange);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+}
+
+.action-tricky-apple:hover {
+    background: #FAFAFA;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.action-tricky-apple:active {
+    background: #F0F0F0;
+}
+
+/* Got It Button */
+.action-got-it-apple {
+    background: var(--apple-blue);
+    color: var(--apple-white);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.25);
+}
+
+.action-got-it-apple:hover {
+    background: #0071ED;
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+}
+
+.action-got-it-apple:active {
+    background: #0066D6;
+}
+
+.btn-text-apple {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+
+/* Mobile Optimizations */
+@media (max-width: 600px) {
+    .word-apple {
+        font-size: 48px;
+    }
+
+    .word-card-apple {
+        padding: 48px 32px;
+        min-width: 240px;
+    }
+
+    .practice-content-apple {
+        padding: 64px 16px 100px;
+    }
+
+    .btn-text-apple {
+        font-size: 16px;
+    }
+
+    .action-btn-apple {
+        height: 48px;
+    }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .word-card-apple,
+    .action-btn-apple,
+    .btn-back-apple,
+    .btn-settings-apple {
+        transition: none;
+    }
+
+    .swipe-hint-apple {
+        animation: none;
+        opacity: 1;
+    }
+}

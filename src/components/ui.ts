@@ -6,9 +6,7 @@ import type { WordPack } from '@/types';
 import { storageService } from '@/services/storage.service';
 import { extractCleanLabel, getWordPreview, formatDate, groupPacksBySubPack } from '@/utils/helpers';
 import { logger } from '@/utils/logger';
-import { speechService } from '@/utils/speech';
 import { formatWordWithColoredSyllables } from '@/utils/syllables';
-import { wordPacks } from '@/data/wordPacks';
 import type { AppState } from '../app';
 
 /**
@@ -189,18 +187,18 @@ export function renderPracticeScreen(appState: AppState): void {
     );
     currentWordEl.innerHTML = formattedWord;
 
-    // Add visual class based on status
+    // Add visual class based on status (Apple style uses word-apple class)
     const progress = appState.reviewMode
       ? null
       : storageService.getPackProgress(appState.currentPack.id);
 
-    currentWordEl.className = 'word';
+    currentWordEl.className = 'word-apple';
     if (progress && progress.words[currentWord]) {
       currentWordEl.classList.add(progress.words[currentWord]);
     }
   }
 
-  // Update syllable toggle button state
+  // Update syllable toggle button state (now a settings icon)
   updateSyllableToggleButton(appState);
 
   // Update word counter
@@ -208,29 +206,6 @@ export function renderPracticeScreen(appState: AppState): void {
   if (wordCounter) {
     wordCounter.textContent = `${appState.currentWordIndex + 1} / ${words.length}`;
   }
-
-  // Update navigation buttons
-  const prevBtn = document.getElementById('prevBtn') as HTMLButtonElement;
-  if (prevBtn) {
-    prevBtn.disabled = appState.currentWordIndex === 0;
-  }
-
-  const nextBtn = document.getElementById('nextBtn') as HTMLButtonElement;
-  if (nextBtn) {
-    nextBtn.disabled = appState.currentWordIndex === words.length - 1;
-  }
-
-  // Set up speaker button
-  const speakerBtn = document.getElementById('speakerBtn');
-  if (speakerBtn) {
-    speakerBtn.onclick = () => {
-      speechService.speak(currentWord);
-      logger.info('Speaking word via button click', { word: currentWord });
-    };
-  }
-
-  // Show Quick Review button if there are tricky words
-  updateQuickReviewButton();
 
   // Update visual progress bar
   updatePracticeProgressBar(appState.currentWordIndex + 1, words.length);
@@ -375,46 +350,44 @@ function countSubPackTrickyWords(packs: WordPack[]): number {
  */
 function updateSyllableToggleButton(appState: AppState): void {
   const toggleBtn = document.getElementById('syllableToggleBtn');
-  const toggleIcon = document.getElementById('syllableToggleIcon');
-  const toggleText = document.getElementById('syllableToggleText');
 
-  if (!toggleBtn || !toggleIcon || !toggleText) return;
+  if (!toggleBtn) return;
 
+  // Apple style: just change the button color/state
   if (appState.showSyllablesForCurrentWord) {
     toggleBtn.classList.add('active');
-    toggleIcon.textContent = '👁️';
-    toggleText.textContent = 'Hide Syllables';
+    toggleBtn.style.color = 'var(--apple-blue, #007AFF)';
   } else {
     toggleBtn.classList.remove('active');
-    toggleIcon.textContent = '💡';
-    toggleText.textContent = 'Show Syllables';
+    toggleBtn.style.color = 'var(--apple-gray, #8E8E93)';
   }
 }
 
 /**
  * Update Quick Review button visibility and count
+ * NOTE: Disabled for Apple-style minimal design
  */
-function updateQuickReviewButton(): void {
-  const quickReviewContainer = document.getElementById('quickReviewContainer');
-  const quickReviewCount = document.getElementById('quickReviewCount');
+// function updateQuickReviewButton(): void {
+//   const quickReviewContainer = document.getElementById('quickReviewContainer');
+//   const quickReviewCount = document.getElementById('quickReviewCount');
 
-  if (!quickReviewContainer || !quickReviewCount) return;
+//   if (!quickReviewContainer || !quickReviewCount) return;
 
-  // Count total tricky words across all packs
-  let trickyCount = 0;
+//   // Count total tricky words across all packs
+//   let trickyCount = 0;
 
-  wordPacks.forEach((pack) => {
-    const progress = storageService.getPackProgress(pack.id);
-    if (progress) {
-      trickyCount += Object.values(progress.words).filter(status => status === 'tricky').length;
-    }
-  });
+//   wordPacks.forEach((pack) => {
+//     const progress = storageService.getPackProgress(pack.id);
+//     if (progress) {
+//       trickyCount += Object.values(progress.words).filter(status => status === 'tricky').length;
+//     }
+//   });
 
-  if (trickyCount > 0) {
-    const displayCount = Math.min(trickyCount, 3);
-    quickReviewCount.textContent = displayCount.toString();
-    quickReviewContainer.style.display = 'block';
-  } else {
-    quickReviewContainer.style.display = 'none';
-  }
-}
+//   if (trickyCount > 0) {
+//     const displayCount = Math.min(trickyCount, 3);
+//     quickReviewCount.textContent = displayCount.toString();
+//     quickReviewContainer.style.display = 'block';
+//   } else {
+//     quickReviewContainer.style.display = 'none';
+//   }
+// }

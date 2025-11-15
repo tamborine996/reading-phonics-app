@@ -874,10 +874,10 @@ function setupEliteNavigation(): void {
  * Setup Elite Practice Screen Features
  */
 function setupElitePracticeFeatures(): void {
-  const wordDisplay = document.getElementById('currentWord');
+  const wordCard = document.getElementById('wordCard');
   const swipeHint = document.getElementById('swipeHint');
 
-  if (!wordDisplay) return;
+  if (!wordCard) return;
 
   // Show swipe hint briefly
   if (swipeHint && !sessionStorage.getItem('swipeHintShown')) {
@@ -888,17 +888,34 @@ function setupElitePracticeFeatures(): void {
     sessionStorage.setItem('swipeHintShown', 'true');
   }
 
-  // Swipe gesture support
+  // Tap to speak functionality
+  let touchStartTime = 0;
   let touchStartX = 0;
   let touchEndX = 0;
 
   const handleTouchStart = (e: TouchEvent) => {
+    touchStartTime = Date.now();
     touchStartX = e.changedTouches[0].screenX;
   };
 
   const handleTouchEnd = (e: TouchEvent) => {
     touchEndX = e.changedTouches[0].screenX;
-    handleSwipe();
+    const touchDuration = Date.now() - touchStartTime;
+    const touchDistance = Math.abs(touchStartX - touchEndX);
+
+    // If it's a quick tap (not a swipe), speak the word
+    if (touchDuration < 300 && touchDistance < 10) {
+      const currentWord = document.getElementById('currentWord')?.textContent;
+      if (currentWord) {
+        import('@/utils/speech').then(({ speechService }) => {
+          speechService.speak(currentWord);
+          logger.info('Speaking word via tap', { word: currentWord });
+        });
+      }
+    } else {
+      // Otherwise handle as swipe
+      handleSwipe();
+    }
   };
 
   const handleSwipe = () => {
@@ -917,12 +934,23 @@ function setupElitePracticeFeatures(): void {
   };
 
   // Remove old listeners if they exist
-  wordDisplay.removeEventListener('touchstart', handleTouchStart as any);
-  wordDisplay.removeEventListener('touchend', handleTouchEnd as any);
+  wordCard.removeEventListener('touchstart', handleTouchStart as any);
+  wordCard.removeEventListener('touchend', handleTouchEnd as any);
 
   // Add new listeners
-  wordDisplay.addEventListener('touchstart', handleTouchStart as any, { passive: true });
-  wordDisplay.addEventListener('touchend', handleTouchEnd as any, { passive: true });
+  wordCard.addEventListener('touchstart', handleTouchStart as any, { passive: true });
+  wordCard.addEventListener('touchend', handleTouchEnd as any, { passive: true });
+
+  // Also handle click for desktop
+  wordCard.onclick = () => {
+    const currentWord = document.getElementById('currentWord')?.textContent;
+    if (currentWord) {
+      import('@/utils/speech').then(({ speechService }) => {
+        speechService.speak(currentWord);
+        logger.info('Speaking word via click', { word: currentWord });
+      });
+    }
+  };
 
   // Keyboard shortcuts
   const handleKeyDown = (e: KeyboardEvent) => {
