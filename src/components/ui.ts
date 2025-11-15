@@ -125,12 +125,12 @@ function renderPackTable(packs: WordPack[]): string {
 
     html += `
       <tr data-pack-id="${pack.id}">
-        <td class="pack-number">P${pack.id}</td>
-        <td class="pack-label">${cleanLabel}</td>
-        <td class="word-preview">${wordPreview}</td>
-        <td class="word-count">${totalWords}</td>
-        <td>${lastReviewed}</td>
-        <td>
+        <td class="pack-number" data-label="Pack">P${pack.id}</td>
+        <td class="pack-label" data-label="Label">${cleanLabel}</td>
+        <td class="word-preview" data-label="Words">${wordPreview}</td>
+        <td class="word-count" data-label="Count">${totalWords}</td>
+        <td data-label="Last Reviewed">${lastReviewed}</td>
+        <td data-label="Progress">
           <div class="progress-cell">
             <span>${reviewedWords}/${totalWords} (${progressPercent}%)</span>
             <div class="progress-bar-small">
@@ -138,7 +138,7 @@ function renderPackTable(packs: WordPack[]): string {
             </div>
           </div>
         </td>
-        <td class="actions-cell">
+        <td class="actions-cell" data-label="Actions">
           <button onclick="startPack(${pack.id})" class="action-btn practice">Practice</button>
           ${
             trickyCount > 0

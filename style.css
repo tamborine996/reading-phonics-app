@@ -1035,12 +1035,143 @@ h1 {
         min-height: 280px;
     }
 
+    /* Convert table to card layout on mobile */
     .pack-table-container {
-        overflow-x: scroll;
+        overflow-x: visible;
     }
 
     .pack-table {
-        min-width: 600px;
+        display: block;
+        width: 100%;
+    }
+
+    .pack-table thead {
+        display: none;
+    }
+
+    .pack-table tbody {
+        display: block;
+    }
+
+    .pack-table tbody tr {
+        display: block;
+        background: white;
+        border-radius: 12px;
+        padding: 15px;
+        margin-bottom: 15px;
+        border: none;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .pack-table tbody tr:hover {
+        background: white;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
+
+    .pack-table td {
+        display: block;
+        padding: 8px 0;
+        border: none;
+        text-align: left;
+    }
+
+    .pack-table td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #667eea;
+        display: inline-block;
+        width: 120px;
+        margin-right: 10px;
+    }
+
+    .pack-number {
+        font-size: 1.2rem;
+        margin-bottom: 5px;
+    }
+
+    .pack-label {
+        font-size: 1rem;
+        margin-bottom: 10px;
+    }
+
+    .word-preview {
+        max-width: 100%;
+    }
+
+    .progress-cell {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .progress-bar-small {
+        flex: 1;
+        max-width: 150px;
+    }
+
+    .actions-cell {
+        padding-top: 12px;
+        margin-top: 8px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .action-btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+
+    .action-btn:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Mobile-friendly spacing and sizing */
+    .subtitle {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+
+    .search-input {
+        font-size: 16px; /* Prevents zoom on iOS */
+        padding: 14px 18px;
+    }
+
+    .sub-pack {
+        margin-bottom: 30px;
+    }
+
+    .sub-pack-header {
+        padding: 10px 0;
+        margin-bottom: 15px;
+    }
+
+    .sub-pack h2 {
+        font-size: 1.5rem;
+    }
+
+    .parent-btn {
+        width: 100%;
+        margin-top: 20px;
+    }
+
+    /* Hide table header labels on mobile since cards have their own labels */
+    .pack-table td::before {
+        content: attr(data-label) ": ";
+        font-weight: 600;
+        color: #667eea;
+        margin-right: 5px;
+    }
+
+    /* Special handling for pack number - no label needed */
+    .pack-table .pack-number::before {
+        content: "";
+        display: none;
+    }
+
+    /* Actions cell shouldn't have label since buttons are self-explanatory */
+    .pack-table .actions-cell::before {
+        content: "";
+        display: none;
     }
 }
 
