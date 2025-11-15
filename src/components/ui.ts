@@ -319,30 +319,44 @@ function createTrickyReviewButton(
 
 /**
  * Helper: Count global tricky words
+ * Now uses actual getTrickyWords to ensure count matches
  */
 function countGlobalTrickyWords(packs: WordPack[]): number {
-  let count = 0;
+  const trickyWords: Array<{ word: string; packId: number }> = [];
+
   packs.forEach((pack) => {
     const progress = storageService.getPackProgress(pack.id);
-    if (progress) {
-      count += Object.values(progress.words).filter((status) => status === 'tricky').length;
-    }
+    if (!progress) return;
+
+    pack.words.forEach((word) => {
+      if (progress.words[word] === 'tricky') {
+        trickyWords.push({ word, packId: pack.id });
+      }
+    });
   });
-  return count;
+
+  return trickyWords.length;
 }
 
 /**
  * Helper: Count sub-pack tricky words
+ * Now uses actual collection logic to ensure count matches
  */
 function countSubPackTrickyWords(packs: WordPack[]): number {
-  let count = 0;
+  const trickyWords: Array<{ word: string; packId: number }> = [];
+
   packs.forEach((pack) => {
     const progress = storageService.getPackProgress(pack.id);
-    if (progress) {
-      count += Object.values(progress.words).filter((status) => status === 'tricky').length;
-    }
+    if (!progress) return;
+
+    pack.words.forEach((word) => {
+      if (progress.words[word] === 'tricky') {
+        trickyWords.push({ word, packId: pack.id });
+      }
+    });
   });
-  return count;
+
+  return trickyWords.length;
 }
 
 /**
