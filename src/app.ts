@@ -257,6 +257,7 @@ export function startPack(packId: number): void {
     logger.info(`Starting pack ${packId}`);
     showScreen('practiceScreen');
     renderPracticeScreen(appState);
+    setupElitePracticeFeatures();
   } catch (error) {
     logger.error(`Failed to start pack ${packId}`, error);
     alert('Failed to start pack');
@@ -301,6 +302,7 @@ export function startTrickyReview(
     logger.info(`Starting tricky review: ${level}`, { count: trickyWords.length });
     showScreen('practiceScreen');
     renderPracticeScreen(appState);
+    setupElitePracticeFeatures();
   } catch (error) {
     logger.error('Failed to start tricky review', error);
     alert('Failed to start tricky review');
@@ -866,6 +868,97 @@ function setupEliteNavigation(): void {
   setTimeout(populateCategoryList, 500);
 
   logger.info('Elite navigation features initialized');
+}
+
+/**
+ * Setup Elite Practice Screen Features
+ */
+function setupElitePracticeFeatures(): void {
+  const wordDisplay = document.getElementById('currentWord');
+  const swipeHint = document.getElementById('swipeHint');
+
+  if (!wordDisplay) return;
+
+  // Show swipe hint briefly
+  if (swipeHint && !sessionStorage.getItem('swipeHintShown')) {
+    swipeHint.style.display = 'block';
+    setTimeout(() => {
+      swipeHint.style.display = 'none';
+    }, 3000);
+    sessionStorage.setItem('swipeHintShown', 'true');
+  }
+
+  // Swipe gesture support
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  const handleTouchStart = (e: TouchEvent) => {
+    touchStartX = e.changedTouches[0].screenX;
+  };
+
+  const handleTouchEnd = (e: TouchEvent) => {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  };
+
+  const handleSwipe = () => {
+    const swipeThreshold = 50;
+    const diff = touchStartX - touchEndX;
+
+    if (Math.abs(diff) > swipeThreshold) {
+      if (diff > 0) {
+        // Swipe left - next word
+        navigateWord(1);
+      } else {
+        // Swipe right - previous word
+        navigateWord(-1);
+      }
+    }
+  };
+
+  // Remove old listeners if they exist
+  wordDisplay.removeEventListener('touchstart', handleTouchStart as any);
+  wordDisplay.removeEventListener('touchend', handleTouchEnd as any);
+
+  // Add new listeners
+  wordDisplay.addEventListener('touchstart', handleTouchStart as any, { passive: true });
+  wordDisplay.addEventListener('touchend', handleTouchEnd as any, { passive: true });
+
+  // Keyboard shortcuts
+  const handleKeyDown = (e: KeyboardEvent) => {
+    // Only handle if we're on practice screen
+    const practiceScreen = document.getElementById('practiceScreen');
+    if (!practiceScreen || practiceScreen.classList.contains('hidden')) return;
+
+    switch (e.key) {
+      case ' ':
+      case 'Enter':
+        e.preventDefault();
+        markWord('mastered');
+        break;
+      case 't':
+      case 'T':
+        e.preventDefault();
+        markWord('tricky');
+        break;
+      case 'ArrowLeft':
+        e.preventDefault();
+        navigateWord(-1);
+        break;
+      case 'ArrowRight':
+        e.preventDefault();
+        navigateWord(1);
+        break;
+    }
+  };
+
+  // Remove old keyboard listener
+  document.removeEventListener('keydown', handleKeyDown);
+
+  // Add new keyboard listener
+  document.addEventListener('keydown', handleKeyDown);
+
+  logger.info('Elite practice features initialized');
 }
 
 // Make functions available globally for onclick handlers

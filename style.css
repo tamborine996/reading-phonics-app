@@ -1671,3 +1671,253 @@ html {
 .settings-panel {
     display: none !important;
 }
+
+/* ============================================
+   ELITE PRACTICE SCREEN
+   ============================================ */
+
+/* Visual Progress Bar */
+.practice-progress-bar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    z-index: 1000;
+}
+
+.practice-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 10px rgba(67, 233, 123, 0.5);
+}
+
+/* Swipe Hint */
+.swipe-hint {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    padding: 8px;
+    margin: -10px 0 10px 0;
+    animation: fadeInOut 3s ease-in-out;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    20%, 80% { opacity: 1; }
+}
+
+/* Enhanced Word Card */
+.word-display {
+    position: relative;
+    touch-action: pan-y pinch-zoom;
+}
+
+.word {
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+}
+
+.word.slide-out-left {
+    animation: slideOutLeft 0.3s ease forwards;
+}
+
+.word.slide-out-right {
+    animation: slideOutRight 0.3s ease forwards;
+}
+
+.word.slide-in-left {
+    animation: slideInLeft 0.3s ease forwards;
+}
+
+.word.slide-in-right {
+    animation: slideInRight 0.3s ease forwards;
+}
+
+@keyframes slideOutLeft {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(-100px); opacity: 0; }
+}
+
+@keyframes slideOutRight {
+    from { transform: translateX(0); opacity: 1; }
+    to { transform: translateX(100px); opacity: 0; }
+}
+
+@keyframes slideInLeft {
+    from { transform: translateX(-100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+    from { transform: translateX(100px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Enhanced Button Feedback */
+.btn-large {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-large:active {
+    transform: scale(0.97);
+}
+
+.btn-large::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.4);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn-large:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Enhanced Speaker Button */
+.btn-speaker {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-speaker:hover {
+    transform: scale(1.1);
+}
+
+.btn-speaker:active {
+    transform: scale(0.95);
+    animation: pulse 0.3s ease;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(102, 126, 234, 0.7); }
+    50% { box-shadow: 0 0 0 15px rgba(102, 126, 234, 0); }
+}
+
+/* Keyboard Shortcut Hints */
+.keyboard-hints {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    backdrop-filter: blur(10px);
+}
+
+.keyboard-hints.visible {
+    opacity: 1;
+}
+
+.keyboard-hints kbd {
+    background: rgba(255, 255, 255, 0.2);
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-family: monospace;
+    margin: 0 4px;
+}
+
+/* Word Status Indicator */
+.word-status-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.word-status-badge.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.word-status-badge.mastered {
+    background: #43e97b;
+    color: white;
+}
+
+.word-status-badge.tricky {
+    background: #ff6b6b;
+    color: white;
+}
+
+/* Mobile Touch Improvements */
+@media (max-width: 600px) {
+    .practice-progress-bar {
+        height: 3px;
+    }
+
+    .btn-large {
+        min-height: 65px;
+        font-size: 1.2rem;
+    }
+
+    .btn-speaker {
+        width: 70px;
+        height: 70px;
+        font-size: 2.2rem;
+    }
+
+    .word-display {
+        min-height: 260px;
+    }
+
+    .swipe-hint {
+        font-size: 0.85rem;
+    }
+}
+
+/* Better spacing for practice screen */
+#practiceScreen .container {
+    padding-top: 4px; /* Account for progress bar */
+}
+
+#practiceScreen .header {
+    margin-bottom: 15px;
+}
+
+.pack-title-practice {
+    font-size: 1.3rem;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Navigation button improvements */
+.btn-nav {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-nav:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-nav:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-nav:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}

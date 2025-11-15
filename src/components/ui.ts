@@ -232,9 +232,23 @@ export function renderPracticeScreen(appState: AppState): void {
   // Show Quick Review button if there are tricky words
   updateQuickReviewButton();
 
+  // Update visual progress bar
+  updatePracticeProgressBar(appState.currentWordIndex + 1, words.length);
+
   // Auto-speak the word when it first appears (optional)
   // Uncomment the line below if you want automatic speech
   // speechService.speak(currentWord);
+}
+
+/**
+ * Update practice progress bar
+ */
+function updatePracticeProgressBar(current: number, total: number): void {
+  const progressFill = document.getElementById('practiceProgressFill');
+  if (progressFill) {
+    const percent = (current / total) * 100;
+    progressFill.style.width = `${percent}%`;
+  }
 }
 
 /**

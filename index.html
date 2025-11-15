@@ -160,6 +160,11 @@
     <!-- Practice Screen -->
     <div id="practiceScreen" class="screen hidden">
         <div class="container">
+            <!-- Visual Progress Bar -->
+            <div class="practice-progress-bar">
+                <div class="practice-progress-fill" id="practiceProgressFill" style="width: 0%"></div>
+            </div>
+
             <div class="header">
                 <button class="btn-back" id="backBtn">← Back</button>
                 <div class="progress-info">
@@ -168,6 +173,11 @@
             </div>
 
             <h2 id="packTitle" class="pack-title-practice">Pack 1</h2>
+
+            <!-- Swipe Hint (shows briefly on first load) -->
+            <div class="swipe-hint" id="swipeHint" style="display: none;">
+                ← Swipe to navigate →
+            </div>
 
             <div class="word-display">
                 <div id="currentWord" class="word">loading</div>
