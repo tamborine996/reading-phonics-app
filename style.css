@@ -1682,16 +1682,17 @@ html {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.2);
+    height: 6px;
+    background: rgba(255, 255, 255, 0.3);
     z-index: 1000;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .practice-progress-fill {
     height: 100%;
     background: linear-gradient(90deg, #43e97b 0%, #38f9d7 100%);
     transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 0 0 10px rgba(67, 233, 123, 0.5);
+    box-shadow: 0 0 12px rgba(67, 233, 123, 0.6);
 }
 
 /* Swipe Hint */
@@ -1865,7 +1866,7 @@ html {
 /* Mobile Touch Improvements */
 @media (max-width: 600px) {
     .practice-progress-bar {
-        height: 3px;
+        height: 6px;
     }
 
     .btn-large {
