@@ -5,7 +5,7 @@
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
     display: flex;
@@ -19,6 +19,8 @@ body {
     user-select: none;
     /* Prevent tap highlight */
     -webkit-tap-highlight-color: transparent;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 .container {
@@ -2288,5 +2290,282 @@ html {
     .swipe-hint-apple {
         animation: none;
         opacity: 1;
+    }
+}
+
+/* ============================================
+   APPLE POLISH FOR HOME PAGE
+   Light refinements with Apple-quality details
+   ============================================ */
+
+/* Typography Polish */
+h1 {
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.subtitle {
+    font-weight: 500;
+    letter-spacing: -0.3px;
+}
+
+/* Card Polish - Softer shadows, better spacing */
+.pack-card {
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 16px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pack-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.pack-card:active {
+    transform: translateY(-1px);
+    transition: all 0.1s ease;
+}
+
+/* Sub-pack Cards */
+.sub-pack {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+/* Search Bar Polish */
+.search-container {
+    position: relative;
+}
+
+.search-input {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 400;
+    letter-spacing: -0.2px;
+}
+
+.search-input:focus {
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.2);
+    transform: translateY(-1px);
+}
+
+/* Button Polish */
+.btn-primary,
+.btn-secondary,
+.action-btn {
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-primary:hover,
+.btn-secondary:hover,
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.btn-primary:active,
+.btn-secondary:active,
+.action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Practice Button Polish */
+.action-btn.practice {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
+}
+
+.action-btn.practice:hover {
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+}
+
+/* Review Tricky Button Polish */
+.action-btn.review-tricky {
+    box-shadow: 0 2px 12px rgba(255, 149, 0, 0.2);
+}
+
+.action-btn.review-tricky:hover {
+    box-shadow: 0 4px 20px rgba(255, 149, 0, 0.3);
+}
+
+/* Pattern Filter Button Polish */
+.pattern-filter-toggle {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    letter-spacing: -0.3px;
+}
+
+.pattern-filter-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.pattern-btn {
+    border-radius: 10px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    letter-spacing: -0.2px;
+}
+
+.pattern-btn:hover {
+    transform: translateX(4px);
+}
+
+/* Table Polish */
+.pack-table {
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.pack-table th {
+    font-weight: 600;
+    letter-spacing: -0.2px;
+}
+
+.pack-table td {
+    font-weight: 400;
+}
+
+/* Progress Bar Polish */
+.progress-bar-small {
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.progress-fill {
+    transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 0 8px rgba(102, 126, 234, 0.4);
+}
+
+/* Quick Jump Button Polish */
+.quick-jump-btn {
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-jump-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.35);
+}
+
+.quick-jump-btn:active {
+    transform: scale(0.95);
+}
+
+/* Back to Top Button Polish */
+.back-to-top-btn {
+    box-shadow: 0 4px 16px rgba(102, 126, 234, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.back-to-top-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 24px rgba(102, 126, 234, 0.35);
+}
+
+/* Sticky Header Polish */
+.sticky-section-header {
+    font-weight: 600;
+    letter-spacing: -0.5px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+/* Quick Jump Menu Polish */
+.quick-jump-menu {
+    border-radius: 20px 20px 0 0;
+    box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.2);
+}
+
+.category-list button {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 500;
+    letter-spacing: -0.2px;
+}
+
+.category-list button:active {
+    transform: scale(0.98);
+}
+
+/* User Bar Polish */
+.user-bar,
+.sign-in-bar {
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.btn-sign-out,
+.btn-sign-in {
+    border-radius: 10px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-sign-out:hover,
+.btn-sign-in:hover {
+    transform: scale(1.02);
+}
+
+.btn-sign-out:active,
+.btn-sign-in:active {
+    transform: scale(0.98);
+}
+
+/* Tricky Review Buttons Polish */
+.tricky-review-btn {
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 12px rgba(255, 149, 0, 0.2);
+}
+
+.tricky-review-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(255, 149, 0, 0.3);
+}
+
+.tricky-review-btn:active {
+    transform: translateY(0);
+}
+
+/* Parent Button Polish */
+.parent-btn {
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile Refinements */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2.5rem;
+        letter-spacing: -1px;
+    }
+
+    .subtitle {
+        font-size: 1.1rem;
+    }
+
+    .pack-card {
+        border-radius: 14px;
+    }
+
+    .search-input {
+        border-radius: 10px;
     }
 }
