@@ -7,6 +7,8 @@ export interface WordPack {
   category: string;
   subPack: string;
   words: string[];
+  patterns?: string[]; // Phonics patterns (e.g., ['gh-f-sound', 'consonant-blend'])
+  description?: string; // Quick description of the pattern
 }
 
 export interface WordStatus {
@@ -76,3 +78,5 @@ export interface AppState {
   currentSession: PracticeSession | null;
   user: User | null;
 }
+
+export type SyllableDictionary = Record<string, string[]>;

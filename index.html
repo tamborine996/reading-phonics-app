@@ -50,6 +50,69 @@
             <h1>📚 Word Practice</h1>
             <p class="subtitle">Choose a pack to practice - organized by difficulty</p>
 
+            <!-- Search Bar -->
+            <div class="search-container">
+                <input
+                    type="text"
+                    id="wordSearch"
+                    class="search-input"
+                    placeholder="🔍 Search for a word or pattern (e.g., 'beautiful' or 'gh')..."
+                />
+                <button class="search-clear-btn" id="searchClearBtn" style="display: none;">✕</button>
+            </div>
+            <div id="searchResults" class="search-results" style="display: none;"></div>
+
+            <!-- Pattern Filter Section -->
+            <div class="pattern-filter-section">
+                <button class="pattern-filter-toggle" id="patternFilterToggle">
+                    🎯 Filter by Sound Pattern
+                </button>
+                <div class="pattern-filter-dropdown" id="patternFilterDropdown" style="display: none;">
+                    <div class="pattern-categories">
+                        <div class="pattern-category">
+                            <h3>GH Patterns</h3>
+                            <button class="pattern-btn" data-pattern="gh-f-sound">GH makes F sound (cough, rough)</button>
+                            <button class="pattern-btn" data-pattern="silent-gh">GH is silent (night, weigh)</button>
+                        </div>
+                        <div class="pattern-category">
+                            <h3>Silent Letters</h3>
+                            <button class="pattern-btn" data-pattern="silent-b">Silent B (climb, thumb)</button>
+                            <button class="pattern-btn" data-pattern="silent-k">Silent K (knee, knife)</button>
+                            <button class="pattern-btn" data-pattern="silent-w">Silent W (write, wrong)</button>
+                            <button class="pattern-btn" data-pattern="silent-g">Silent G (sign, gnat)</button>
+                            <button class="pattern-btn" data-pattern="silent-h">Silent H (honest, ghost)</button>
+                            <button class="pattern-btn" data-pattern="silent-l">Silent L (calm, talk)</button>
+                            <button class="pattern-btn" data-pattern="silent-t">Silent T (listen, castle)</button>
+                        </div>
+                        <div class="pattern-category">
+                            <h3>Long Vowels</h3>
+                            <button class="pattern-btn" data-pattern="magic-e">Magic E (cake, bike)</button>
+                            <button class="pattern-btn" data-pattern="ai-vowel-team">AI pattern (rain, train)</button>
+                            <button class="pattern-btn" data-pattern="ay-vowel-team">AY pattern (play, day)</button>
+                            <button class="pattern-btn" data-pattern="ee-vowel-team">EE pattern (tree, see)</button>
+                            <button class="pattern-btn" data-pattern="ea-vowel-team">EA pattern (beach, read)</button>
+                            <button class="pattern-btn" data-pattern="oa-vowel-team">OA pattern (boat, road)</button>
+                        </div>
+                        <div class="pattern-category">
+                            <h3>R-Controlled</h3>
+                            <button class="pattern-btn" data-pattern="ar-pattern">AR sound (car, star)</button>
+                            <button class="pattern-btn" data-pattern="or-pattern">OR sound (for, storm)</button>
+                            <button class="pattern-btn" data-pattern="er-pattern">ER sound (her, teacher)</button>
+                            <button class="pattern-btn" data-pattern="ir-pattern">IR sound (bird, girl)</button>
+                            <button class="pattern-btn" data-pattern="ur-pattern">UR sound (burn, nurse)</button>
+                        </div>
+                        <div class="pattern-category">
+                            <h3>Advanced Patterns</h3>
+                            <button class="pattern-btn" data-pattern="ough-pattern">OUGH patterns (all types)</button>
+                            <button class="pattern-btn" data-pattern="soft-c">Soft C (city, ice)</button>
+                            <button class="pattern-btn" data-pattern="soft-g">Soft G (giant, age)</button>
+                            <button class="pattern-btn" data-pattern="ph-digraph">PH makes F (phone, graph)</button>
+                        </div>
+                    </div>
+                    <button class="clear-filter-btn" id="clearFilterBtn">Clear Filter</button>
+                </div>
+            </div>
+
             <!-- Settings Panel -->
             <div class="settings-panel">
                 <label class="settings-toggle">
@@ -84,6 +147,20 @@
                 <div id="currentWord" class="word">loading</div>
                 <button class="btn-speaker" id="speakerBtn" title="Listen to word">
                     🔊
+                </button>
+            </div>
+
+            <!-- Syllable Toggle Button -->
+            <div class="syllable-toggle-container">
+                <button class="btn-syllable-toggle" id="syllableToggleBtn" title="Show/hide syllable breaks for multisyllabic words">
+                    <span id="syllableToggleIcon">💡</span> <span id="syllableToggleText">Show Syllables</span>
+                </button>
+            </div>
+
+            <!-- Quick Review Button -->
+            <div class="quick-review-container" id="quickReviewContainer" style="display: none;">
+                <button class="btn-quick-review" id="quickReviewBtn">
+                    📝 Quick Review (<span id="quickReviewCount">0</span> words)
                 </button>
             </div>
 

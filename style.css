@@ -213,6 +213,43 @@ h1 {
     transform: scale(0.95);
 }
 
+/* Syllable Toggle Button */
+.syllable-toggle-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.btn-syllable-toggle {
+    background: rgba(255, 255, 255, 0.25);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    padding: 12px 24px;
+    border-radius: 10px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.btn-syllable-toggle:hover {
+    background: rgba(255, 255, 255, 0.35);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-syllable-toggle:active {
+    transform: translateY(0);
+}
+
+.btn-syllable-toggle.active {
+    background: white;
+    color: #667eea;
+    border-color: white;
+}
+
 .button-group {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -410,6 +447,121 @@ h1 {
 .parent-pack-info {
     color: #666;
     margin-bottom: 10px;
+}
+
+/* Search Container */
+.search-container {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 15px 45px 15px 20px;
+    font-size: 1rem;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.95);
+    color: #333;
+    transition: all 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: white;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.search-input::placeholder {
+    color: #999;
+}
+
+.search-clear-btn {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 107, 107, 0.2);
+    color: #ff6b6b;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.search-clear-btn:hover {
+    background: #ff6b6b;
+    color: white;
+}
+
+.search-results {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.search-results-header {
+    color: #667eea;
+    font-size: 1.1rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.search-result-pack {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background 0.2s ease;
+}
+
+.search-result-pack:last-child {
+    border-bottom: none;
+}
+
+.search-result-pack:hover {
+    background: #f8f9fa;
+}
+
+.search-result-title {
+    color: #667eea;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.search-result-matches {
+    color: #666;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+.search-result-words {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.search-result-word {
+    background: #ffe0e0;
+    color: #333;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+}
+
+.search-result-word .match-highlight {
+    background: #ffeb3b;
+    font-weight: bold;
+}
+
+.search-result-actions {
+    margin-top: 10px;
 }
 
 /* Settings Panel */
@@ -890,4 +1042,234 @@ h1 {
     .pack-table {
         min-width: 600px;
     }
+}
+
+/* Pattern Filter Section */
+.pattern-filter-section {
+    margin-bottom: 20px;
+}
+
+.pattern-filter-toggle {
+    width: 100%;
+    padding: 15px 20px;
+    background: white;
+    color: #667eea;
+    border: 2px solid rgba(255, 255, 255, 0.4);
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.pattern-filter-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    background: #f8f9ff;
+}
+
+.pattern-filter-toggle.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.pattern-filter-dropdown {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.pattern-categories {
+    display: grid;
+    gap: 20px;
+}
+
+.pattern-category h3 {
+    color: #667eea;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    font-weight: 600;
+}
+
+.pattern-btn {
+    display: block;
+    width: 100%;
+    padding: 10px 15px;
+    background: #f0f4ff;
+    color: #333;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    margin-bottom: 8px;
+}
+
+.pattern-btn:hover {
+    background: #e0e7ff;
+    border-color: #667eea;
+}
+
+.pattern-btn.active {
+    background: #667eea;
+    color: white;
+    border-color: #667eea;
+}
+
+.clear-filter-btn {
+    width: 100%;
+    padding: 12px;
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: all 0.2s ease;
+}
+
+.clear-filter-btn:hover {
+    background: #ff5252;
+    transform: scale(1.02);
+}
+
+/* Quick Review Button */
+.quick-review-container {
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.btn-quick-review {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);
+}
+
+.btn-quick-review:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 20px rgba(245, 87, 108, 0.4);
+}
+
+.btn-quick-review:active {
+    transform: translateY(-1px);
+}
+
+/* Celebration Animations */
+@keyframes celebrate {
+    0%, 100% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.2) rotate(-10deg); }
+    50% { transform: scale(1.1) rotate(10deg); }
+    75% { transform: scale(1.2) rotate(-5deg); }
+}
+
+@keyframes confetti {
+    0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.celebrate {
+    animation: celebrate 0.6s ease-in-out;
+}
+
+.confetti {
+    position: fixed;
+    width: 10px;
+    height: 10px;
+    background: #f5576c;
+    top: -10px;
+    animation: confetti 3s linear;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+/* Success feedback animations */
+@keyframes successPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+.success-pulse {
+    animation: successPulse 0.4s ease-in-out;
+}
+
+/* Word card enter animation */
+@keyframes wordEnter {
+    0% { 
+        opacity: 0;
+        transform: scale(0.8) translateY(20px);
+    }
+    100% { 
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.word-enter {
+    animation: wordEnter 0.4s ease-out;
+}
+
+/* Improved button feedback */
+.btn-large:active {
+    transform: scale(0.95);
+}
+
+.btn-got-it:active {
+    background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+}
+
+.btn-tricky:active {
+    background: linear-gradient(135deg, #ee5a6f 0%, #f29263 100%);
+}
+
+/* Particle effect for celebrations */
+@keyframes particleFly {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
+
+.particle {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    pointer-events: none;
+    animation: particleFly 1s ease-out forwards;
+    z-index: 9999;
+}
+
+/* Shake animation for tricky words */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    75% { transform: translateX(10px); }
+}
+
+.shake {
+    animation: shake 0.3s ease-in-out;
 }

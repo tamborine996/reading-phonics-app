@@ -4,11 +4,11 @@
 
 import type { WordPack } from '@/types';
 import { storageService } from '@/services/storage.service';
-import { settingsService } from '@/services/settings.service';
 import { extractCleanLabel, getWordPreview, formatDate, groupPacksBySubPack } from '@/utils/helpers';
 import { logger } from '@/utils/logger';
 import { speechService } from '@/utils/speech';
-import { formatWordWithSyllables } from '@/utils/syllables';
+import { formatWordWithColoredSyllables } from '@/utils/syllables';
+import { wordPacks } from '@/data/wordPacks';
 import type { AppState } from '../app';
 
 /**
@@ -182,12 +182,10 @@ export function renderPracticeScreen(appState: AppState): void {
   // Update current word
   const currentWordEl = document.getElementById('currentWord');
   if (currentWordEl) {
-    // Format word with syllables if enabled
-    const settings = settingsService.getSettings();
-    const formattedWord = formatWordWithSyllables(
+    // Use colored syllables if card-level toggle is ON
+    const formattedWord = formatWordWithColoredSyllables(
       currentWord,
-      settings.syllableSeparator,
-      settings.showSyllables
+      appState.showSyllablesForCurrentWord
     );
     currentWordEl.innerHTML = formattedWord;
 
@@ -201,6 +199,9 @@ export function renderPracticeScreen(appState: AppState): void {
       currentWordEl.classList.add(progress.words[currentWord]);
     }
   }
+
+  // Update syllable toggle button state
+  updateSyllableToggleButton(appState);
 
   // Update word counter
   const wordCounter = document.getElementById('wordCounter');
@@ -227,6 +228,9 @@ export function renderPracticeScreen(appState: AppState): void {
       logger.info('Speaking word via button click', { word: currentWord });
     };
   }
+
+  // Show Quick Review button if there are tricky words
+  updateQuickReviewButton();
 
   // Auto-speak the word when it first appears (optional)
   // Uncomment the line below if you want automatic speech
@@ -350,4 +354,53 @@ function countSubPackTrickyWords(packs: WordPack[]): number {
     }
   });
   return count;
+}
+
+/**
+ * Update syllable toggle button appearance
+ */
+function updateSyllableToggleButton(appState: AppState): void {
+  const toggleBtn = document.getElementById('syllableToggleBtn');
+  const toggleIcon = document.getElementById('syllableToggleIcon');
+  const toggleText = document.getElementById('syllableToggleText');
+
+  if (!toggleBtn || !toggleIcon || !toggleText) return;
+
+  if (appState.showSyllablesForCurrentWord) {
+    toggleBtn.classList.add('active');
+    toggleIcon.textContent = '👁️';
+    toggleText.textContent = 'Hide Syllables';
+  } else {
+    toggleBtn.classList.remove('active');
+    toggleIcon.textContent = '💡';
+    toggleText.textContent = 'Show Syllables';
+  }
+}
+
+/**
+ * Update Quick Review button visibility and count
+ */
+function updateQuickReviewButton(): void {
+  const quickReviewContainer = document.getElementById('quickReviewContainer');
+  const quickReviewCount = document.getElementById('quickReviewCount');
+
+  if (!quickReviewContainer || !quickReviewCount) return;
+
+  // Count total tricky words across all packs
+  let trickyCount = 0;
+
+  wordPacks.forEach((pack) => {
+    const progress = storageService.getPackProgress(pack.id);
+    if (progress) {
+      trickyCount += Object.values(progress.words).filter(status => status === 'tricky').length;
+    }
+  });
+
+  if (trickyCount > 0) {
+    const displayCount = Math.min(trickyCount, 3);
+    quickReviewCount.textContent = displayCount.toString();
+    quickReviewContainer.style.display = 'block';
+  } else {
+    quickReviewContainer.style.display = 'none';
+  }
 }

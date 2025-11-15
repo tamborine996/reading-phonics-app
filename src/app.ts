@@ -30,6 +30,7 @@ export class AppState {
   reviewMode = false;
   reviewWords: Array<{ word: string; packId: number; wordIndex: number }> = [];
   currentSession: PracticeSession | null = null;
+  showSyllablesForCurrentWord = false;
 
   reset() {
     this.currentPack = null;
@@ -37,6 +38,7 @@ export class AppState {
     this.reviewMode = false;
     this.reviewWords = [];
     this.currentSession = null;
+    this.showSyllablesForCurrentWord = false;
   }
 }
 
@@ -162,21 +164,70 @@ async function setupEventListeners(): Promise<void> {
     parentBackBtn.onclick = () => showScreen('homeScreen');
   }
 
-  // Syllable toggle
-  const syllableToggle = document.getElementById('syllableToggle') as HTMLInputElement;
-  if (syllableToggle) {
-    // Set initial state from settings
-    const { settingsService } = await import('@/services/settings.service');
-    syllableToggle.checked = settingsService.get('showSyllables');
+  // Syllable toggle button (card-level)
+  const syllableToggleBtn = document.getElementById('syllableToggleBtn');
+  if (syllableToggleBtn) {
+    syllableToggleBtn.onclick = () => toggleSyllablesForSession();
+  }
 
-    syllableToggle.onchange = () => {
-      settingsService.set('showSyllables', syllableToggle.checked);
-      // If currently in practice mode, re-render to show/hide syllables
-      if (appState.currentPack) {
-        renderPracticeScreen(appState);
+  // Word search
+  const searchInput = document.getElementById('wordSearch') as HTMLInputElement;
+  const searchClearBtn = document.getElementById('searchClearBtn');
+
+  if (searchInput) {
+    searchInput.oninput = () => handleSearch(searchInput.value);
+  }
+
+  if (searchClearBtn) {
+    searchClearBtn.onclick = () => {
+      if (searchInput) {
+        searchInput.value = '';
+        handleSearch('');
       }
-      logger.info('Syllable display toggled', { enabled: syllableToggle.checked });
     };
+  }
+
+  // Pattern filter
+  const patternFilterToggle = document.getElementById('patternFilterToggle');
+  const patternFilterDropdown = document.getElementById('patternFilterDropdown');
+  const clearFilterBtn = document.getElementById('clearFilterBtn');
+
+  if (patternFilterToggle && patternFilterDropdown) {
+    patternFilterToggle.onclick = () => {
+      const isVisible = patternFilterDropdown.style.display === 'block';
+      patternFilterDropdown.style.display = isVisible ? 'none' : 'block';
+      patternFilterToggle.classList.toggle('active');
+    };
+  }
+
+  // Pattern buttons
+  document.querySelectorAll('.pattern-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const pattern = btn.getAttribute('data-pattern');
+      if (pattern) {
+        handlePatternFilter(pattern);
+        btn.classList.toggle('active');
+      }
+    });
+  });
+
+  if (clearFilterBtn) {
+    clearFilterBtn.onclick = () => {
+      document.querySelectorAll('.pattern-btn').forEach((btn) => btn.classList.remove('active'));
+      renderSubPackList(wordPacks);
+      if (patternFilterDropdown) {
+        patternFilterDropdown.style.display = 'none';
+      }
+      if (patternFilterToggle) {
+        patternFilterToggle.classList.remove('active');
+      }
+    };
+  }
+
+  // Quick Review button
+  const quickReviewBtn = document.getElementById('quickReviewBtn');
+  if (quickReviewBtn) {
+    quickReviewBtn.onclick = () => startQuickReview();
   }
 
   logger.info('Event listeners set up successfully');
@@ -198,6 +249,7 @@ export function startPack(packId: number): void {
     appState.currentWordIndex = 0;
     appState.reviewMode = false;
     appState.reviewWords = [];
+    appState.showSyllablesForCurrentWord = false;
 
     logger.info(`Starting pack ${packId}`);
     showScreen('practiceScreen');
@@ -304,6 +356,19 @@ function navigateWord(direction: number): void {
 }
 
 /**
+ * Toggle syllable display for current practice session
+ */
+function toggleSyllablesForSession(): void {
+  try {
+    appState.showSyllablesForCurrentWord = !appState.showSyllablesForCurrentWord;
+    renderPracticeScreen(appState);
+    logger.info('Syllable display toggled', { enabled: appState.showSyllablesForCurrentWord });
+  } catch (error) {
+    logger.error('Failed to toggle syllables', error);
+  }
+}
+
+/**
  * Mark current word as tricky or mastered
  */
 function markWord(status: 'tricky' | 'mastered'): void {
@@ -320,6 +385,11 @@ function markWord(status: 'tricky' | 'mastered'): void {
     } else if (appState.currentPack) {
       const word = appState.currentPack.words[appState.currentWordIndex];
       storageService.updateWordStatus(appState.currentPack.id, word, status);
+    }
+
+    // Celebrate if mastered!
+    if (status === 'mastered') {
+      celebrate();
     }
 
     // Sync to Supabase if user is authenticated
@@ -390,6 +460,234 @@ function showCompletion(): void {
   }
 }
 
+/**
+ * Handle word/pattern search
+ */
+function handleSearch(query: string): void {
+  const searchClearBtn = document.getElementById('searchClearBtn');
+  const searchResults = document.getElementById('searchResults');
+
+  if (!searchResults) return;
+
+  // Show/hide clear button
+  if (searchClearBtn) {
+    searchClearBtn.style.display = query.trim() ? 'flex' : 'none';
+  }
+
+  // If empty, hide results
+  if (!query.trim()) {
+    searchResults.style.display = 'none';
+    return;
+  }
+
+  // Search for matches
+  const results = searchWordPacks(query);
+
+  if (results.length === 0) {
+    searchResults.innerHTML = `
+      <div class="search-results-header">No matches found for "${query}"</div>
+      <p style="color: #666;">Try searching for a different word or pattern.</p>
+    `;
+    searchResults.style.display = 'block';
+    return;
+  }
+
+  // Render results
+  renderSearchResults(results, query);
+}
+
+/**
+ * Search word packs for matching words or patterns
+ */
+function searchWordPacks(query: string): Array<{ pack: WordPack; matchingWords: string[] }> {
+  const queryLower = query.toLowerCase().trim();
+  const results: Array<{ pack: WordPack; matchingWords: string[] }> = [];
+
+  wordPacks.forEach((pack) => {
+    const matchingWords = pack.words.filter((word) =>
+      word.toLowerCase().includes(queryLower)
+    );
+
+    if (matchingWords.length > 0) {
+      results.push({ pack, matchingWords });
+    }
+  });
+
+  // Sort by number of matches (descending)
+  return results.sort((a, b) => b.matchingWords.length - a.matchingWords.length);
+}
+
+/**
+ * Render search results
+ */
+function renderSearchResults(
+  results: Array<{ pack: WordPack; matchingWords: string[] }>,
+  query: string
+): void {
+  const searchResults = document.getElementById('searchResults');
+  if (!searchResults) return;
+
+  const totalMatches = results.reduce((sum, r) => sum + r.matchingWords.length, 0);
+
+  let html = `
+    <div class="search-results-header">
+      Found ${totalMatches} word${totalMatches !== 1 ? 's' : ''} in ${results.length} pack${results.length !== 1 ? 's' : ''}
+    </div>
+  `;
+
+  results.forEach(({ pack, matchingWords }) => {
+    const cleanLabel = extractCleanLabel(pack.category);
+    html += `
+      <div class="search-result-pack">
+        <div class="search-result-title">Pack ${pack.id}: ${cleanLabel}</div>
+        <div class="search-result-matches">${matchingWords.length} match${matchingWords.length !== 1 ? 'es' : ''}</div>
+        <div class="search-result-words">
+          ${matchingWords.map((word) => `<span class="search-result-word">${highlightMatch(word, query)}</span>`).join('')}
+        </div>
+        <div class="search-result-actions">
+          <button onclick="startPack(${pack.id})" class="action-btn practice">Practice This Pack</button>
+        </div>
+      </div>
+    `;
+  });
+
+  searchResults.innerHTML = html;
+  searchResults.style.display = 'block';
+}
+
+/**
+ * Highlight matching text in search results
+ */
+function highlightMatch(word: string, query: string): string {
+  const queryLower = query.toLowerCase();
+  const wordLower = word.toLowerCase();
+  const index = wordLower.indexOf(queryLower);
+
+  if (index === -1) return word;
+
+  const before = word.substring(0, index);
+  const match = word.substring(index, index + query.length);
+  const after = word.substring(index + query.length);
+
+  return `${before}<span class="match-highlight">${match}</span>${after}`;
+}
+
+/**
+ * Import helper function
+ */
+function extractCleanLabel(category: string): string {
+  // Extract just the readable part without pack number
+  const parts = category.split(':');
+  if (parts.length > 1) {
+    return parts[1].trim().replace(/^[0-9A-Z]+\.\s*/, '');
+  }
+  return category;
+}
+
+/**
+ * Handle pattern filtering
+ */
+function handlePatternFilter(pattern: string): void {
+  const filteredPacks = wordPacks.filter((pack) =>
+    pack.patterns?.includes(pattern)
+  );
+
+  if (filteredPacks.length > 0) {
+    renderSubPackList(filteredPacks);
+    logger.info('Pattern filter applied', { pattern, count: filteredPacks.length });
+  } else {
+    alert(`No packs found with pattern: ${pattern}`);
+  }
+}
+
+/**
+ * Start Quick Review of last 3 tricky words
+ */
+function startQuickReview(): void {
+  const recentTrickyWords = getRecentTrickyWords(3);
+
+  if (recentTrickyWords.length === 0) {
+    alert('No recent tricky words to review!');
+    return;
+  }
+
+  appState.reviewMode = true;
+  appState.reviewWords = recentTrickyWords;
+  appState.currentWordIndex = 0;
+  appState.currentPack = wordPacks.find((p) => p.id === recentTrickyWords[0].packId) || null;
+
+  showScreen('practiceScreen');
+  renderPracticeScreen(appState);
+
+  logger.info('Quick Review started', { wordCount: recentTrickyWords.length });
+}
+
+/**
+ * Get recent tricky words across all packs
+ */
+function getRecentTrickyWords(limit: number): Array<{ word: string; packId: number; wordIndex: number }> {
+  const trickyWords: Array<{ word: string; packId: number; wordIndex: number; lastReviewed: string }> = [];
+
+  wordPacks.forEach((pack) => {
+    const progress = storageService.getPackProgress(pack.id);
+    if (!progress) return;
+
+    pack.words.forEach((word, idx) => {
+      if (progress.words[word] === 'tricky') {
+        trickyWords.push({
+          word,
+          packId: pack.id,
+          wordIndex: idx,
+          lastReviewed: progress.lastReviewed || '',
+        });
+      }
+    });
+  });
+
+  // Sort by most recently reviewed
+  trickyWords.sort((a, b) => {
+    if (!a.lastReviewed) return 1;
+    if (!b.lastReviewed) return -1;
+    return new Date(b.lastReviewed).getTime() - new Date(a.lastReviewed).getTime();
+  });
+
+  return trickyWords.slice(0, limit).map(({ word, packId, wordIndex }) => ({ word, packId, wordIndex }));
+}
+
+/**
+ * Trigger celebration animation
+ */
+function celebrate(): void {
+  const wordEl = document.getElementById('currentWord');
+  if (wordEl) {
+    wordEl.classList.add('celebrate');
+    setTimeout(() => wordEl.classList.remove('celebrate'), 600);
+  }
+
+  // Create confetti particles
+  for (let i = 0; i < 30; i++) {
+    createConfetti();
+  }
+}
+
+/**
+ * Create confetti particle
+ */
+function createConfetti(): void {
+  const confetti = document.createElement('div');
+  confetti.className = 'confetti';
+
+  const colors = ['#f5576c', '#f093fb', '#4facfe', '#00f2fe', '#43e97b', '#38f9d7', '#fa709a', '#fee140'];
+  confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+  confetti.style.left = Math.random() * 100 + 'vw';
+  confetti.style.animationDelay = Math.random() * 0.5 + 's';
+  confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
+
+  document.body.appendChild(confetti);
+
+  setTimeout(() => confetti.remove(), 4000);
+}
+
 // Make functions available globally for onclick handlers
 declare global {
   interface Window {
@@ -403,3 +701,11 @@ window.startTrickyReview = startTrickyReview;
 
 // Initialize on load
 window.onload = () => init();
+
+
+
+
+
+
+
+
