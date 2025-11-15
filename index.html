@@ -113,13 +113,39 @@
                 </div>
             </div>
 
-            <!-- Settings Panel -->
-            <div class="settings-panel">
-                <label class="settings-toggle">
-                    <input type="checkbox" id="syllableToggle" checked>
-                    <span>Show syllable dots (e.g., hap•py)</span>
-                </label>
+            <!-- Sticky Section Header -->
+            <div id="stickyHeader" class="sticky-section-header" style="display: none;">
+                <span id="currentSectionName">Loading...</span>
             </div>
+
+            <!-- Quick Jump Button -->
+            <button class="quick-jump-btn" id="quickJumpBtn" title="Jump to section">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+
+            <!-- Quick Jump Menu Overlay -->
+            <div id="quickJumpOverlay" class="quick-jump-overlay" style="display: none;">
+                <div class="quick-jump-menu">
+                    <div class="quick-jump-header">
+                        <h3>Jump to Section</h3>
+                        <button class="close-menu-btn" id="closeMenuBtn">✕</button>
+                    </div>
+                    <div id="categoryList" class="category-list">
+                        <!-- Categories will be populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Back to Top Button -->
+            <button class="back-to-top-btn" id="backToTopBtn" style="display: none;" title="Back to top">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 19V5M5 12l7-7 7 7"/>
+                </svg>
+            </button>
 
             <div id="packList" class="pack-list">
                 <!-- Sub-packs and tables will be loaded here -->

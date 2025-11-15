@@ -230,6 +230,9 @@ async function setupEventListeners(): Promise<void> {
     quickReviewBtn.onclick = () => startQuickReview();
   }
 
+  // Elite Navigation Features
+  setupEliteNavigation();
+
   logger.info('Event listeners set up successfully');
 }
 
@@ -686,6 +689,183 @@ function createConfetti(): void {
   document.body.appendChild(confetti);
 
   setTimeout(() => confetti.remove(), 4000);
+}
+
+/**
+ * Setup Elite Navigation Features
+ */
+function setupEliteNavigation(): void {
+  const stickyHeader = document.getElementById('stickyHeader');
+  const currentSectionName = document.getElementById('currentSectionName');
+  const quickJumpBtn = document.getElementById('quickJumpBtn');
+  const quickJumpOverlay = document.getElementById('quickJumpOverlay');
+  const closeMenuBtn = document.getElementById('closeMenuBtn');
+  const categoryList = document.getElementById('categoryList');
+  const backToTopBtn = document.getElementById('backToTopBtn');
+
+  let currentSection = '';
+  let ticking = false;
+
+  // Populate category list
+  function populateCategoryList(): void {
+    if (!categoryList) return;
+
+    const categories = new Map<string, number>();
+    const subPackElements = document.querySelectorAll('.sub-pack');
+
+    subPackElements.forEach((el) => {
+      const heading = el.querySelector('h2');
+      if (heading) {
+        const sectionName = heading.textContent || '';
+        const packCount = el.querySelectorAll('.pack-table tbody tr').length;
+        categories.set(sectionName, packCount);
+      }
+    });
+
+    categoryList.innerHTML = '';
+    categories.forEach((count, name) => {
+      const item = document.createElement('div');
+      item.className = 'category-item';
+      item.innerHTML = `
+        <span class="category-name">${name}</span>
+        <span class="category-count">${count} pack${count !== 1 ? 's' : ''}</span>
+      `;
+      item.onclick = () => {
+        jumpToSection(name);
+        closeQuickJumpMenu();
+      };
+      categoryList.appendChild(item);
+    });
+  }
+
+  // Jump to section
+  function jumpToSection(sectionName: string): void {
+    const subPackElements = document.querySelectorAll('.sub-pack');
+    for (const el of Array.from(subPackElements)) {
+      const heading = el.querySelector('h2');
+      if (heading && heading.textContent === sectionName) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        break;
+      }
+    }
+  }
+
+  // Handle scroll
+  function handleScroll(): void {
+    if (ticking) return;
+
+    window.requestAnimationFrame(() => {
+      const scrollY = window.scrollY;
+
+      // Update sticky header
+      if (stickyHeader && currentSectionName) {
+        const subPackElements = document.querySelectorAll('.sub-pack');
+        let foundSection = '';
+
+        for (const el of Array.from(subPackElements)) {
+          const rect = el.getBoundingClientRect();
+          const heading = el.querySelector('h2');
+
+          if (rect.top <= 100 && rect.bottom > 100 && heading) {
+            foundSection = heading.textContent || '';
+            break;
+          }
+        }
+
+        if (foundSection && foundSection !== currentSection) {
+          currentSection = foundSection;
+          currentSectionName.textContent = foundSection;
+        }
+
+        // Show/hide sticky header based on scroll
+        if (scrollY > 300 && foundSection) {
+          stickyHeader.classList.add('visible');
+          stickyHeader.style.display = 'block';
+        } else {
+          stickyHeader.classList.remove('visible');
+          setTimeout(() => {
+            if (!stickyHeader.classList.contains('visible')) {
+              stickyHeader.style.display = 'none';
+            }
+          }, 300);
+        }
+      }
+
+      // Show/hide back to top button
+      if (backToTopBtn) {
+        if (scrollY > 500) {
+          backToTopBtn.style.display = 'flex';
+          setTimeout(() => backToTopBtn.classList.add('visible'), 10);
+        } else {
+          backToTopBtn.classList.remove('visible');
+          setTimeout(() => {
+            if (!backToTopBtn.classList.contains('visible')) {
+              backToTopBtn.style.display = 'none';
+            }
+          }, 300);
+        }
+      }
+
+      ticking = false;
+    });
+
+    ticking = true;
+  }
+
+  // Open quick jump menu
+  function openQuickJumpMenu(): void {
+    if (quickJumpOverlay) {
+      populateCategoryList();
+      quickJumpOverlay.style.display = 'block';
+      setTimeout(() => quickJumpOverlay.classList.add('active'), 10);
+    }
+  }
+
+  // Close quick jump menu
+  function closeQuickJumpMenu(): void {
+    if (quickJumpOverlay) {
+      quickJumpOverlay.classList.remove('active');
+      setTimeout(() => {
+        if (!quickJumpOverlay.classList.contains('active')) {
+          quickJumpOverlay.style.display = 'none';
+        }
+      }, 400);
+    }
+  }
+
+  // Back to top
+  function scrollToTop(): void {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // Event listeners
+  if (quickJumpBtn) {
+    quickJumpBtn.onclick = openQuickJumpMenu;
+  }
+
+  if (closeMenuBtn) {
+    closeMenuBtn.onclick = closeQuickJumpMenu;
+  }
+
+  if (quickJumpOverlay) {
+    quickJumpOverlay.onclick = (e) => {
+      if (e.target === quickJumpOverlay) {
+        closeQuickJumpMenu();
+      }
+    };
+  }
+
+  if (backToTopBtn) {
+    backToTopBtn.onclick = scrollToTop;
+  }
+
+  // Set up scroll listener
+  window.addEventListener('scroll', handleScroll, { passive: true });
+
+  // Initial population when packs are loaded
+  setTimeout(populateCategoryList, 500);
+
+  logger.info('Elite navigation features initialized');
 }
 
 // Make functions available globally for onclick handlers
