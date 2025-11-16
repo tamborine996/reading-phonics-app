@@ -31,6 +31,7 @@ export class AppState {
   reviewWords: Array<{ word: string; packId: number; wordIndex: number }> = [];
   currentSession: PracticeSession | null = null;
   showSyllablesForCurrentWord = false;
+  lastCompletedPackId?: number;
 
   reset() {
     this.currentPack = null;
@@ -39,6 +40,7 @@ export class AppState {
     this.reviewWords = [];
     this.currentSession = null;
     this.showSyllablesForCurrentWord = false;
+    // Don't reset lastCompletedPackId - we want to keep it for "Do Again"
   }
 }
 
@@ -149,6 +151,22 @@ async function setupEventListeners(): Promise<void> {
       appState.reset();
       showScreen('homeScreen');
       renderSubPackList(wordPacks); // Refresh pack list to show updated tricky counts
+    };
+  }
+
+  // Do Again button
+  const doAgainBtn = document.getElementById('doAgainBtn');
+  if (doAgainBtn) {
+    doAgainBtn.onclick = () => {
+      const lastPackId = appState.lastCompletedPackId;
+      if (lastPackId !== undefined) {
+        startPack(lastPackId);
+      } else {
+        // Fallback to home if no pack ID stored
+        appState.reset();
+        showScreen('homeScreen');
+        renderSubPackList(wordPacks);
+      }
     };
   }
 
@@ -667,13 +685,16 @@ function showCompletion(): void {
 
       // Mark pack as completed
       storageService.markPackCompleted(appState.currentPack.id);
+      // Store the pack ID for "Do Again" functionality
+      appState.lastCompletedPackId = appState.currentPack.id;
     }
 
     showScreen('completeScreen');
     renderCompleteScreen(
       appState.reviewMode ? 'Review Complete!' : 'Pack Complete!',
       words.length,
-      trickyWords
+      trickyWords,
+      appState.currentPack?.category
     );
 
     logger.info('Session completed', {

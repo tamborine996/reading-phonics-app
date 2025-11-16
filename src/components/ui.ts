@@ -247,7 +247,8 @@ function updatePracticeProgressBar(current: number, total: number): void {
 export function renderCompleteScreen(
   title: string,
   totalWords: number,
-  trickyWords: string[]
+  trickyWords: string[],
+  packName?: string
 ): void {
   const titleEl = document.getElementById('completeTitle');
   if (titleEl) {
@@ -256,7 +257,14 @@ export function renderCompleteScreen(
 
   const statsEl = document.getElementById('completeStats');
   if (statsEl) {
-    let html = `
+    let html = '';
+
+    // Add pack name if provided
+    if (packName) {
+      html += `<p class="pack-name"><strong>${packName}</strong></p>`;
+    }
+
+    html += `
       <p>Total words: ${totalWords}</p>
       <p>Tricky words: ${trickyWords.length}</p>
     `;

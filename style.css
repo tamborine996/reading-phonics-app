@@ -600,8 +600,8 @@ h1 {
 .sub-pack {
     background: white;
     border-radius: 15px;
-    padding: 25px;
-    margin-bottom: 25px;
+    padding: 20px;
+    margin-bottom: 15px;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
@@ -623,7 +623,7 @@ h1 {
 
 /* Tricky Review Buttons */
 .tricky-review-btn {
-    background: #007AFF;
+    background: #AF52DE;
     color: white;
     border: none;
     padding: 12px 24px;
@@ -636,9 +636,9 @@ h1 {
 }
 
 .tricky-review-btn:hover {
-    background: #0051D5;
+    background: #8E3FB8;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    box-shadow: 0 4px 12px rgba(175, 82, 222, 0.3);
 }
 
 .tricky-review-btn.global {
@@ -744,6 +744,23 @@ h1 {
     text-align: center;
 }
 
+/* Align Last Reviewed and Completed columns */
+.pack-table td[data-label="Last Reviewed"],
+.pack-table td[data-label="Completed"] {
+    text-align: center;
+}
+
+.pack-table th:nth-child(5),
+.pack-table th:nth-child(6) {
+    text-align: center;
+}
+
+.completion-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .progress-cell {
     display: flex;
     flex-direction: column;
@@ -785,12 +802,12 @@ h1 {
 }
 
 .action-btn.review-tricky {
-    background: #007AFF;
+    background: #AF52DE;
     color: white;
 }
 
 .action-btn.review-tricky:hover {
-    background: #0051D5;
+    background: #8E3FB8;
 }
 
 /* Auth Screen */
@@ -864,31 +881,33 @@ h1 {
     gap: 15px;
     margin-bottom: 20px;
     padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.15);
+    background: white;
     border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .user-email {
-    color: white;
+    color: #1d1d1f;
     font-size: 0.9rem;
     font-weight: 500;
 }
 
 .btn-sign-out {
-    background: rgba(255, 255, 255, 0.25);
+    background: #007AFF;
     color: white;
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: none;
     padding: 8px 16px;
     border-radius: 8px;
     font-size: 0.85rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
 }
 
 .btn-sign-out:hover {
-    background: white;
-    color: #007AFF;
-    border-color: white;
+    background: #0051D5;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
 }
 
 /* Sign In Bar (for unauthenticated users) */
@@ -981,6 +1000,14 @@ h1 {
     font-size: 1.2rem;
     color: #333;
     margin-bottom: 15px;
+}
+
+.complete-stats p.pack-name {
+    font-size: 1.4rem;
+    color: #007AFF;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #f0f0f0;
 }
 
 .complete-stats p:last-child {
