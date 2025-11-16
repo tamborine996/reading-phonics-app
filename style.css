@@ -744,21 +744,21 @@ h1 {
     text-align: center;
 }
 
-/* Align Last Reviewed and Completed columns */
+/* Align Last Reviewed and Completed columns - left aligned like other columns */
 .pack-table td[data-label="Last Reviewed"],
 .pack-table td[data-label="Completed"] {
-    text-align: center;
+    text-align: left;
 }
 
 .pack-table th:nth-child(5),
 .pack-table th:nth-child(6) {
-    text-align: center;
+    text-align: left;
 }
 
 .completion-cell {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .progress-cell {

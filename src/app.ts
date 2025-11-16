@@ -362,6 +362,7 @@ export function startPack(packId: number): void {
     showScreen('practiceScreen');
     renderPracticeScreen(appState);
     setupElitePracticeFeatures();
+    updateFilterButtonText();
   } catch (error) {
     logger.error(`Failed to start pack ${packId}`, error);
     alert('Failed to start pack');
@@ -577,24 +578,38 @@ function toggleTrickyFilter(): void {
     appState.currentWordIndex = 0; // Reset to first word
     appState.shuffledWords = []; // Clear shuffle when changing filter
 
-    // Update button text
-    const filterBtn = document.getElementById('filterTrickyBtn');
-    if (filterBtn) {
-      const span = filterBtn.querySelector('span');
-      if (span) {
-        span.textContent = appState.filterTrickyOnly ? 'Tricky' : 'All';
-      }
-      if (appState.filterTrickyOnly) {
-        filterBtn.classList.add('active');
-      } else {
-        filterBtn.classList.remove('active');
-      }
-    }
-
+    updateFilterButtonText();
     renderPracticeScreen(appState);
     logger.info('Toggled tricky filter', { trickyOnly: appState.filterTrickyOnly });
   } catch (error) {
     logger.error('Failed to toggle tricky filter', error);
+  }
+}
+
+/**
+ * Update filter button text with word counts
+ */
+function updateFilterButtonText(): void {
+  const filterBtn = document.getElementById('filterTrickyBtn');
+  if (!filterBtn || !appState.currentPack) return;
+
+  const span = filterBtn.querySelector('span');
+  if (!span) return;
+
+  // Count total and tricky words
+  const totalWords = appState.currentPack.words.length;
+  const progress = storageService.getPackProgress(appState.currentPack.id);
+  const trickyCount = progress
+    ? appState.currentPack.words.filter((word) => progress.words[word] === 'tricky').length
+    : 0;
+
+  // Update button text and style
+  if (appState.filterTrickyOnly) {
+    span.textContent = `Tricky (${trickyCount})`;
+    filterBtn.classList.add('active');
+  } else {
+    span.textContent = `All (${totalWords})`;
+    filterBtn.classList.remove('active');
   }
 }
 
@@ -786,6 +801,9 @@ function markWord(status: 'tricky' | 'mastered'): void {
     } else {
       showCompletion();
     }
+
+    // Update filter button to reflect new tricky count
+    updateFilterButtonText();
   } catch (error) {
     logger.error('Failed to mark word', error);
     alert('Failed to save progress');
