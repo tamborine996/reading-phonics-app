@@ -8,6 +8,7 @@ import { extractCleanLabel, getWordPreview, formatDate, groupPacksBySubPack } fr
 import { logger } from '@/utils/logger';
 import { formatWordWithColoredSyllables } from '@/utils/syllables';
 import type { AppState } from '../app';
+import { setupCustomPackListeners } from '../app';
 
 /**
  * Show a specific screen
@@ -197,6 +198,9 @@ export function renderSubPackList(packs: WordPack[]): void {
   if (customSection) {
     container.innerHTML += customSection;
   }
+
+  // Setup custom pack event listeners after rendering
+  setupCustomPackListeners();
 
   const grouped = groupPacksBySubPack(packs);
 

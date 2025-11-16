@@ -282,54 +282,6 @@ async function setupEventListeners(): Promise<void> {
     quickReviewBtn.onclick = () => startQuickReview();
   }
 
-  // Custom Pack Modal Event Listeners
-  const createPackBtn = document.getElementById('createPackBtn');
-  if (createPackBtn) {
-    createPackBtn.onclick = () => openCustomPackModal();
-  }
-
-  const closeModalBtn = document.getElementById('closeModalBtn');
-  const cancelModalBtn = document.getElementById('cancelModalBtn');
-  const customPackModal = document.getElementById('customPackModal');
-
-  if (closeModalBtn) {
-    closeModalBtn.onclick = () => closeCustomPackModal();
-  }
-
-  if (cancelModalBtn) {
-    cancelModalBtn.onclick = () => closeCustomPackModal();
-  }
-
-  // Close modal when clicking outside
-  if (customPackModal) {
-    customPackModal.onclick = (e) => {
-      if (e.target === customPackModal) {
-        closeCustomPackModal();
-      }
-    };
-  }
-
-  const savePackBtn = document.getElementById('savePackBtn');
-  if (savePackBtn) {
-    savePackBtn.onclick = () => saveCustomPack();
-  }
-
-  const deletePackBtn = document.getElementById('deletePackBtn');
-  if (deletePackBtn) {
-    deletePackBtn.onclick = () => deleteCustomPackFromModal();
-  }
-
-  // Word count update
-  const packWords = document.getElementById('packWords') as HTMLTextAreaElement;
-  const wordCountEl = document.getElementById('wordCount');
-  if (packWords && wordCountEl) {
-    packWords.oninput = () => {
-      const words = parseWords(packWords.value);
-      const count = words.length;
-      wordCountEl.textContent = `${count} ${count === 1 ? 'word' : 'words'}`;
-    };
-  }
-
   // Elite Navigation Features
   setupEliteNavigation();
 
@@ -1471,6 +1423,57 @@ function setupElitePracticeFeatures(): void {
 // ==================== Custom Pack Functions ====================
 
 let currentEditingPackId: string | null = null;
+
+/**
+ * Setup event listeners for custom pack buttons
+ * This is called after rendering the custom packs section
+ */
+export function setupCustomPackListeners(): void {
+  const createPackBtn = document.getElementById('createPackBtn');
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const cancelModalBtn = document.getElementById('cancelModalBtn');
+  const customPackModal = document.getElementById('customPackModal');
+  const savePackBtn = document.getElementById('savePackBtn');
+  const deletePackBtn = document.getElementById('deletePackBtn');
+  const packWords = document.getElementById('packWords') as HTMLTextAreaElement;
+  const wordCountEl = document.getElementById('wordCount');
+
+  if (createPackBtn) {
+    createPackBtn.onclick = () => openCustomPackModal();
+  }
+
+  if (closeModalBtn) {
+    closeModalBtn.onclick = () => closeCustomPackModal();
+  }
+
+  if (cancelModalBtn) {
+    cancelModalBtn.onclick = () => closeCustomPackModal();
+  }
+
+  if (customPackModal) {
+    customPackModal.onclick = (e) => {
+      if (e.target === customPackModal) {
+        closeCustomPackModal();
+      }
+    };
+  }
+
+  if (savePackBtn) {
+    savePackBtn.onclick = () => saveCustomPack();
+  }
+
+  if (deletePackBtn) {
+    deletePackBtn.onclick = () => deleteCustomPackFromModal();
+  }
+
+  if (packWords && wordCountEl) {
+    packWords.oninput = () => {
+      const words = parseWords(packWords.value);
+      const count = words.length;
+      wordCountEl.textContent = `${count} ${count === 1 ? 'word' : 'words'}`;
+    };
+  }
+}
 
 /**
  * Parse words from text input (comma or newline separated)
