@@ -603,12 +603,13 @@ function updateFilterButtonText(): void {
     ? appState.currentPack.words.filter((word) => progress.words[word] === 'tricky').length
     : 0;
 
-  // Update button text and style
+  // Show both counts so user can see tricky count before switching
+  // Bold the active mode
   if (appState.filterTrickyOnly) {
-    span.textContent = `Tricky (${trickyCount})`;
+    span.innerHTML = `All (${totalWords}) / <strong>Tricky (${trickyCount})</strong>`;
     filterBtn.classList.add('active');
   } else {
-    span.textContent = `All (${totalWords})`;
+    span.innerHTML = `<strong>All (${totalWords})</strong> / Tricky (${trickyCount})`;
     filterBtn.classList.remove('active');
   }
 }
