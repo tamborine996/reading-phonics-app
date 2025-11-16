@@ -25,6 +25,88 @@ export function showScreen(screenName: string): void {
 }
 
 /**
+ * Render custom packs section
+ */
+function renderCustomPacks(): string {
+  const customPacks = storageService.getCustomPacks();
+
+  if (customPacks.length === 0) {
+    // Show empty state with create button
+    return `
+      <div class="custom-packs-section">
+        <div class="section-header">
+          <h3 class="section-title">Custom Packs</h3>
+          <button class="btn-create-pack" id="createPackBtn">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <span>Create Pack</span>
+          </button>
+        </div>
+        <div class="empty-state">
+          <p>No custom packs yet. Create your first pack to practice words from books or homework!</p>
+        </div>
+      </div>
+    `;
+  }
+
+  // Show list of custom packs
+  let html = `
+    <div class="custom-packs-section">
+      <div class="section-header">
+        <h3 class="section-title">Custom Packs</h3>
+        <button class="btn-create-pack" id="createPackBtn">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M8 2V14M2 8H14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>Create Pack</span>
+        </button>
+      </div>
+      <div class="custom-packs-list">
+  `;
+
+  customPacks.forEach((pack) => {
+    const progress = storageService.getPackProgress(pack.id);
+    const lastReviewed = progress?.lastReviewed ? formatDate(progress.lastReviewed) : 'Never';
+    const completionCount = progress?.completionCount || 0;
+    const wordCount = pack.words.length;
+
+    html += `
+      <div class="custom-pack-row">
+        <div class="custom-pack-main" onclick="startPack('${pack.id}')">
+          <div class="custom-pack-number">${pack.id}</div>
+          <div class="custom-pack-info">
+            <div class="custom-pack-name">${pack.name}</div>
+            <div class="custom-pack-meta">
+              <span class="custom-pack-words">${wordCount} ${wordCount === 1 ? 'word' : 'words'}</span>
+              <span class="custom-pack-separator">•</span>
+              <span class="custom-pack-time">${lastReviewed}</span>
+              <span class="custom-pack-separator">•</span>
+              <span class="custom-pack-count">${completionCount} ${completionCount === 1 ? 'time' : 'times'}</span>
+            </div>
+          </div>
+          <svg class="custom-pack-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <button class="custom-pack-edit-btn" onclick="editPack('${pack.id}', event)" title="Edit pack">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M11.3 1.7l3 3-8.5 8.5H2.8v-3l8.5-8.5z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    `;
+  });
+
+  html += `
+      </div>
+    </div>
+  `;
+
+  return html;
+}
+
+/**
  * Get recently practiced packs (sorted by most recent)
  */
 function getRecentlyPracticedPacks(packs: WordPack[], limit = 5): WordPack[] {
@@ -108,6 +190,12 @@ export function renderSubPackList(packs: WordPack[]): void {
   const recentSection = renderRecentlyPracticed(packs);
   if (recentSection) {
     container.innerHTML += recentSection;
+  }
+
+  // Add Custom Packs section
+  const customSection = renderCustomPacks();
+  if (customSection) {
+    container.innerHTML += customSection;
   }
 
   const grouped = groupPacksBySubPack(packs);
@@ -432,7 +520,7 @@ function createTrickyReviewButton(
  * Now uses actual getTrickyWords to ensure count matches
  */
 function countGlobalTrickyWords(packs: WordPack[]): number {
-  const trickyWords: Array<{ word: string; packId: number }> = [];
+  const trickyWords: Array<{ word: string; packId: number | string }> = [];
 
   packs.forEach((pack) => {
     const progress = storageService.getPackProgress(pack.id);
@@ -453,7 +541,7 @@ function countGlobalTrickyWords(packs: WordPack[]): number {
  * Now uses actual collection logic to ensure count matches
  */
 function countSubPackTrickyWords(packs: WordPack[]): number {
-  const trickyWords: Array<{ word: string; packId: number }> = [];
+  const trickyWords: Array<{ word: string; packId: number | string }> = [];
 
   packs.forEach((pack) => {
     const progress = storageService.getPackProgress(pack.id);
@@ -517,7 +605,7 @@ function updateStarButton(appState: AppState, currentWord: string): void {
  * Helper: Count global starred words
  */
 function countGlobalStarredWords(packs: WordPack[]): number {
-  const starredWords: Array<{ word: string; packId: number }> = [];
+  const starredWords: Array<{ word: string; packId: number | string }> = [];
 
   packs.forEach((pack) => {
     const progress = storageService.getPackProgress(pack.id);

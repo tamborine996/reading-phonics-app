@@ -3,13 +3,14 @@
  * This provides a clean abstraction that can be replaced with database calls
  */
 
-import type { UserProgress, PackProgress } from '@/types';
+import type { UserProgress, PackProgress, CustomPack } from '@/types';
 import { APP_CONFIG } from '@/constants/config';
 import { logger } from '@/utils/logger';
 import { validatePackProgress } from '@/utils/validation';
 
 export class StorageService {
   private storageKey = APP_CONFIG.LOCAL_STORAGE_KEY;
+  private customPacksKey = 'phonics-app-custom-packs';
 
   /**
    * Get all user progress from storage
@@ -36,7 +37,7 @@ export class StorageService {
   /**
    * Get progress for a specific pack
    */
-  getPackProgress(packId: number): PackProgress | undefined {
+  getPackProgress(packId: number | string): PackProgress | undefined {
     try {
       const allProgress = this.getUserProgress();
       return allProgress[packId];
@@ -49,7 +50,7 @@ export class StorageService {
   /**
    * Save progress for a specific pack
    */
-  savePackProgress(packId: number, progress: PackProgress): boolean {
+  savePackProgress(packId: number | string, progress: PackProgress): boolean {
     try {
       validatePackProgress(progress);
 
@@ -69,7 +70,7 @@ export class StorageService {
    * Update word status in a pack
    */
   updateWordStatus(
-    packId: number,
+    packId: number | string,
     word: string,
     status: 'tricky' | 'mastered' | 'starred' | 'unstarred',
     isStarred = false
@@ -111,7 +112,7 @@ export class StorageService {
   /**
    * Mark pack as completed
    */
-  markPackCompleted(packId: number): boolean {
+  markPackCompleted(packId: number | string): boolean {
     try {
       const progress = this.getPackProgress(packId);
 
@@ -177,6 +178,150 @@ export class StorageService {
       return true;
     } catch (error) {
       logger.error('Failed to import progress', error);
+      return false;
+    }
+  }
+
+  // ========== Custom Packs Methods ==========
+
+  /**
+   * Get all custom packs from storage
+   */
+  getCustomPacks(): CustomPack[] {
+    try {
+      const stored = localStorage.getItem(this.customPacksKey);
+      if (!stored) {
+        logger.info('No custom packs found, returning empty array');
+        return [];
+      }
+
+      const packs = JSON.parse(stored) as CustomPack[];
+      logger.info('Retrieved custom packs from storage', {
+        count: packs.length,
+      });
+      return packs;
+    } catch (error) {
+      logger.error('Failed to retrieve custom packs', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get a specific custom pack by ID
+   */
+  getCustomPack(packId: string): CustomPack | undefined {
+    try {
+      const packs = this.getCustomPacks();
+      return packs.find((pack) => pack.id === packId);
+    } catch (error) {
+      logger.error(`Failed to get custom pack ${packId}`, error);
+      return undefined;
+    }
+  }
+
+  /**
+   * Generate next custom pack ID (C1, C2, C3...)
+   */
+  private getNextCustomPackId(): string {
+    const packs = this.getCustomPacks();
+    if (packs.length === 0) {
+      return 'C1';
+    }
+
+    // Extract numbers from existing IDs and find max
+    const numbers = packs
+      .map((pack) => parseInt(pack.id.substring(1)))
+      .filter((num) => !isNaN(num));
+
+    const maxNumber = Math.max(...numbers);
+    return `C${maxNumber + 1}`;
+  }
+
+  /**
+   * Create a new custom pack
+   */
+  createCustomPack(name: string, words: string[]): CustomPack | null {
+    try {
+      const packs = this.getCustomPacks();
+      const newId = this.getNextCustomPackId();
+      const now = new Date().toISOString();
+
+      const newPack: CustomPack = {
+        id: newId,
+        name,
+        category: 'Custom',
+        subPack: 'Custom Packs',
+        words,
+        editable: true,
+        createdAt: now,
+        updatedAt: now,
+      };
+
+      packs.push(newPack);
+      localStorage.setItem(this.customPacksKey, JSON.stringify(packs));
+      logger.info(`Created custom pack ${newId}`, { name, wordCount: words.length });
+
+      return newPack;
+    } catch (error) {
+      logger.error('Failed to create custom pack', error);
+      return null;
+    }
+  }
+
+  /**
+   * Update an existing custom pack
+   */
+  updateCustomPack(packId: string, name: string, words: string[]): boolean {
+    try {
+      const packs = this.getCustomPacks();
+      const packIndex = packs.findIndex((pack) => pack.id === packId);
+
+      if (packIndex === -1) {
+        logger.warn(`Cannot update pack ${packId} - not found`);
+        return false;
+      }
+
+      packs[packIndex] = {
+        ...packs[packIndex],
+        name,
+        words,
+        updatedAt: new Date().toISOString(),
+      };
+
+      localStorage.setItem(this.customPacksKey, JSON.stringify(packs));
+      logger.info(`Updated custom pack ${packId}`, { name, wordCount: words.length });
+
+      return true;
+    } catch (error) {
+      logger.error(`Failed to update custom pack ${packId}`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Delete a custom pack
+   */
+  deleteCustomPack(packId: string): boolean {
+    try {
+      const packs = this.getCustomPacks();
+      const filteredPacks = packs.filter((pack) => pack.id !== packId);
+
+      if (filteredPacks.length === packs.length) {
+        logger.warn(`Cannot delete pack ${packId} - not found`);
+        return false;
+      }
+
+      localStorage.setItem(this.customPacksKey, JSON.stringify(filteredPacks));
+      logger.info(`Deleted custom pack ${packId}`);
+
+      // Also delete progress for this pack
+      const allProgress = this.getUserProgress();
+      delete allProgress[packId];
+      localStorage.setItem(this.storageKey, JSON.stringify(allProgress));
+
+      return true;
+    } catch (error) {
+      logger.error(`Failed to delete custom pack ${packId}`, error);
       return false;
     }
   }

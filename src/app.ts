@@ -28,10 +28,10 @@ export class AppState {
   currentPack: WordPack | null = null;
   currentWordIndex = 0;
   reviewMode = false;
-  reviewWords: Array<{ word: string; packId: number; wordIndex: number }> = [];
+  reviewWords: Array<{ word: string; packId: number | string; wordIndex: number }> = [];
   currentSession: PracticeSession | null = null;
   showSyllablesForCurrentWord = false;
-  lastCompletedPackId?: number;
+  lastCompletedPackId?: number | string;
   filterTrickyOnly = false; // Filter to show only tricky words
   shuffledWords: string[] = []; // Store shuffled word order
 
@@ -282,6 +282,54 @@ async function setupEventListeners(): Promise<void> {
     quickReviewBtn.onclick = () => startQuickReview();
   }
 
+  // Custom Pack Modal Event Listeners
+  const createPackBtn = document.getElementById('createPackBtn');
+  if (createPackBtn) {
+    createPackBtn.onclick = () => openCustomPackModal();
+  }
+
+  const closeModalBtn = document.getElementById('closeModalBtn');
+  const cancelModalBtn = document.getElementById('cancelModalBtn');
+  const customPackModal = document.getElementById('customPackModal');
+
+  if (closeModalBtn) {
+    closeModalBtn.onclick = () => closeCustomPackModal();
+  }
+
+  if (cancelModalBtn) {
+    cancelModalBtn.onclick = () => closeCustomPackModal();
+  }
+
+  // Close modal when clicking outside
+  if (customPackModal) {
+    customPackModal.onclick = (e) => {
+      if (e.target === customPackModal) {
+        closeCustomPackModal();
+      }
+    };
+  }
+
+  const savePackBtn = document.getElementById('savePackBtn');
+  if (savePackBtn) {
+    savePackBtn.onclick = () => saveCustomPack();
+  }
+
+  const deletePackBtn = document.getElementById('deletePackBtn');
+  if (deletePackBtn) {
+    deletePackBtn.onclick = () => deleteCustomPackFromModal();
+  }
+
+  // Word count update
+  const packWords = document.getElementById('packWords') as HTMLTextAreaElement;
+  const wordCountEl = document.getElementById('wordCount');
+  if (packWords && wordCountEl) {
+    packWords.oninput = () => {
+      const words = parseWords(packWords.value);
+      const count = words.length;
+      wordCountEl.textContent = `${count} ${count === 1 ? 'word' : 'words'}`;
+    };
+  }
+
   // Elite Navigation Features
   setupEliteNavigation();
 
@@ -349,9 +397,16 @@ export function setupTableSorting(): void {
 /**
  * Start practicing a pack
  */
-export function startPack(packId: number): void {
+export function startPack(packId: number | string): void {
   try {
-    const pack = wordPacks.find((p) => p.id === packId);
+    // Find pack in preset packs or custom packs
+    let pack = wordPacks.find((p) => p.id === packId);
+
+    if (!pack && typeof packId === 'string') {
+      // Look in custom packs
+      pack = storageService.getCustomPack(packId);
+    }
+
     if (!pack) {
       logger.error(`Pack ${packId} not found`);
       alert('Pack not found');
@@ -363,6 +418,8 @@ export function startPack(packId: number): void {
     appState.reviewMode = false;
     appState.reviewWords = [];
     appState.showSyllablesForCurrentWord = false;
+    appState.filterTrickyOnly = false; // Reset filter
+    appState.shuffledWords = []; // Reset shuffle
 
     logger.info(`Starting pack ${packId}`);
     showScreen('practiceScreen');
@@ -426,8 +483,8 @@ export function startTrickyReview(
 function getTrickyWords(
   level: 'global' | 'subpack' | 'pack',
   filter?: string | number
-): Array<{ word: string; packId: number; wordIndex: number }> {
-  const trickyWords: Array<{ word: string; packId: number; wordIndex: number }> = [];
+): Array<{ word: string; packId: number | string; wordIndex: number }> {
+  const trickyWords: Array<{ word: string; packId: number | string; wordIndex: number }> = [];
 
   wordPacks.forEach((pack) => {
     // Filter by level
@@ -502,8 +559,8 @@ export function startStarredReview(
 function getStarredWords(
   level: 'global' | 'subpack' | 'pack',
   filter?: string | number
-): Array<{ word: string; packId: number; wordIndex: number }> {
-  const starredWords: Array<{ word: string; packId: number; wordIndex: number }> = [];
+): Array<{ word: string; packId: number | string; wordIndex: number }> {
+  const starredWords: Array<{ word: string; packId: number | string; wordIndex: number }> = [];
 
   wordPacks.forEach((pack) => {
     // Filter by level
@@ -1040,8 +1097,8 @@ function startQuickReview(): void {
 /**
  * Get recent tricky words across all packs
  */
-function getRecentTrickyWords(limit: number): Array<{ word: string; packId: number; wordIndex: number }> {
-  const trickyWords: Array<{ word: string; packId: number; wordIndex: number; lastReviewed: string }> = [];
+function getRecentTrickyWords(limit: number): Array<{ word: string; packId: number | string; wordIndex: number }> {
+  const trickyWords: Array<{ word: string; packId: number | string; wordIndex: number; lastReviewed: string }> = [];
 
   wordPacks.forEach((pack) => {
     const progress = storageService.getPackProgress(pack.id);
@@ -1411,6 +1468,162 @@ function setupElitePracticeFeatures(): void {
   logger.info('Elite practice features initialized');
 }
 
+// ==================== Custom Pack Functions ====================
+
+let currentEditingPackId: string | null = null;
+
+/**
+ * Parse words from text input (comma or newline separated)
+ */
+function parseWords(text: string): string[] {
+  if (!text.trim()) return [];
+
+  // Split by comma or newline, trim whitespace, filter empty
+  const words = text
+    .split(/[,\n]/)
+    .map((w) => w.trim())
+    .filter((w) => w.length > 0);
+
+  return words;
+}
+
+/**
+ * Open custom pack modal for creating new pack
+ */
+function openCustomPackModal(packId?: string): void {
+  const modal = document.getElementById('customPackModal');
+  const modalTitle = document.getElementById('modalTitle');
+  const packNameInput = document.getElementById('packName') as HTMLInputElement;
+  const packWordsInput = document.getElementById('packWords') as HTMLTextAreaElement;
+  const deleteBtn = document.getElementById('deletePackBtn');
+  const saveBtn = document.getElementById('savePackBtn');
+
+  if (!modal || !modalTitle || !packNameInput || !packWordsInput || !deleteBtn || !saveBtn) {
+    logger.error('Modal elements not found');
+    return;
+  }
+
+  // Reset form
+  packNameInput.value = '';
+  packWordsInput.value = '';
+  currentEditingPackId = null;
+
+  if (packId) {
+    // Edit mode
+    const pack = storageService.getCustomPack(packId);
+    if (pack) {
+      modalTitle.textContent = `Edit ${pack.id}`;
+      packNameInput.value = pack.name;
+      packWordsInput.value = pack.words.join(', ');
+      currentEditingPackId = packId;
+      deleteBtn.style.display = 'block';
+      saveBtn.textContent = 'Save Changes';
+    }
+  } else {
+    // Create mode
+    modalTitle.textContent = 'Create Custom Pack';
+    deleteBtn.style.display = 'none';
+    saveBtn.textContent = 'Create Pack';
+  }
+
+  // Update word count
+  const words = parseWords(packWordsInput.value);
+  const wordCountEl = document.getElementById('wordCount');
+  if (wordCountEl) {
+    wordCountEl.textContent = `${words.length} ${words.length === 1 ? 'word' : 'words'}`;
+  }
+
+  modal.style.display = 'flex';
+  packNameInput.focus();
+}
+
+/**
+ * Close custom pack modal
+ */
+function closeCustomPackModal(): void {
+  const modal = document.getElementById('customPackModal');
+  if (modal) {
+    modal.style.display = 'none';
+  }
+  currentEditingPackId = null;
+}
+
+/**
+ * Save custom pack (create or update)
+ */
+function saveCustomPack(): void {
+  const packNameInput = document.getElementById('packName') as HTMLInputElement;
+  const packWordsInput = document.getElementById('packWords') as HTMLTextAreaElement;
+
+  if (!packNameInput || !packWordsInput) {
+    logger.error('Form inputs not found');
+    return;
+  }
+
+  const words = parseWords(packWordsInput.value);
+
+  if (words.length === 0) {
+    alert('Please enter at least one word');
+    return;
+  }
+
+  const name = packNameInput.value.trim() || `Homework - ${new Date().toLocaleDateString()}`;
+
+  if (currentEditingPackId) {
+    // Update existing pack
+    const success = storageService.updateCustomPack(currentEditingPackId, name, words);
+    if (success) {
+      logger.info(`Updated custom pack ${currentEditingPackId}`);
+      closeCustomPackModal();
+      renderSubPackList(wordPacks); // Refresh home screen
+    } else {
+      alert('Failed to update pack');
+    }
+  } else {
+    // Create new pack
+    const newPack = storageService.createCustomPack(name, words);
+    if (newPack) {
+      logger.info(`Created new custom pack ${newPack.id}`);
+      closeCustomPackModal();
+      renderSubPackList(wordPacks); // Refresh home screen
+    } else {
+      alert('Failed to create pack');
+    }
+  }
+}
+
+/**
+ * Delete custom pack from modal
+ */
+function deleteCustomPackFromModal(): void {
+  if (!currentEditingPackId) return;
+
+  const confirmDelete = confirm(
+    `Are you sure you want to delete ${currentEditingPackId}? This action cannot be undone.`
+  );
+
+  if (confirmDelete) {
+    const success = storageService.deleteCustomPack(currentEditingPackId);
+    if (success) {
+      logger.info(`Deleted custom pack ${currentEditingPackId}`);
+      closeCustomPackModal();
+      renderSubPackList(wordPacks); // Refresh home screen
+    } else {
+      alert('Failed to delete pack');
+    }
+  }
+}
+
+/**
+ * Edit custom pack (called from onclick)
+ */
+export function editPack(packId: string, event?: Event): void {
+  if (event) {
+    event.stopPropagation(); // Prevent triggering parent click (startPack)
+  }
+  openCustomPackModal(packId);
+}
+
 // Make functions available globally for onclick handlers
 declare global {
   interface Window {
@@ -1418,6 +1631,7 @@ declare global {
     startTrickyReview: typeof startTrickyReview;
     startStarredReview: typeof startStarredReview;
     setupTableSorting: typeof setupTableSorting;
+    editPack: typeof editPack;
   }
 }
 
@@ -1425,6 +1639,7 @@ window.startPack = startPack;
 window.startTrickyReview = startTrickyReview;
 window.startStarredReview = startStarredReview;
 window.setupTableSorting = setupTableSorting;
+window.editPack = editPack;
 
 // Initialize on load
 window.onload = () => init();

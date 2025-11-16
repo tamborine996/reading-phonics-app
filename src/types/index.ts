@@ -3,12 +3,21 @@
  */
 
 export interface WordPack {
-  id: number;
+  id: number | string; // number for preset packs (1, 2, 3...), string for custom ("C1", "C2"...)
   category: string;
   subPack: string;
   words: string[];
   patterns?: string[]; // Phonics patterns (e.g., ['gh-f-sound', 'consonant-blend'])
   description?: string; // Quick description of the pattern
+  editable?: boolean; // True for custom packs, undefined/false for preset packs
+}
+
+export interface CustomPack extends WordPack {
+  id: string; // "C1", "C2", "C3"...
+  name: string; // User-friendly name (e.g., "Homework - Week 1")
+  editable: true;
+  createdAt: string; // ISO timestamp
+  updatedAt: string; // ISO timestamp
 }
 
 export interface WordStatus {
@@ -33,7 +42,7 @@ export interface SubPackInfo {
 }
 
 export interface PracticeSession {
-  packId: number;
+  packId: number | string; // number for preset packs, string for custom packs ("C1", "C2"...)
   currentWordIndex: number;
   sessionWords: string[];
   reviewingTricky: boolean;
