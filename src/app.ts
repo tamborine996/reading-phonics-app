@@ -32,6 +32,8 @@ export class AppState {
   currentSession: PracticeSession | null = null;
   showSyllablesForCurrentWord = false;
   lastCompletedPackId?: number;
+  filterTrickyOnly = false; // Filter to show only tricky words
+  shuffledWords: string[] = []; // Store shuffled word order
 
   reset() {
     this.currentPack = null;
@@ -40,6 +42,8 @@ export class AppState {
     this.reviewWords = [];
     this.currentSession = null;
     this.showSyllablesForCurrentWord = false;
+    this.filterTrickyOnly = false;
+    this.shuffledWords = [];
     // Don't reset lastCompletedPackId - we want to keep it for "Do Again"
   }
 }
@@ -192,6 +196,24 @@ async function setupEventListeners(): Promise<void> {
   const starWordBtn = document.getElementById('starWordBtn');
   if (starWordBtn) {
     starWordBtn.onclick = () => toggleStarWord();
+  }
+
+  // Filter tricky words button
+  const filterTrickyBtn = document.getElementById('filterTrickyBtn');
+  if (filterTrickyBtn) {
+    filterTrickyBtn.onclick = () => toggleTrickyFilter();
+  }
+
+  // Shuffle button
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  if (shuffleBtn) {
+    shuffleBtn.onclick = () => shuffleWords();
+  }
+
+  // Skip back 2 button
+  const skipBack2Btn = document.getElementById('skipBack2Btn');
+  if (skipBack2Btn) {
+    skipBack2Btn.onclick = () => skipBack2();
   }
 
   // Word search
@@ -499,13 +521,38 @@ function getStarredWords(
 }
 
 /**
+ * Get current word list based on filters and shuffle state
+ */
+function getCurrentWordList(): string[] {
+  if (appState.reviewMode) {
+    return appState.reviewWords.map((w) => w.word);
+  }
+
+  if (!appState.currentPack) return [];
+
+  // If shuffled, use shuffled list
+  if (appState.shuffledWords.length > 0) {
+    return appState.shuffledWords;
+  }
+
+  // If filtering to tricky only
+  if (appState.filterTrickyOnly) {
+    const progress = storageService.getPackProgress(appState.currentPack.id);
+    if (progress) {
+      return appState.currentPack.words.filter((word) => progress.words[word] === 'tricky');
+    }
+  }
+
+  // Default: all words
+  return appState.currentPack.words;
+}
+
+/**
  * Navigate to next/previous word
  */
 function navigateWord(direction: number): void {
   try {
-    const words = appState.reviewMode
-      ? appState.reviewWords.map((w) => w.word)
-      : appState.currentPack?.words || [];
+    const words = getCurrentWordList();
 
     appState.currentWordIndex = Math.max(
       0,
@@ -515,6 +562,98 @@ function navigateWord(direction: number): void {
     renderPracticeScreen(appState);
   } catch (error) {
     logger.error('Failed to navigate word', error);
+  }
+}
+
+/**
+ * Toggle filter between All Words and Tricky Only
+ */
+function toggleTrickyFilter(): void {
+  try {
+    // Don't allow filtering in review mode
+    if (appState.reviewMode) return;
+
+    appState.filterTrickyOnly = !appState.filterTrickyOnly;
+    appState.currentWordIndex = 0; // Reset to first word
+    appState.shuffledWords = []; // Clear shuffle when changing filter
+
+    // Update button text
+    const filterBtn = document.getElementById('filterTrickyBtn');
+    if (filterBtn) {
+      const span = filterBtn.querySelector('span');
+      if (span) {
+        span.textContent = appState.filterTrickyOnly ? 'Tricky' : 'All';
+      }
+      if (appState.filterTrickyOnly) {
+        filterBtn.classList.add('active');
+      } else {
+        filterBtn.classList.remove('active');
+      }
+    }
+
+    renderPracticeScreen(appState);
+    logger.info('Toggled tricky filter', { trickyOnly: appState.filterTrickyOnly });
+  } catch (error) {
+    logger.error('Failed to toggle tricky filter', error);
+  }
+}
+
+/**
+ * Shuffle the current word list
+ */
+function shuffleWords(): void {
+  try {
+    if (!appState.currentPack) return;
+
+    // Get the base word list (filtered or all)
+    let baseWords: string[];
+    if (appState.filterTrickyOnly) {
+      const progress = storageService.getPackProgress(appState.currentPack.id);
+      if (progress) {
+        baseWords = appState.currentPack.words.filter((word) => progress.words[word] === 'tricky');
+      } else {
+        baseWords = appState.currentPack.words;
+      }
+    } else {
+      baseWords = [...appState.currentPack.words];
+    }
+
+    // Fisher-Yates shuffle
+    const shuffled = [...baseWords];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    appState.shuffledWords = shuffled;
+    appState.currentWordIndex = 0; // Reset to first word
+
+    renderPracticeScreen(appState);
+    logger.info('Words shuffled', { count: shuffled.length });
+  } catch (error) {
+    logger.error('Failed to shuffle words', error);
+  }
+}
+
+/**
+ * Skip back 2 words with wraparound
+ */
+function skipBack2(): void {
+  try {
+    const words = getCurrentWordList();
+    const totalWords = words.length;
+
+    if (totalWords === 0) return;
+
+    // Go back 2 with wraparound
+    // If at index 1, go to totalWords - 1 (wraps to second-to-last)
+    // If at index 0, go to totalWords - 2 (wraps to third-to-last)
+    appState.currentWordIndex = (appState.currentWordIndex - 2 + totalWords) % totalWords;
+
+    renderPracticeScreen(appState);
+    logger.info('Skipped back 2 words', { newIndex: appState.currentWordIndex });
+  } catch (error) {
+    logger.error('Failed to skip back 2', error);
   }
 }
 
@@ -549,10 +688,7 @@ function toggleStarWord(): void {
   try {
     if (!appState.currentPack) return;
 
-    const words = appState.reviewMode
-      ? appState.reviewWords.map((w) => w.word)
-      : appState.currentPack.words;
-
+    const words = getCurrentWordList();
     const currentWord = words[appState.currentWordIndex];
     let packId = appState.currentPack.id;
     let wordToStar = currentWord;
@@ -619,7 +755,9 @@ function markWord(status: 'tricky' | 'mastered'): void {
         }
       }
     } else if (appState.currentPack) {
-      const word = appState.currentPack.words[appState.currentWordIndex];
+      // Get the word from the current working list (filtered/shuffled/normal)
+      const words = getCurrentWordList();
+      const word = words[appState.currentWordIndex];
       storageService.updateWordStatus(appState.currentPack.id, word, status);
     }
 
@@ -634,9 +772,7 @@ function markWord(status: 'tricky' | 'mastered'): void {
     });
 
     // Move to next word or show completion
-    const words = appState.reviewMode
-      ? appState.reviewWords
-      : appState.currentPack?.words || [];
+    const words = getCurrentWordList();
 
     if (appState.reviewWords.length === 0 && appState.reviewMode) {
       // All tricky words mastered!
@@ -661,9 +797,7 @@ function markWord(status: 'tricky' | 'mastered'): void {
  */
 function showCompletion(): void {
   try {
-    const words = appState.reviewMode
-      ? appState.reviewWords.map((w) => w.word)
-      : appState.currentPack?.words || [];
+    const words = getCurrentWordList();
 
     let trickyWords: string[] = [];
 

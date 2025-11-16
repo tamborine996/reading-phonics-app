@@ -2151,9 +2151,52 @@ html {
     font-size: 15px;
     font-weight: 600;
     color: var(--apple-text-secondary);
-    margin: 0 0 24px 0;
+    margin: 0 0 16px 0;
     text-align: center;
     letter-spacing: -0.2px;
+}
+
+/* Practice Controls */
+.practice-controls {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.control-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid #E5E5EA;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--apple-text-primary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    min-height: 32px;
+}
+
+.control-btn:hover {
+    background: #F9F9F9;
+    border-color: #D1D1D6;
+}
+
+.control-btn:active {
+    transform: scale(0.96);
+}
+
+.control-btn.active {
+    background: var(--apple-blue);
+    color: white;
+    border-color: var(--apple-blue);
+}
+
+.control-btn svg {
+    flex-shrink: 0;
 }
 
 /* Swipe Hint */

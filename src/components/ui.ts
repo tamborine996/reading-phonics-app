@@ -177,9 +177,22 @@ export function renderPracticeScreen(appState: AppState): void {
     return;
   }
 
-  const words = appState.reviewMode
-    ? appState.reviewWords.map((w) => w.word)
-    : appState.currentPack.words;
+  // Get word list based on current state (filter, shuffle, review mode)
+  let words: string[];
+  if (appState.reviewMode) {
+    words = appState.reviewWords.map((w) => w.word);
+  } else if (appState.shuffledWords.length > 0) {
+    words = appState.shuffledWords;
+  } else if (appState.filterTrickyOnly) {
+    const progress = storageService.getPackProgress(appState.currentPack.id);
+    if (progress) {
+      words = appState.currentPack.words.filter((word) => progress.words[word] === 'tricky');
+    } else {
+      words = appState.currentPack.words;
+    }
+  } else {
+    words = appState.currentPack.words;
+  }
 
   const currentWord = words[appState.currentWordIndex];
 
