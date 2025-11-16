@@ -25,6 +25,68 @@ export function showScreen(screenName: string): void {
 }
 
 /**
+ * Get recently practiced packs (sorted by most recent)
+ */
+function getRecentlyPracticedPacks(packs: WordPack[], limit = 5): WordPack[] {
+  const packsWithProgress = packs
+    .map((pack) => {
+      const progress = storageService.getPackProgress(pack.id);
+      return {
+        pack,
+        lastReviewed: progress?.lastReviewed ? new Date(progress.lastReviewed) : null,
+      };
+    })
+    .filter((item) => item.lastReviewed !== null)
+    .sort((a, b) => b.lastReviewed!.getTime() - a.lastReviewed!.getTime())
+    .slice(0, limit)
+    .map((item) => item.pack);
+
+  return packsWithProgress;
+}
+
+/**
+ * Render recently practiced section
+ */
+function renderRecentlyPracticed(packs: WordPack[]): string {
+  const recentPacks = getRecentlyPracticedPacks(packs, 5);
+
+  if (recentPacks.length === 0) {
+    return ''; // Don't show section if no recent packs
+  }
+
+  let html = `
+    <div class="recently-practiced">
+      <h3 class="recently-practiced-title">Recently Practiced</h3>
+      <div class="recently-practiced-grid">
+  `;
+
+  recentPacks.forEach((pack) => {
+    const progress = storageService.getPackProgress(pack.id);
+    const lastReviewed = progress?.lastReviewed ? formatDate(progress.lastReviewed) : 'Never';
+    const cleanLabel = extractCleanLabel(pack.category);
+    const completionCount = progress?.completionCount || 0;
+
+    html += `
+      <div class="recent-pack-card" onclick="startPack(${pack.id})">
+        <div class="recent-pack-number">P${pack.id}</div>
+        <div class="recent-pack-label">${cleanLabel}</div>
+        <div class="recent-pack-meta">
+          <span class="recent-pack-time">${lastReviewed}</span>
+          <span class="recent-pack-count">${completionCount} ${completionCount === 1 ? 'time' : 'times'}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  html += `
+      </div>
+    </div>
+  `;
+
+  return html;
+}
+
+/**
  * Render sub-pack list with tables
  */
 export function renderSubPackList(packs: WordPack[]): void {
@@ -35,6 +97,12 @@ export function renderSubPackList(packs: WordPack[]): void {
   }
 
   container.innerHTML = '';
+
+  // Add Recently Practiced section first
+  const recentSection = renderRecentlyPracticed(packs);
+  if (recentSection) {
+    container.innerHTML += recentSection;
+  }
 
   const grouped = groupPacksBySubPack(packs);
 
