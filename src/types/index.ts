@@ -12,7 +12,7 @@ export interface WordPack {
 }
 
 export interface WordStatus {
-  [word: string]: 'tricky' | 'mastered';
+  [word: string]: 'tricky' | 'mastered' | 'starred';
 }
 
 export interface PackProgress {

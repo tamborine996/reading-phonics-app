@@ -71,7 +71,8 @@ export class StorageService {
   updateWordStatus(
     packId: number,
     word: string,
-    status: 'tricky' | 'mastered'
+    status: 'tricky' | 'mastered' | 'starred' | 'unstarred',
+    isStarred = false
   ): boolean {
     try {
       let progress = this.getPackProgress(packId);
@@ -84,7 +85,20 @@ export class StorageService {
         };
       }
 
-      progress.words[word] = status;
+      // Handle starred vs regular status
+      if (isStarred) {
+        if (!progress.starred) {
+          progress.starred = {};
+        }
+        if (status === 'starred') {
+          progress.starred[word] = 'starred';
+        } else if (status === 'unstarred') {
+          delete progress.starred[word];
+        }
+      } else {
+        progress.words[word] = status as 'tricky' | 'mastered';
+      }
+
       progress.lastReviewed = new Date().toISOString();
 
       return this.savePackProgress(packId, progress);

@@ -170,6 +170,12 @@ async function setupEventListeners(): Promise<void> {
     syllableToggleBtn.onclick = () => toggleSyllablesForSession();
   }
 
+  // Star word button (for parent review)
+  const starWordBtn = document.getElementById('starWordBtn');
+  if (starWordBtn) {
+    starWordBtn.onclick = () => toggleStarWord();
+  }
+
   // Word search
   const searchInput = document.getElementById('wordSearch') as HTMLInputElement;
   const searchClearBtn = document.getElementById('searchClearBtn');
@@ -443,6 +449,58 @@ function toggleSyllablesForSession(): void {
 }
 
 /**
+ * Toggle star status for current word (for parent review)
+ */
+function toggleStarWord(): void {
+  try {
+    if (!appState.currentPack) return;
+
+    const words = appState.reviewMode
+      ? appState.reviewWords.map((w) => w.word)
+      : appState.currentPack.words;
+
+    const currentWord = words[appState.currentWordIndex];
+    let packId = appState.currentPack.id;
+    let wordToStar = currentWord;
+
+    // If in review mode, get the actual pack ID and word
+    if (appState.reviewMode) {
+      const reviewWord = appState.reviewWords[appState.currentWordIndex];
+      packId = reviewWord.packId;
+      const pack = wordPacks.find((p) => p.id === reviewWord.packId);
+      if (pack) {
+        wordToStar = pack.words[reviewWord.wordIndex];
+      }
+    }
+
+    // Toggle starred status
+    const progress = storageService.getPackProgress(packId);
+    const isCurrentlyStarred = progress?.starred?.[wordToStar] === 'starred';
+
+    storageService.updateWordStatus(packId, wordToStar, isCurrentlyStarred ? 'unstarred' : 'starred', true);
+
+    // Update star button visual
+    const starBtn = document.getElementById('starWordBtn');
+    if (starBtn) {
+      if (isCurrentlyStarred) {
+        starBtn.classList.remove('starred');
+      } else {
+        starBtn.classList.add('starred');
+      }
+    }
+
+    // Sync to Supabase
+    authService.syncLocalProgressToDatabase().catch((error) => {
+      logger.error('Failed to sync starred word', error);
+    });
+
+    logger.info('Word star toggled', { word: wordToStar, starred: !isCurrentlyStarred });
+  } catch (error) {
+    logger.error('Failed to toggle star', error);
+  }
+}
+
+/**
  * Mark current word as tricky or mastered
  */
 function markWord(status: 'tricky' | 'mastered'): void {
@@ -489,6 +547,10 @@ function markWord(status: 'tricky' | 'mastered'): void {
     if (appState.reviewWords.length === 0 && appState.reviewMode) {
       // All tricky words mastered!
       showCompletion();
+    } else if (appState.reviewMode && status === 'mastered') {
+      // In review mode, splicing already moved us to the next word
+      // Just re-render at current index (don't navigate)
+      renderPracticeScreen(appState);
     } else if (appState.currentWordIndex < words.length - 1) {
       navigateWord(1);
     } else {

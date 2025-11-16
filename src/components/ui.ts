@@ -202,6 +202,9 @@ export function renderPracticeScreen(appState: AppState): void {
   // Update syllable toggle button state (now a settings icon)
   updateSyllableToggleButton(appState);
 
+  // Update star button state
+  updateStarButton(appState, currentWord);
+
   // Update word counter
   const wordCounter = document.getElementById('wordCounter');
   if (wordCounter) {
@@ -375,6 +378,32 @@ function updateSyllableToggleButton(appState: AppState): void {
   } else {
     toggleBtn.classList.remove('active');
     toggleBtn.style.color = 'var(--apple-gray, #8E8E93)';
+  }
+}
+
+/**
+ * Update star button appearance based on current word's starred status
+ */
+function updateStarButton(appState: AppState, currentWord: string): void {
+  const starBtn = document.getElementById('starWordBtn');
+  if (!starBtn || !appState.currentPack) return;
+
+  let packId = appState.currentPack.id;
+  let wordToCheck = currentWord;
+
+  // If in review mode, get the actual pack ID
+  if (appState.reviewMode) {
+    const reviewWord = appState.reviewWords[appState.currentWordIndex];
+    packId = reviewWord.packId;
+  }
+
+  const progress = storageService.getPackProgress(packId);
+  const isStarred = progress?.starred?.[wordToCheck] === 'starred';
+
+  if (isStarred) {
+    starBtn.classList.add('starred');
+  } else {
+    starBtn.classList.remove('starred');
   }
 }
 
