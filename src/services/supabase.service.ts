@@ -228,7 +228,9 @@ export class SupabaseService {
       data?.forEach((row: DatabasePackProgress) => {
         progress[row.pack_id] = {
           words: row.words,
+          starred: row.starred || {},
           completed: row.completed,
+          completionCount: row.completion_count || 0,
           lastReviewed: row.last_reviewed,
         };
       });
@@ -258,7 +260,9 @@ export class SupabaseService {
           user_id: userId,
           pack_id: packId,
           words: progress.words,
+          starred: progress.starred || {},
           completed: progress.completed,
+          completion_count: progress.completionCount || 0,
           last_reviewed: progress.lastReviewed,
           synced_at: new Date().toISOString(),
         }, {

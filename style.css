@@ -6,7 +6,7 @@
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #f5f5f7;
     min-height: 100vh;
     display: flex;
     align-items: center;
@@ -45,13 +45,13 @@ body {
 /* Home Screen */
 h1 {
     font-size: 3rem;
-    color: white;
+    color: #1d1d1f;
     text-align: center;
     margin-bottom: 10px;
 }
 
 .subtitle {
-    color: rgba(255, 255, 255, 0.9);
+    color: #6e6e73;
     text-align: center;
     font-size: 1.2rem;
     margin-bottom: 30px;
@@ -134,7 +134,7 @@ h1 {
 
 .btn-back:hover {
     background: white;
-    color: #667eea;
+    color: #007AFF;
 }
 
 .progress-info {
@@ -194,7 +194,7 @@ h1 {
 }
 
 .btn-speaker {
-    background: #667eea;
+    background: #007AFF;
     color: white;
     border: none;
     padding: 16px 24px;
@@ -248,7 +248,7 @@ h1 {
 
 .btn-syllable-toggle.active {
     background: white;
-    color: #667eea;
+    color: #007AFF;
     border-color: white;
 }
 
@@ -325,7 +325,7 @@ h1 {
 
 .btn-nav:hover {
     background: white;
-    color: #667eea;
+    color: #007AFF;
 }
 
 .btn-nav:disabled {
@@ -352,7 +352,7 @@ h1 {
 .stat-number {
     font-size: 3rem;
     font-weight: bold;
-    color: #667eea;
+    color: #007AFF;
     margin-bottom: 10px;
 }
 
@@ -404,7 +404,7 @@ h1 {
 
 .btn-primary {
     background: white;
-    color: #667eea;
+    color: #007AFF;
 }
 
 .btn-primary:hover {
@@ -420,7 +420,7 @@ h1 {
 
 .btn-secondary:hover {
     background: white;
-    color: #667eea;
+    color: #007AFF;
 }
 
 /* Parent View */
@@ -442,7 +442,7 @@ h1 {
 }
 
 .parent-pack h3 {
-    color: #667eea;
+    color: #007AFF;
     margin-bottom: 15px;
 }
 
@@ -511,7 +511,7 @@ h1 {
 }
 
 .search-results-header {
-    color: #667eea;
+    color: #007AFF;
     font-size: 1.1rem;
     font-weight: bold;
     margin-bottom: 15px;
@@ -532,7 +532,7 @@ h1 {
 }
 
 .search-result-title {
-    color: #667eea;
+    color: #007AFF;
     font-weight: 600;
     margin-bottom: 8px;
 }
@@ -589,7 +589,7 @@ h1 {
     width: 20px;
     height: 20px;
     cursor: pointer;
-    accent-color: #667eea;
+    accent-color: #007AFF;
 }
 
 .settings-toggle span {
@@ -610,7 +610,7 @@ h1 {
 }
 
 .sub-pack-header h2 {
-    color: #667eea;
+    color: #007AFF;
     font-size: 1.8rem;
     margin-bottom: 8px;
 }
@@ -672,7 +672,7 @@ h1 {
     text-align: left;
     font-weight: 600;
     color: #333;
-    border-bottom: 2px solid #667eea;
+    border-bottom: 2px solid #007AFF;
 }
 
 .pack-table th.sortable {
@@ -710,7 +710,7 @@ h1 {
 
 .pack-number {
     font-weight: 600;
-    color: #667eea;
+    color: #007AFF;
     font-size: 1.05rem;
 }
 
@@ -764,7 +764,7 @@ h1 {
 }
 
 .action-btn.practice {
-    background: #667eea;
+    background: #007AFF;
     color: white;
 }
 
@@ -824,7 +824,7 @@ h1 {
 .btn-skip {
     width: 100%;
     background: transparent;
-    color: #667eea;
+    color: #007AFF;
     border: none;
     padding: 12px;
     border-radius: 8px;
@@ -875,7 +875,7 @@ h1 {
 
 .btn-sign-out:hover {
     background: white;
-    color: #667eea;
+    color: #007AFF;
     border-color: white;
 }
 
@@ -892,7 +892,7 @@ h1 {
 
 .btn-sign-in {
     background: white;
-    color: #667eea;
+    color: #007AFF;
     border: none;
     padding: 10px 20px;
     border-radius: 8px;
@@ -931,7 +931,7 @@ h1 {
 }
 
 .parent-content h2 {
-    color: #667eea;
+    color: #007AFF;
     margin-bottom: 20px;
 }
 
@@ -954,7 +954,7 @@ h1 {
 }
 
 .parent-content li strong {
-    color: #667eea;
+    color: #007AFF;
 }
 
 .complete-stats {
@@ -1080,7 +1080,7 @@ h1 {
     .pack-table td::before {
         content: attr(data-label);
         font-weight: 600;
-        color: #667eea;
+        color: #007AFF;
         display: inline-block;
         width: 120px;
         margin-right: 10px;
@@ -1160,7 +1160,7 @@ h1 {
     .pack-table td::before {
         content: attr(data-label) ": ";
         font-weight: 600;
-        color: #667eea;
+        color: #007AFF;
         margin-right: 5px;
     }
 
@@ -1186,7 +1186,7 @@ h1 {
     width: 100%;
     padding: 15px 20px;
     background: white;
-    color: #667eea;
+    color: #007AFF;
     border: 2px solid rgba(255, 255, 255, 0.4);
     border-radius: 12px;
     font-size: 1.1rem;
@@ -1206,9 +1206,9 @@ h1 {
 }
 
 .pattern-filter-toggle.active {
-    background: #667eea;
+    background: #007AFF;
     color: white;
-    border-color: #667eea;
+    border-color: #007AFF;
 }
 
 .pattern-filter-dropdown {
@@ -1227,7 +1227,7 @@ h1 {
 }
 
 .pattern-category h3 {
-    color: #667eea;
+    color: #007AFF;
     font-size: 1rem;
     margin-bottom: 10px;
     font-weight: 600;
@@ -1250,13 +1250,13 @@ h1 {
 
 .pattern-btn:hover {
     background: #e0e7ff;
-    border-color: #667eea;
+    border-color: #007AFF;
 }
 
 .pattern-btn.active {
-    background: #667eea;
+    background: #007AFF;
     color: white;
-    border-color: #667eea;
+    border-color: #007AFF;
 }
 
 .clear-filter-btn {
@@ -1417,7 +1417,7 @@ h1 {
     top: 0;
     left: 0;
     right: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #007AFF 0%, #007AFF 100%);
     color: white;
     padding: 12px 20px;
     font-size: 0.9rem;
@@ -1445,7 +1445,7 @@ h1 {
     width: 56px;
     height: 56px;
     border-radius: 50%;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #007AFF 0%, #007AFF 100%);
     border: none;
     color: white;
     box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
@@ -1475,8 +1475,8 @@ h1 {
     height: 48px;
     border-radius: 50%;
     background: rgba(255, 255, 255, 0.95);
-    border: 2px solid #667eea;
-    color: #667eea;
+    border: 2px solid #007AFF;
+    color: #007AFF;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     display: flex;
@@ -1494,7 +1494,7 @@ h1 {
 }
 
 .back-to-top-btn:hover {
-    background: #667eea;
+    background: #007AFF;
     color: white;
     transform: scale(1.1);
 }
@@ -1595,7 +1595,7 @@ h1 {
 
 .category-item:hover {
     background: #e9ecef;
-    border-color: #667eea;
+    border-color: #007AFF;
 }
 
 .category-item:active {
@@ -1609,7 +1609,7 @@ h1 {
 }
 
 .category-count {
-    color: #667eea;
+    color: #007AFF;
     font-size: 0.9rem;
     font-weight: 500;
 }
@@ -2401,7 +2401,7 @@ h1 {
 
 /* Practice Button Polish */
 .action-btn.practice {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #007AFF 0%, #007AFF 100%);
     box-shadow: 0 2px 12px rgba(102, 126, 234, 0.3);
 }
 
