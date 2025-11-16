@@ -115,7 +115,7 @@ function renderPackTable(packs: WordPack[]): string {
     const lastReviewed = progress?.lastReviewed ? formatDate(progress.lastReviewed) : 'Never';
 
     const trickyCount = progress
-      ? Object.values(progress.words).filter((status) => status === 'tricky').length
+      ? pack.words.filter((word) => progress.words[word] === 'tricky').length
       : 0;
 
     const wordPreview = getWordPreview(pack.words);
