@@ -198,10 +198,16 @@ async function setupEventListeners(): Promise<void> {
     starWordBtn.onclick = () => toggleStarWord();
   }
 
-  // Filter tricky words button
-  const filterTrickyBtn = document.getElementById('filterTrickyBtn');
-  if (filterTrickyBtn) {
-    filterTrickyBtn.onclick = () => toggleTrickyFilter();
+  // Segmented control for filter
+  const allWordsBtn = document.getElementById('allWordsBtn');
+  const trickyWordsBtn = document.getElementById('trickyWordsBtn');
+
+  if (allWordsBtn) {
+    allWordsBtn.onclick = () => setFilter('all');
+  }
+
+  if (trickyWordsBtn) {
+    trickyWordsBtn.onclick = () => setFilter('tricky');
   }
 
   // Shuffle button
@@ -362,7 +368,7 @@ export function startPack(packId: number): void {
     showScreen('practiceScreen');
     renderPracticeScreen(appState);
     setupElitePracticeFeatures();
-    updateFilterButtonText();
+    updateSegmentedControl();
   } catch (error) {
     logger.error(`Failed to start pack ${packId}`, error);
     alert('Failed to start pack');
@@ -567,34 +573,38 @@ function navigateWord(direction: number): void {
 }
 
 /**
- * Toggle filter between All Words and Tricky Only
+ * Set filter mode (all or tricky)
  */
-function toggleTrickyFilter(): void {
+function setFilter(mode: 'all' | 'tricky'): void {
   try {
     // Don't allow filtering in review mode
     if (appState.reviewMode) return;
 
-    appState.filterTrickyOnly = !appState.filterTrickyOnly;
+    const shouldFilterTricky = mode === 'tricky';
+
+    // Only update if actually changing
+    if (appState.filterTrickyOnly === shouldFilterTricky) return;
+
+    appState.filterTrickyOnly = shouldFilterTricky;
     appState.currentWordIndex = 0; // Reset to first word
     appState.shuffledWords = []; // Clear shuffle when changing filter
 
-    updateFilterButtonText();
+    updateSegmentedControl();
     renderPracticeScreen(appState);
-    logger.info('Toggled tricky filter', { trickyOnly: appState.filterTrickyOnly });
+    logger.info('Set filter mode', { mode });
   } catch (error) {
-    logger.error('Failed to toggle tricky filter', error);
+    logger.error('Failed to set filter', error);
   }
 }
 
 /**
- * Update filter button text with word counts
+ * Update segmented control appearance and counts
  */
-function updateFilterButtonText(): void {
-  const filterBtn = document.getElementById('filterTrickyBtn');
-  if (!filterBtn || !appState.currentPack) return;
+function updateSegmentedControl(): void {
+  const allBtn = document.getElementById('allWordsBtn');
+  const trickyBtn = document.getElementById('trickyWordsBtn');
 
-  const span = filterBtn.querySelector('span');
-  if (!span) return;
+  if (!allBtn || !trickyBtn || !appState.currentPack) return;
 
   // Count total and tricky words
   const totalWords = appState.currentPack.words.length;
@@ -603,14 +613,20 @@ function updateFilterButtonText(): void {
     ? appState.currentPack.words.filter((word) => progress.words[word] === 'tricky').length
     : 0;
 
-  // Show both counts so user can see tricky count before switching
-  // Bold the active mode
+  // Update counts
+  const allCount = allBtn.querySelector('.count');
+  const trickyCountEl = trickyBtn.querySelector('.count');
+
+  if (allCount) allCount.textContent = totalWords.toString();
+  if (trickyCountEl) trickyCountEl.textContent = trickyCount.toString();
+
+  // Update active state
   if (appState.filterTrickyOnly) {
-    span.innerHTML = `All (${totalWords}) / <strong>Tricky (${trickyCount})</strong>`;
-    filterBtn.classList.add('active');
+    allBtn.classList.remove('active');
+    trickyBtn.classList.add('active');
   } else {
-    span.innerHTML = `<strong>All (${totalWords})</strong> / Tricky (${trickyCount})`;
-    filterBtn.classList.remove('active');
+    allBtn.classList.add('active');
+    trickyBtn.classList.remove('active');
   }
 }
 
@@ -803,8 +819,8 @@ function markWord(status: 'tricky' | 'mastered'): void {
       showCompletion();
     }
 
-    // Update filter button to reflect new tricky count
-    updateFilterButtonText();
+    // Update segmented control to reflect new tricky count
+    updateSegmentedControl();
   } catch (error) {
     logger.error('Failed to mark word', error);
     alert('Failed to save progress');

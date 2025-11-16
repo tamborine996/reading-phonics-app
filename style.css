@@ -2162,6 +2162,52 @@ html {
     gap: 8px;
     justify-content: center;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+/* iOS-style Segmented Control */
+.segmented-control {
+    display: inline-flex;
+    background: #F2F2F7;
+    border-radius: 9px;
+    padding: 2px;
+    gap: 0;
+}
+
+.segment {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: var(--apple-text-primary);
+    font-size: 13px;
+    font-weight: 400;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-radius: 7px;
+    white-space: nowrap;
+    min-height: 28px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.segment .count {
+    font-weight: 600;
+    opacity: 0.6;
+}
+
+.segment.active {
+    background: white;
+    color: var(--apple-text-primary);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+.segment.active .count {
+    opacity: 1;
+}
+
+.segment:hover:not(.active) {
+    opacity: 0.7;
 }
 
 .control-btn {
@@ -2187,12 +2233,6 @@ html {
 
 .control-btn:active {
     transform: scale(0.96);
-}
-
-.control-btn.active {
-    background: var(--apple-blue);
-    color: white;
-    border-color: var(--apple-blue);
 }
 
 .control-btn svg {
