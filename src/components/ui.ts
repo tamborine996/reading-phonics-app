@@ -57,7 +57,7 @@ function renderRecentlyPracticed(packs: WordPack[]): string {
   let html = `
     <div class="recently-practiced">
       <h3 class="recently-practiced-title">Recently Practiced</h3>
-      <div class="recently-practiced-grid">
+      <div class="recently-practiced-list">
   `;
 
   recentPacks.forEach((pack) => {
@@ -67,13 +67,19 @@ function renderRecentlyPracticed(packs: WordPack[]): string {
     const completionCount = progress?.completionCount || 0;
 
     html += `
-      <div class="recent-pack-card" onclick="startPack(${pack.id})">
+      <div class="recent-pack-row" onclick="startPack(${pack.id})">
         <div class="recent-pack-number">P${pack.id}</div>
-        <div class="recent-pack-label">${cleanLabel}</div>
-        <div class="recent-pack-meta">
-          <span class="recent-pack-time">${lastReviewed}</span>
-          <span class="recent-pack-count">${completionCount} ${completionCount === 1 ? 'time' : 'times'}</span>
+        <div class="recent-pack-info">
+          <div class="recent-pack-label">${cleanLabel}</div>
+          <div class="recent-pack-meta">
+            <span class="recent-pack-time">${lastReviewed}</span>
+            <span class="recent-pack-separator">•</span>
+            <span class="recent-pack-count">${completionCount} ${completionCount === 1 ? 'time' : 'times'}</span>
+          </div>
         </div>
+        <svg class="recent-pack-arrow" width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path d="M7 4L13 10L7 16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
       </div>
     `;
   });
