@@ -1111,6 +1111,12 @@ function setupEliteNavigation(): void {
   logger.info('Elite navigation features initialized');
 }
 
+// Store event handlers outside the function so we can properly remove them
+let currentTouchHandlers: {
+  start: ((e: TouchEvent) => void) | null;
+  end: ((e: TouchEvent) => void) | null;
+} = { start: null, end: null };
+
 /**
  * Setup Elite Practice Screen Features
  */
@@ -1127,6 +1133,12 @@ function setupElitePracticeFeatures(): void {
       swipeHint.style.display = 'none';
     }, 3000);
     sessionStorage.setItem('swipeHintShown', 'true');
+  }
+
+  // Remove old listeners if they exist
+  if (currentTouchHandlers.start && currentTouchHandlers.end) {
+    wordCard.removeEventListener('touchstart', currentTouchHandlers.start as any);
+    wordCard.removeEventListener('touchend', currentTouchHandlers.end as any);
   }
 
   // Tap to speak functionality
@@ -1174,9 +1186,9 @@ function setupElitePracticeFeatures(): void {
     }
   };
 
-  // Remove old listeners if they exist
-  wordCard.removeEventListener('touchstart', handleTouchStart as any);
-  wordCard.removeEventListener('touchend', handleTouchEnd as any);
+  // Store the new handlers so we can remove them next time
+  currentTouchHandlers.start = handleTouchStart;
+  currentTouchHandlers.end = handleTouchEnd;
 
   // Add new listeners
   wordCard.addEventListener('touchstart', handleTouchStart as any, { passive: true });
