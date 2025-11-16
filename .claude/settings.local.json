@@ -37,7 +37,8 @@
       "mcp__chrome-devtools__take_snapshot",
       "mcp__chrome-devtools__click",
       "mcp__chrome-devtools__evaluate_script",
-      "mcp__chrome-devtools__press_key"
+      "mcp__chrome-devtools__press_key",
+      "Bash(words\" popup when clicked.\n\nRoot cause: Mismatch between counting logic (checked progress.words) \nand collection logic (checked pack.words). This could happen if \nprogress data contained words no longer in the pack.\n\nSolution: Align counting with collection - both now iterate through \npack.words and check if each word is marked as tricky.\n\nChanged in src/components/ui.ts:117-119\n- Before: Object.values(progress.words).filter()\n- After: pack.words.filter()\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")"
     ],
     "deny": [],
     "ask": []

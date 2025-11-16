@@ -84,6 +84,11 @@ export function renderSubPackList(packs: WordPack[]): void {
   });
 
   logger.info('Sub-pack list rendered', { subPackCount: grouped.size });
+
+  // Setup table sorting after tables are rendered
+  if (typeof window !== 'undefined' && (window as any).setupTableSorting) {
+    (window as any).setupTableSorting();
+  }
 }
 
 /**
@@ -99,7 +104,7 @@ function renderPackTable(packs: WordPack[]): string {
           <th class="sortable">Word Preview <span class="sort-icon">⇅</span></th>
           <th class="sortable">Count <span class="sort-icon">⇅</span></th>
           <th class="sortable">Last Reviewed <span class="sort-icon">⇅</span></th>
-          <th class="sortable">Progress <span class="sort-icon">⇅</span></th>
+          <th class="sortable">Completed <span class="sort-icon">⇅</span></th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -110,8 +115,7 @@ function renderPackTable(packs: WordPack[]): string {
     const progress = storageService.getPackProgress(pack.id);
     const totalWords = pack.words.length;
 
-    const reviewedWords = progress ? Object.keys(progress.words).length : 0;
-    const progressPercent = Math.round((reviewedWords / totalWords) * 100);
+    const completionCount = progress?.completionCount || 0;
     const lastReviewed = progress?.lastReviewed ? formatDate(progress.lastReviewed) : 'Never';
 
     const trickyCount = progress
@@ -128,12 +132,9 @@ function renderPackTable(packs: WordPack[]): string {
         <td class="word-preview" data-label="Words">${wordPreview}</td>
         <td class="word-count" data-label="Count">${totalWords}</td>
         <td data-label="Last Reviewed">${lastReviewed}</td>
-        <td data-label="Progress">
-          <div class="progress-cell">
-            <span>${reviewedWords}/${totalWords} (${progressPercent}%)</span>
-            <div class="progress-bar-small">
-              <div class="progress-fill" style="width: ${progressPercent}%"></div>
-            </div>
+        <td data-label="Completed">
+          <div class="completion-cell">
+            <span>${completionCount} ${completionCount === 1 ? 'time' : 'times'}</span>
           </div>
         </td>
         <td class="actions-cell" data-label="Actions">

@@ -2068,6 +2068,28 @@ html {
     transform: scale(0.95);
 }
 
+/* Active state when syllables are enabled */
+.btn-settings-apple.syllables-active {
+    color: var(--apple-blue);
+    background: rgba(0, 122, 255, 0.1);
+}
+
+/* Starred state for star button */
+.btn-settings-apple.starred {
+    color: var(--apple-orange);
+}
+
+.btn-settings-apple.starred svg path {
+    fill: var(--apple-orange);
+}
+
+/* Header actions group */
+.header-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
 .btn-settings-apple svg {
     width: 20px;
     height: 20px;

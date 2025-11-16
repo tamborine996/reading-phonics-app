@@ -17,7 +17,9 @@ export interface WordStatus {
 
 export interface PackProgress {
   words: WordStatus;
+  starred?: WordStatus; // Words starred by parent for review
   completed: boolean;
+  completionCount?: number; // Number of times pack completed
   lastReviewed: string | null; // ISO timestamp
 }
 
@@ -65,7 +67,9 @@ export interface DatabasePackProgress {
   user_id: string;
   pack_id: number;
   words: WordStatus;
+  starred?: WordStatus;
   completed: boolean;
+  completion_count?: number;
   last_reviewed: string | null;
   synced_at: string;
 }

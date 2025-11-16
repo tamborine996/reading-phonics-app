@@ -107,6 +107,7 @@ export class StorageService {
       }
 
       progress.completed = true;
+      progress.completionCount = (progress.completionCount || 0) + 1;
       progress.lastReviewed = new Date().toISOString();
 
       return this.savePackProgress(packId, progress);

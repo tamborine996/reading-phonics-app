@@ -237,6 +237,64 @@ async function setupEventListeners(): Promise<void> {
 }
 
 /**
+ * Setup table sorting
+ */
+export function setupTableSorting(): void {
+  const tables = document.querySelectorAll('.pack-table');
+
+  tables.forEach((table) => {
+    const headers = table.querySelectorAll('th.sortable');
+    const tbody = table.querySelector('tbody');
+
+    if (!tbody) return;
+
+    headers.forEach((header, columnIndex) => {
+      header.addEventListener('click', () => {
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const isAscending = header.classList.contains('sort-asc');
+
+        // Remove sort classes from all headers
+        headers.forEach((h) => h.classList.remove('sort-asc', 'sort-desc'));
+
+        // Toggle sort direction
+        if (isAscending) {
+          header.classList.add('sort-desc');
+        } else {
+          header.classList.add('sort-asc');
+        }
+
+        // Sort rows
+        rows.sort((a, b) => {
+          const cellA = a.querySelectorAll('td')[columnIndex];
+          const cellB = b.querySelectorAll('td')[columnIndex];
+
+          if (!cellA || !cellB) return 0;
+
+          let valueA = cellA.textContent?.trim() || '';
+          let valueB = cellB.textContent?.trim() || '';
+
+          // Try to parse as numbers
+          const numA = parseFloat(valueA);
+          const numB = parseFloat(valueB);
+
+          if (!isNaN(numA) && !isNaN(numB)) {
+            return isAscending ? numB - numA : numA - numB;
+          }
+
+          // String comparison
+          return isAscending
+            ? valueB.localeCompare(valueA)
+            : valueA.localeCompare(valueB);
+        });
+
+        // Re-append sorted rows
+        rows.forEach((row) => tbody.appendChild(row));
+      });
+    });
+  });
+}
+
+/**
  * Start practicing a pack
  */
 export function startPack(packId: number): void {
@@ -366,6 +424,17 @@ function navigateWord(direction: number): void {
 function toggleSyllablesForSession(): void {
   try {
     appState.showSyllablesForCurrentWord = !appState.showSyllablesForCurrentWord;
+
+    // Update button visual state
+    const syllableToggleBtn = document.getElementById('syllableToggleBtn');
+    if (syllableToggleBtn) {
+      if (appState.showSyllablesForCurrentWord) {
+        syllableToggleBtn.classList.add('syllables-active');
+      } else {
+        syllableToggleBtn.classList.remove('syllables-active');
+      }
+    }
+
     renderPracticeScreen(appState);
     logger.info('Syllable display toggled', { enabled: appState.showSyllablesForCurrentWord });
   } catch (error) {
@@ -387,6 +456,16 @@ function markWord(status: 'tricky' | 'mastered'): void {
         const word = pack.words[trickyWord.wordIndex];
         storageService.updateWordStatus(trickyWord.packId, word, status);
       }
+
+      // If word is mastered in review mode, remove it from review list
+      if (status === 'mastered') {
+        appState.reviewWords.splice(appState.currentWordIndex, 1);
+
+        // Adjust index if we removed the last word or need to stay in bounds
+        if (appState.currentWordIndex >= appState.reviewWords.length && appState.reviewWords.length > 0) {
+          appState.currentWordIndex = appState.reviewWords.length - 1;
+        }
+      }
     } else if (appState.currentPack) {
       const word = appState.currentPack.words[appState.currentWordIndex];
       storageService.updateWordStatus(appState.currentPack.id, word, status);
@@ -407,7 +486,10 @@ function markWord(status: 'tricky' | 'mastered'): void {
       ? appState.reviewWords
       : appState.currentPack?.words || [];
 
-    if (appState.currentWordIndex < words.length - 1) {
+    if (appState.reviewWords.length === 0 && appState.reviewMode) {
+      // All tricky words mastered!
+      showCompletion();
+    } else if (appState.currentWordIndex < words.length - 1) {
       navigateWord(1);
     } else {
       showCompletion();
@@ -994,11 +1076,13 @@ declare global {
   interface Window {
     startPack: typeof startPack;
     startTrickyReview: typeof startTrickyReview;
+    setupTableSorting: typeof setupTableSorting;
   }
 }
 
 window.startPack = startPack;
 window.startTrickyReview = startTrickyReview;
+window.setupTableSorting = setupTableSorting;
 
 // Initialize on load
 window.onload = () => init();
