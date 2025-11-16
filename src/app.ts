@@ -405,6 +405,82 @@ function getTrickyWords(
 }
 
 /**
+ * Start reviewing starred words (for parent review)
+ */
+export function startStarredReview(
+  level: 'global' | 'subpack' | 'pack',
+  filter?: string | number
+): void {
+  try {
+    const starredWords = getStarredWords(level, filter);
+
+    if (starredWords.length === 0) {
+      alert('No starred words to review!');
+      return;
+    }
+
+    appState.reviewMode = true;
+    appState.reviewWords = starredWords;
+    appState.currentWordIndex = 0;
+
+    // Create a virtual pack for review
+    let title = 'All Starred Words';
+    if (level === 'subpack' && typeof filter === 'string') {
+      title = `${filter} - Starred Words`;
+    } else if (level === 'pack' && typeof filter === 'number') {
+      const pack = wordPacks.find((p) => p.id === filter);
+      title = pack ? `${pack.category} - Starred Words` : 'Starred Words';
+    }
+
+    appState.currentPack = {
+      id: typeof filter === 'number' ? filter : 0,
+      category: title,
+      subPack: '',
+      words: starredWords.map((w) => w.word),
+    };
+
+    logger.info(`Starting starred review: ${level}`, { count: starredWords.length });
+    showScreen('practiceScreen');
+    renderPracticeScreen(appState);
+    setupElitePracticeFeatures();
+  } catch (error) {
+    logger.error('Failed to start starred review', error);
+    alert('Failed to start starred review');
+  }
+}
+
+/**
+ * Get starred words at different levels
+ */
+function getStarredWords(
+  level: 'global' | 'subpack' | 'pack',
+  filter?: string | number
+): Array<{ word: string; packId: number; wordIndex: number }> {
+  const starredWords: Array<{ word: string; packId: number; wordIndex: number }> = [];
+
+  wordPacks.forEach((pack) => {
+    // Filter by level
+    if (level === 'subpack' && pack.subPack !== filter) return;
+    if (level === 'pack' && pack.id !== filter) return;
+
+    const progress = storageService.getPackProgress(pack.id);
+    if (!progress || !progress.starred) return;
+
+    pack.words.forEach((word, idx) => {
+      if (progress.starred![word] === 'starred') {
+        starredWords.push({
+          word,
+          packId: pack.id,
+          wordIndex: idx,
+        });
+      }
+    });
+  });
+
+  return starredWords;
+}
+
+/**
  * Navigate to next/previous word
  */
 function navigateWord(direction: number): void {
@@ -1138,12 +1214,14 @@ declare global {
   interface Window {
     startPack: typeof startPack;
     startTrickyReview: typeof startTrickyReview;
+    startStarredReview: typeof startStarredReview;
     setupTableSorting: typeof setupTableSorting;
   }
 }
 
 window.startPack = startPack;
 window.startTrickyReview = startTrickyReview;
+window.startStarredReview = startStarredReview;
 window.setupTableSorting = setupTableSorting;
 
 // Initialize on load

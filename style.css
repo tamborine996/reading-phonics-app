@@ -652,6 +652,17 @@ h1 {
     display: inline-block;
 }
 
+/* Starred Words Button (for parent review) */
+.tricky-review-btn.starred-btn {
+    background: #FF9500;
+    border: 2px solid #FF9500;
+}
+
+.tricky-review-btn.starred-btn:hover {
+    background: #CC7A00;
+    box-shadow: 0 4px 12px rgba(255, 149, 0, 0.3);
+}
+
 /* Pack Table */
 .pack-table-container {
     overflow-x: auto;

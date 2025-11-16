@@ -49,6 +49,17 @@ export function renderSubPackList(packs: WordPack[]): void {
     container.appendChild(globalBtn);
   }
 
+  // Global starred words button (for parent)
+  const globalStarredCount = countGlobalStarredWords(packs);
+  if (globalStarredCount > 0) {
+    const globalStarBtn = createStarredReviewButton(
+      `⭐ Review All Starred Words (${globalStarredCount})`,
+      'global',
+      'global'
+    );
+    container.appendChild(globalStarBtn);
+  }
+
   // Render each sub-pack
   grouped.forEach((subPackPacks, subPackName) => {
     const subPackDiv = document.createElement('div');
@@ -405,6 +416,50 @@ function updateStarButton(appState: AppState, currentWord: string): void {
   } else {
     starBtn.classList.remove('starred');
   }
+}
+
+/**
+ * Helper: Count global starred words
+ */
+function countGlobalStarredWords(packs: WordPack[]): number {
+  const starredWords: Array<{ word: string; packId: number }> = [];
+
+  packs.forEach((pack) => {
+    const progress = storageService.getPackProgress(pack.id);
+    if (!progress || !progress.starred) return;
+
+    pack.words.forEach((word) => {
+      if (progress.starred![word] === 'starred') {
+        starredWords.push({ word, packId: pack.id });
+      }
+    });
+  });
+
+  return starredWords.length;
+}
+
+/**
+ * Helper: Create starred review button
+ */
+function createStarredReviewButton(
+  text: string,
+  level: 'global' | 'subpack' | 'pack',
+  className: string,
+  filter?: string | number
+): HTMLButtonElement {
+  const btn = document.createElement('button');
+  btn.className = `tricky-review-btn starred-btn ${className}`;
+  btn.textContent = text;
+
+  if (level === 'global') {
+    btn.onclick = () => (window as any).startStarredReview('global');
+  } else if (level === 'subpack' && typeof filter === 'string') {
+    btn.onclick = () => (window as any).startStarredReview('subpack', filter);
+  } else if (level === 'pack' && typeof filter === 'number') {
+    btn.onclick = () => (window as any).startStarredReview('pack', filter);
+  }
+
+  return btn;
 }
 
 /**
