@@ -1,16 +1,30 @@
 /**
  * Design Toggle - Switch between Original and Warm Educational themes
- *
- * Usage: Include this script in your HTML after the main app script
- * A floating toggle button will appear in the top-left corner
+ * Works with Vite by adding alternate stylesheet as an override
  */
 
 (function() {
     'use strict';
 
-    const ORIGINAL_STYLESHEET = 'style.css';
-    const ALTERNATE_STYLESHEET = 'style-alternate.css';
+    const ALTERNATE_STYLESHEET_ID = 'alternate-theme-stylesheet';
     const STORAGE_KEY = 'word-practice-theme';
+
+    // Get the base path (for GitHub Pages)
+    function getBasePath() {
+        const scripts = document.getElementsByTagName('script');
+        for (let script of scripts) {
+            if (script.src && script.src.includes('design-toggle')) {
+                const url = new URL(script.src);
+                return url.pathname.substring(0, url.pathname.lastIndexOf('/') + 1);
+            }
+        }
+        // Fallback - detect from current URL
+        const path = window.location.pathname;
+        if (path.includes('/reading-phonics-app/')) {
+            return '/reading-phonics-app/';
+        }
+        return '/';
+    }
 
     // Create the toggle button
     function createToggleButton() {
@@ -24,7 +38,6 @@
             <span class="toggle-label">Original</span>
         `;
 
-        // Styles for the toggle button
         button.style.cssText = `
             position: fixed;
             top: 16px;
@@ -62,26 +75,38 @@
         return button;
     }
 
-    // Get the current stylesheet link element
-    function getStylesheetLink() {
-        return document.querySelector('link[href*="style"]');
+    // Check if alternate theme is active
+    function isAlternateActive() {
+        return !!document.getElementById(ALTERNATE_STYLESHEET_ID);
     }
 
-    // Check which theme is currently active
-    function getCurrentTheme() {
-        const link = getStylesheetLink();
-        if (!link) return 'original';
-        return link.href.includes('style-alternate') ? 'alternate' : 'original';
+    // Enable alternate theme
+    function enableAlternateTheme() {
+        if (document.getElementById(ALTERNATE_STYLESHEET_ID)) return;
+
+        const link = document.createElement('link');
+        link.id = ALTERNATE_STYLESHEET_ID;
+        link.rel = 'stylesheet';
+        link.href = getBasePath() + 'style-alternate.css';
+        document.head.appendChild(link);
+    }
+
+    // Disable alternate theme
+    function disableAlternateTheme() {
+        const link = document.getElementById(ALTERNATE_STYLESHEET_ID);
+        if (link) {
+            link.remove();
+        }
     }
 
     // Update the toggle button appearance
-    function updateButtonAppearance(theme) {
+    function updateButtonAppearance(isAlternate) {
         const button = document.getElementById('design-toggle-btn');
         if (!button) return;
 
         const label = button.querySelector('.toggle-label');
 
-        if (theme === 'alternate') {
+        if (isAlternate) {
             button.style.background = 'linear-gradient(135deg, #FF8F6B 0%, #E5724D 100%)';
             button.style.color = 'white';
             button.style.borderColor = 'transparent';
@@ -96,29 +121,22 @@
 
     // Toggle between designs
     function toggleDesign() {
-        const link = getStylesheetLink();
-        if (!link) {
-            console.error('No stylesheet link found');
-            return;
-        }
-
-        const currentTheme = getCurrentTheme();
-        const newTheme = currentTheme === 'original' ? 'alternate' : 'original';
-        const newStylesheet = newTheme === 'alternate' ? ALTERNATE_STYLESHEET : ORIGINAL_STYLESHEET;
+        const isAlternate = isAlternateActive();
 
         // Fade out effect
         document.body.style.opacity = '0';
         document.body.style.transition = 'opacity 0.2s ease';
 
         setTimeout(() => {
-            // Switch stylesheet
-            link.href = newStylesheet;
-
-            // Save preference
-            localStorage.setItem(STORAGE_KEY, newTheme);
-
-            // Update button
-            updateButtonAppearance(newTheme);
+            if (isAlternate) {
+                disableAlternateTheme();
+                localStorage.setItem(STORAGE_KEY, 'original');
+                updateButtonAppearance(false);
+            } else {
+                enableAlternateTheme();
+                localStorage.setItem(STORAGE_KEY, 'alternate');
+                updateButtonAppearance(true);
+            }
 
             // Fade back in
             setTimeout(() => {
@@ -127,22 +145,18 @@
         }, 200);
     }
 
-    // Initialize on DOM ready
+    // Initialize
     function init() {
-        // Create toggle button
         createToggleButton();
 
         // Check for saved preference
         const savedTheme = localStorage.getItem(STORAGE_KEY);
         if (savedTheme === 'alternate') {
-            const link = getStylesheetLink();
-            if (link) {
-                link.href = ALTERNATE_STYLESHEET;
-            }
+            enableAlternateTheme();
+            updateButtonAppearance(true);
+        } else {
+            updateButtonAppearance(false);
         }
-
-        // Update button to match current state
-        updateButtonAppearance(getCurrentTheme());
 
         console.log('Design toggle initialized. Click the button in the top-left to switch themes.');
     }
