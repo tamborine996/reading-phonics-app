@@ -14,6 +14,7 @@ export const SUPABASE_CONFIG = {
     USERS: 'users',
     PACK_PROGRESS: 'pack_progress',
     USER_SESSIONS: 'user_sessions',
+    CUSTOM_PACKS: 'custom_packs',
   },
 } as const;
 

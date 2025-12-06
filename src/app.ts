@@ -863,6 +863,8 @@ function showCompletion(): void {
 
       // Mark pack as completed
       storageService.markPackCompleted(appState.currentPack.id);
+      // Sync completion to cloud
+      authService.syncLocalProgressToDatabase();
       // Store the pack ID for "Do Again" functionality
       appState.lastCompletedPackId = appState.currentPack.id;
     }
@@ -1577,6 +1579,11 @@ function saveCustomPack(): void {
     const success = storageService.updateCustomPack(currentEditingPackId, name, words);
     if (success) {
       logger.info(`Updated custom pack ${currentEditingPackId}`);
+      // Sync to cloud
+      const updatedPack = storageService.getCustomPack(currentEditingPackId);
+      if (updatedPack) {
+        authService.syncCustomPack(updatedPack);
+      }
       closeCustomPackModal();
       renderSubPackList(wordPacks); // Refresh home screen
     } else {
@@ -1587,6 +1594,8 @@ function saveCustomPack(): void {
     const newPack = storageService.createCustomPack(name, words);
     if (newPack) {
       logger.info(`Created new custom pack ${newPack.id}`);
+      // Sync to cloud
+      authService.syncCustomPack(newPack);
       closeCustomPackModal();
       renderSubPackList(wordPacks); // Refresh home screen
     } else {
@@ -1606,9 +1615,12 @@ function deleteCustomPackFromModal(): void {
   );
 
   if (confirmDelete) {
-    const success = storageService.deleteCustomPack(currentEditingPackId);
+    const packIdToDelete = currentEditingPackId;
+    const success = storageService.deleteCustomPack(packIdToDelete);
     if (success) {
-      logger.info(`Deleted custom pack ${currentEditingPackId}`);
+      logger.info(`Deleted custom pack ${packIdToDelete}`);
+      // Sync deletion to cloud
+      authService.deleteCustomPackFromDatabase(packIdToDelete);
       closeCustomPackModal();
       renderSubPackList(wordPacks); // Refresh home screen
     } else {

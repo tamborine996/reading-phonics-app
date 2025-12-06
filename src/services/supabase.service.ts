@@ -4,7 +4,7 @@
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import type { User, DatabasePackProgress, PackProgress } from '@/types';
+import type { User, DatabasePackProgress, PackProgress, CustomPack, DatabaseCustomPack } from '@/types';
 import { SUPABASE_CONFIG } from '@/constants/config';
 import { logger } from '@/utils/logger';
 
@@ -299,6 +299,118 @@ export class SupabaseService {
       logger.info('Successfully synced all progress to database');
     } catch (error) {
       logger.error('Failed to sync progress', error);
+      throw error;
+    }
+  }
+
+  // ========== Custom Packs Methods ==========
+
+  /**
+   * Get all custom packs for user
+   */
+  async getUserCustomPacks(userId: string): Promise<CustomPack[]> {
+    if (!this.client) throw new Error('Supabase not initialized');
+
+    try {
+      const { data, error } = await this.client
+        .from(SUPABASE_CONFIG.TABLE_NAMES.CUSTOM_PACKS)
+        .select('*')
+        .eq('user_id', userId);
+
+      if (error) {
+        logger.error('Failed to fetch custom packs', error);
+        throw error;
+      }
+
+      const packs: CustomPack[] = (data || []).map((row: DatabaseCustomPack) => ({
+        id: row.local_id,
+        name: row.name,
+        category: 'Custom',
+        subPack: 'Custom Packs',
+        words: row.words,
+        editable: true as const,
+        createdAt: row.created_at,
+        updatedAt: row.updated_at,
+      }));
+
+      logger.info('Fetched custom packs', { count: packs.length });
+      return packs;
+    } catch (error) {
+      logger.error('Error fetching custom packs', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Save or update a custom pack
+   */
+  async saveCustomPack(userId: string, pack: CustomPack): Promise<void> {
+    if (!this.client) throw new Error('Supabase not initialized');
+
+    try {
+      const { error } = await this.client
+        .from(SUPABASE_CONFIG.TABLE_NAMES.CUSTOM_PACKS)
+        .upsert({
+          user_id: userId,
+          local_id: pack.id,
+          name: pack.name,
+          words: pack.words,
+          created_at: pack.createdAt,
+          updated_at: pack.updatedAt,
+          synced_at: new Date().toISOString(),
+        }, {
+          onConflict: 'user_id,local_id'
+        });
+
+      if (error) {
+        logger.error('Failed to save custom pack', error);
+        throw error;
+      }
+
+      logger.info(`Saved custom pack ${pack.id}`);
+    } catch (error) {
+      logger.error('Error saving custom pack', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a custom pack
+   */
+  async deleteCustomPack(userId: string, packLocalId: string): Promise<void> {
+    if (!this.client) throw new Error('Supabase not initialized');
+
+    try {
+      const { error } = await this.client
+        .from(SUPABASE_CONFIG.TABLE_NAMES.CUSTOM_PACKS)
+        .delete()
+        .eq('user_id', userId)
+        .eq('local_id', packLocalId);
+
+      if (error) {
+        logger.error('Failed to delete custom pack', error);
+        throw error;
+      }
+
+      logger.info(`Deleted custom pack ${packLocalId}`);
+    } catch (error) {
+      logger.error('Error deleting custom pack', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Sync all local custom packs to database
+   */
+  async syncCustomPacks(userId: string, localPacks: CustomPack[]): Promise<void> {
+    if (!this.client) throw new Error('Supabase not initialized');
+
+    try {
+      const promises = localPacks.map(pack => this.saveCustomPack(userId, pack));
+      await Promise.all(promises);
+      logger.info('Successfully synced all custom packs to database');
+    } catch (error) {
+      logger.error('Failed to sync custom packs', error);
       throw error;
     }
   }

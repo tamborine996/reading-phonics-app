@@ -83,6 +83,28 @@ export interface DatabasePackProgress {
   synced_at: string;
 }
 
+// Database representation for custom packs
+export interface DatabaseCustomPack {
+  id: string; // UUID from Supabase
+  user_id: string;
+  local_id: string; // C1, C2, C3...
+  name: string;
+  words: string[];
+  created_at: string;
+  updated_at: string;
+  synced_at: string;
+}
+
+// Sync status for UI feedback
+export type SyncStatus = 'idle' | 'syncing' | 'success' | 'error' | 'offline';
+
+export interface SyncState {
+  status: SyncStatus;
+  lastSyncTime: string | null;
+  pendingChanges: number;
+  errorMessage?: string;
+}
+
 export type Screen = 'home' | 'practice' | 'complete' | 'parent';
 
 export interface AppState {
