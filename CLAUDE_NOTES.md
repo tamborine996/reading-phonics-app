@@ -5,9 +5,24 @@
 **Project**: Reading Phonics App - TypeScript web app for teaching phonics to children
 **Live URL**: https://tamborine996.github.io/reading-phonics-app/
 **GitHub**: https://github.com/tamborine996/reading-phonics-app
-**Last Major Update**: 2025-01-08
+**Last Major Update**: 2025-12-13
 
-## Current Architecture (v2.0)
+## ⚠️ KNOWN ISSUE: Cloud Sync Not Working
+
+**Status**: Custom packs and progress created on one device do NOT sync to other devices when logged in with Google.
+
+**Likely Cause**: Supabase RLS (Row Level Security) policies may be blocking writes.
+
+**To Diagnose**:
+1. Check Supabase Dashboard → Table Editor → `custom_packs` table
+2. Verify RLS policies exist for SELECT, INSERT, UPDATE, DELETE
+3. Each policy should use: `auth.uid() = user_id`
+
+**Workaround**: Use "Export All Data" button in Parent View to backup local data.
+
+---
+
+## Current Architecture (v2.1)
 
 ### Tech Stack
 - **Frontend**: TypeScript + Vite + HTML/CSS
@@ -17,6 +32,7 @@
 - **TTS**: Web Speech API (browser native)
 - **Testing**: Vitest
 - **Linting**: ESLint
+- **Theme**: Warm educational (Nunito/Quicksand fonts, cream/coral/sage colors)
 
 ### Key Design Decisions
 
@@ -83,6 +99,20 @@ src/
 
 **Primary Key**: `(user_id, pack_id)`
 
+### Table: `custom_packs`
+
+| Column | Type | Description |
+|--------|------|-------------|
+| user_id | uuid | FK to auth.users(id) |
+| local_id | text | Pack ID (e.g., "C1", "C2") |
+| name | text | Pack name |
+| words | text[] | Array of words |
+| created_at | timestamp | Creation time |
+| updated_at | timestamp | Last update time |
+| synced_at | timestamp | Last sync time |
+
+**Primary Key**: `(user_id, local_id)`
+
 ### Row Level Security (RLS) Policies
 - SELECT: `auth.uid() = user_id`
 - INSERT: `auth.uid() = user_id`
@@ -90,6 +120,8 @@ src/
 - DELETE: `auth.uid() = user_id`
 
 Users can only access their own data.
+
+**⚠️ RLS policies must be created manually in Supabase for each table!**
 
 ## Authentication Flow
 
@@ -116,11 +148,13 @@ Users can only access their own data.
 
 ## Key Features
 
-### 1. Word Packs (130 packs, 3,383 words)
+### 1. Word Packs (130 preset + custom packs)
+- 130 preset packs with 3,383 words
 - Organized by phonics patterns
 - Year 1-6 curriculum coverage
 - ~26 words per pack
 - Grouped by sub-packs (Year 1, Year 2, Short Vowels, etc.)
+- **Custom Packs**: Users can create their own (C1, C2, C3...)
 
 ### 2. Text-to-Speech
 - Web Speech API
@@ -140,6 +174,20 @@ Users can only access their own data.
 - See tricky words by pack
 - Last reviewed dates
 - Completion status
+- **Data Export**: Download all data as JSON backup file
+
+### 5. Custom Packs (Added Nov 2025)
+- Create personalized word lists
+- IDs: C1, C2, C3... (stored in localStorage and Supabase)
+- Edit and delete custom packs
+- Practice like regular packs
+
+### 6. Warm Theme (Made Permanent Dec 2025)
+- Cream background (#FDF8F3)
+- Coral accents (#FF8F6B)
+- Sage green for success (#7CB890)
+- Nunito (display) + Quicksand (body) fonts
+- Design toggle removed - warm theme is now the only theme
 
 ## Deployment Pipeline
 
@@ -207,6 +255,14 @@ Triggered on push to `master`:
 - Text-to-speech
 - GitHub Pages (unlimited deployments)
 - Removed Python/Excel dependency
+
+**v2.1 (Nov-Dec 2025)**: Custom Packs + Warm Theme
+- Custom pack creation (C1, C2, C3...)
+- Warm educational theme (permanent)
+- Data export feature
+- Removed design toggle
+- Removed sync notification (was covering buttons)
+- Mobile responsiveness improvements
 
 ### Why Migration from Netlify to GitHub Pages
 - Netlify: 300 build minutes/month limit (ran out in one day)
@@ -307,9 +363,31 @@ When wrapping up a session, document:
 - Known issues (if any)
 - Next steps
 
+## Session Log: 2025-12-13
+
+### Changes Made
+1. **Made warm theme permanent** - Removed design toggle, replaced style.css with warm theme
+2. **Removed sync notification** - Was covering the "Got It" button
+3. **Added Data Export feature** - Button in Parent View to download JSON backup
+4. **Improved mobile responsiveness** - Reduced padding, smaller fonts on mobile
+5. **Added sync error logging** - Console errors now visible for debugging
+
+### Files Modified
+- `style.css` - Now contains warm theme only
+- `index.html` - Removed design-toggle script, added export button
+- `src/app.ts` - Added export data functionality
+- `src/services/sync.service.ts` - Disabled visual indicator, added error logging
+
+### Files Deleted
+- `public/design-toggle.js`
+- `public/style-alternate.css`
+
+### Outstanding Issue
+**Cloud sync not working** - Custom packs created on phone don't appear on laptop. User has backed up data locally. Next step: Check Supabase RLS policies.
+
 ---
 
-**Last Updated**: 2025-01-08
-**Version**: 2.0
-**Status**: Production-ready, all features working
-**Next Session**: Pick from Future Enhancement Ideas or user requests
+**Last Updated**: 2025-12-13
+**Version**: 2.1
+**Status**: Production-ready, sync issue needs investigation
+**Next Session**: Fix Supabase RLS policies for cloud sync

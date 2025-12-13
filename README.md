@@ -45,7 +45,9 @@ A modern, child-friendly web application for practicing phonics words with cloud
 - **Visual Progress Tracking** - See completion percentages
 - **Pack Filtering** - Organized by sub-packs (Year 1, Year 2, etc.)
 - **Review Modes** - Review all tricky words, by sub-pack, or by individual pack
-- **Child-Friendly Design** - Purple gradient, smooth animations
+- **Warm Educational Theme** - Cream/coral/sage colors, Nunito/Quicksand fonts
+- **Custom Packs** - Create your own word lists (C1, C2, C3...)
+- **Data Export** - Backup all progress and custom packs to JSON file
 
 ## Tech Stack
 
@@ -196,10 +198,27 @@ Stores user progress for each word pack.
 
 **Primary Key**: `(user_id, pack_id)`
 
+#### `custom_packs`
+Stores user-created custom word packs.
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `user_id` | uuid | References auth.users(id) |
+| `local_id` | text | Local pack ID (e.g., "C1", "C2") |
+| `name` | text | Pack name |
+| `words` | text[] | Array of words |
+| `created_at` | timestamp | Creation time |
+| `updated_at` | timestamp | Last update time |
+| `synced_at` | timestamp | Last sync time |
+
+**Primary Key**: `(user_id, local_id)`
+
 ### Row Level Security Policies
 - Users can only read/write their own progress
 - INSERT/UPDATE/DELETE restricted to authenticated users
 - SELECT restricted to user's own records
+
+**⚠️ Known Issue (Dec 2025)**: Cloud sync may not be working properly. Check Supabase RLS policies if custom packs aren't syncing between devices. Use the Data Export feature in Parent View to backup local data.
 
 ## Data Management
 
@@ -449,14 +468,13 @@ Before showing to users:
 ## Future Enhancements
 
 ### Planned Features
-- [ ] Progress export to PDF/CSV
-- [ ] Customizable packs (let users create their own)
+- [x] ~~Customizable packs (let users create their own)~~ - DONE (Nov 2025)
+- [x] ~~Progress export~~ - DONE (Dec 2025) - Export to JSON in Parent View
 - [ ] Multiple child profiles
 - [ ] Achievement badges
 - [ ] Word shuffle mode
 - [ ] Audio recording (record child reading words)
 - [ ] Spelling tests
-- [ ] Dark mode
 
 ### Architecture Improvements
 - [ ] Service worker for true offline support
@@ -488,5 +506,5 @@ For questions or issues with the project, check:
 
 ---
 
-**Last Updated**: 2025-01-08
-**Version**: 2.0 (TypeScript + Supabase + GitHub Pages)
+**Last Updated**: 2025-12-13
+**Version**: 2.1 (Custom Packs + Warm Theme + Data Export)
