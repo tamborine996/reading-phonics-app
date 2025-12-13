@@ -76,7 +76,7 @@ body {
 }
 
 .container {
-    max-width: 900px;
+    max-width: 800px;
     width: 100%;
 }
 
@@ -2102,29 +2102,66 @@ h1::first-letter {
 
 @media (max-width: 600px) {
     body {
-        padding: 16px;
+        padding: 12px;
     }
 
     h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
 
     .subtitle {
         font-size: 1rem;
-        margin-bottom: 24px;
+        margin-bottom: 20px;
     }
 
+    /* Navigation elements */
+    .sticky-section-header {
+        padding: 10px 15px;
+        font-size: 0.85rem;
+    }
+
+    .quick-jump-btn {
+        width: 50px;
+        height: 50px;
+        bottom: 70px;
+    }
+
+    .back-to-top-btn {
+        width: 44px;
+        height: 44px;
+    }
+
+    .quick-jump-header h3 {
+        font-size: 1.1rem;
+    }
+
+    .category-item {
+        padding: 14px 16px;
+    }
+
+    /* Sub packs */
+    .sub-pack {
+        padding: 18px;
+        margin-bottom: 16px;
+    }
+
+    .sub-pack-header h2 {
+        font-size: 1.4rem;
+    }
+
+    /* Practice screen */
     .word-apple {
-        font-size: 42px;
+        font-size: 40px;
     }
 
     .word-card-apple {
-        padding: 44px 28px;
-        min-width: 240px;
+        padding: 40px 24px;
+        min-width: 220px;
+        border-radius: var(--radius-lg);
     }
 
     .practice-content-apple {
-        padding: 70px 16px 110px;
+        padding: 64px 12px 100px;
     }
 
     .btn-text-apple {
@@ -2132,17 +2169,70 @@ h1::first-letter {
     }
 
     .action-btn-apple {
-        height: 52px;
+        height: 48px;
     }
 
+    .practice-footer-apple {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    /* Pack cards */
+    .pack-card {
+        padding: 18px 20px;
+        border-radius: var(--radius-md);
+    }
+
+    .pack-card-title {
+        font-size: 1.2rem;
+    }
+
+    /* Recently practiced */
+    .recently-practiced {
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+
+    .recently-practiced-title {
+        font-size: 1.2rem;
+    }
+
+    .recent-pack-row {
+        padding: 12px 14px;
+        min-height: 60px;
+    }
+
+    .recent-pack-number {
+        font-size: 1.3rem;
+        min-width: 40px;
+    }
+
+    /* Custom packs */
+    .custom-packs-section {
+        padding: 18px;
+        margin-bottom: 20px;
+    }
+
+    .custom-pack-row {
+        padding: 12px 14px;
+        min-height: 60px;
+    }
+
+    /* Stats */
     .stats {
         grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 20px;
     }
 
     .stat-number {
-        font-size: 2.4rem;
+        font-size: 2.2rem;
     }
 
+    /* Tables */
     .pack-table {
         display: block;
         width: 100%;
@@ -2160,15 +2250,15 @@ h1::first-letter {
         display: block;
         background: var(--white);
         border-radius: var(--radius-md);
-        padding: 16px;
-        margin-bottom: 16px;
+        padding: 14px;
+        margin-bottom: 12px;
         border: 2px solid var(--warm-cream-dark);
         box-shadow: var(--shadow-sm);
     }
 
     .pack-table td {
         display: block;
-        padding: 8px 0;
+        padding: 6px 0;
         border: none;
         text-align: left;
     }
@@ -2179,15 +2269,34 @@ h1::first-letter {
         font-weight: 700;
         color: var(--soft-coral);
         display: inline-block;
-        width: 130px;
-        margin-right: 10px;
+        width: 120px;
+        margin-right: 8px;
         font-size: 0.85rem;
     }
 
+    /* Buttons */
+    .btn-primary,
+    .btn-secondary {
+        padding: 14px 20px;
+        font-size: 1rem;
+        min-height: 50px;
+    }
+
+    .tricky-review-btn.global {
+        padding: 16px;
+        font-size: 1rem;
+        margin-bottom: 24px;
+    }
+
+    /* Section headers */
     .section-header {
         flex-direction: column;
         align-items: flex-start;
-        gap: 14px;
+        gap: 12px;
+    }
+
+    .section-title {
+        font-size: 1.1rem;
     }
 
     .btn-create-pack {
@@ -2195,20 +2304,50 @@ h1::first-letter {
         justify-content: center;
     }
 
+    /* Modal */
     .modal-content {
         width: 95%;
         max-height: 95vh;
         border-radius: var(--radius-lg);
     }
 
+    .modal-header {
+        padding: 18px 20px;
+    }
+
+    .modal-body {
+        padding: 20px;
+    }
+
     .modal-footer {
         flex-direction: column;
+        padding: 18px 20px;
     }
 
     .modal-footer .btn-primary,
     .modal-footer .btn-secondary,
     .modal-footer .btn-danger {
         width: 100%;
+    }
+
+    /* Search */
+    .search-container {
+        margin-bottom: 18px;
+    }
+
+    .search-input {
+        padding: 14px 44px 14px 18px;
+    }
+
+    /* Auth */
+    .auth-container {
+        padding: 32px 24px;
+        margin: 20px auto;
+    }
+
+    .user-bar {
+        padding: 12px 16px;
+        margin-bottom: 18px;
     }
 }
 
