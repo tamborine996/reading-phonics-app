@@ -266,99 +266,14 @@ export class SyncService {
 
   /**
    * Update the visual status indicator
+   * Disabled - sync status is handled silently in the background
    */
   private updateStatusIndicator(): void {
-    let indicator = document.getElementById('sync-status-indicator');
-
-    if (!indicator) {
-      indicator = document.createElement('div');
-      indicator.id = 'sync-status-indicator';
-      indicator.style.cssText = `
-        position: fixed;
-        bottom: 16px;
-        right: 16px;
-        padding: 8px 16px;
-        border-radius: 20px;
-        font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-        font-size: 12px;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        z-index: 9999;
-        transition: all 0.3s ease;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-      `;
-      document.body.appendChild(indicator);
-    }
-
-    const { status, pendingChanges, errorMessage } = this.state;
-
-    switch (status) {
-      case 'syncing':
-        indicator.style.background = '#007AFF';
-        indicator.style.color = 'white';
-        indicator.innerHTML = `
-          <span class="sync-spinner" style="width: 12px; height: 12px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 1s linear infinite;"></span>
-          Syncing...
-        `;
-        indicator.style.opacity = '1';
-        break;
-
-      case 'success':
-        indicator.style.background = '#34C759';
-        indicator.style.color = 'white';
-        indicator.innerHTML = `
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M2 6L5 9L10 3" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-          Saved
-        `;
-        indicator.style.opacity = '1';
-        break;
-
-      case 'error':
-        indicator.style.background = '#FF3B30';
-        indicator.style.color = 'white';
-        indicator.innerHTML = `
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <circle cx="6" cy="6" r="5" stroke="white" stroke-width="2"/>
-            <line x1="6" y1="3" x2="6" y2="6.5" stroke="white" stroke-width="2" stroke-linecap="round"/>
-            <circle cx="6" cy="8.5" r="0.75" fill="white"/>
-          </svg>
-          ${pendingChanges} pending${errorMessage ? ` - ${errorMessage}` : ''}
-        `;
-        indicator.style.opacity = '1';
-        break;
-
-      case 'offline':
-        indicator.style.background = '#8E8E93';
-        indicator.style.color = 'white';
-        indicator.innerHTML = `
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M1 1L11 11M3 5C4.5 3.5 7.5 3.5 9 5M5 7C5.5 6.5 6.5 6.5 7 7" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
-          </svg>
-          Offline${pendingChanges > 0 ? ` (${pendingChanges} pending)` : ''}
-        `;
-        indicator.style.opacity = '1';
-        break;
-
-      case 'idle':
-      default:
-        indicator.style.opacity = '0';
-        break;
-    }
-
-    // Add spinner animation if not exists
-    if (!document.getElementById('sync-spinner-style')) {
-      const style = document.createElement('style');
-      style.id = 'sync-spinner-style';
-      style.textContent = `
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `;
-      document.head.appendChild(style);
+    // Sync status indicator disabled - syncing happens silently
+    // Remove any existing indicator
+    const indicator = document.getElementById('sync-status-indicator');
+    if (indicator) {
+      indicator.remove();
     }
   }
 }
