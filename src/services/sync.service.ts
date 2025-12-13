@@ -96,6 +96,8 @@ export class SyncService {
    * Set error status
    */
   setError(message: string): void {
+    logger.error('Sync error:', message);
+    console.error('[SYNC ERROR]', message);
     this.setState({ status: 'error', errorMessage: message });
   }
 

@@ -186,6 +186,37 @@ async function setupEventListeners(): Promise<void> {
     parentBackBtn.onclick = () => showScreen('homeScreen');
   }
 
+  // Export data button
+  const exportDataBtn = document.getElementById('exportDataBtn');
+  if (exportDataBtn) {
+    exportDataBtn.onclick = () => {
+      try {
+        const data = {
+          exportDate: new Date().toISOString(),
+          customPacks: localStorage.getItem('phonics-app-custom-packs'),
+          progress: localStorage.getItem('phonics-app-progress'),
+          recentPacks: localStorage.getItem('phonics-app-recent-packs'),
+          settings: localStorage.getItem('phonics-app-settings'),
+        };
+
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `reading-app-backup-${new Date().toISOString().split('T')[0]}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        alert('Data exported successfully! Check your downloads folder.');
+      } catch (error) {
+        console.error('Export failed:', error);
+        alert('Export failed. Please try again.');
+      }
+    };
+  }
+
   // Syllable toggle button (card-level)
   const syllableToggleBtn = document.getElementById('syllableToggleBtn');
   if (syllableToggleBtn) {
