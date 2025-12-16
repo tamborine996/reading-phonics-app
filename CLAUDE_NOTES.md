@@ -371,11 +371,13 @@ When wrapping up a session, document:
 3. **Added Data Export feature** - Button in Parent View to download JSON backup
 4. **Improved mobile responsiveness** - Reduced padding, smaller fonts on mobile
 5. **Added sync error logging** - Console errors now visible for debugging
+6. **Added cancel confirmation for custom packs** - Prevents accidental data loss when pressing Cancel with words entered
+7. **Added voice input for custom packs** - "Add by Voice" button uses Web Speech API for speech-to-text word entry
 
 ### Files Modified
-- `style.css` - Now contains warm theme only
-- `index.html` - Removed design-toggle script, added export button
-- `src/app.ts` - Added export data functionality
+- `style.css` - Now contains warm theme only, plus voice button styles
+- `index.html` - Removed design-toggle script, added export button, added voice input button in modal
+- `src/app.ts` - Added export data functionality, cancel confirmation, and voice input with Web Speech API
 - `src/services/sync.service.ts` - Disabled visual indicator, added error logging
 
 ### Files Deleted
@@ -387,7 +389,7 @@ When wrapping up a session, document:
 
 ---
 
-**Last Updated**: 2025-12-13
+**Last Updated**: 2025-12-16
 **Version**: 2.1
 **Status**: Production-ready, sync issue needs investigation
 **Next Session**: Fix Supabase RLS policies for cloud sync
