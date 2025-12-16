@@ -1480,13 +1480,13 @@ export function setupCustomPackListeners(): void {
   }
 
   if (cancelModalBtn) {
-    cancelModalBtn.onclick = () => closeCustomPackModal();
+    cancelModalBtn.onclick = () => closeCustomPackModalWithConfirm();
   }
 
   if (customPackModal) {
     customPackModal.onclick = (e) => {
       if (e.target === customPackModal) {
-        closeCustomPackModal();
+        closeCustomPackModalWithConfirm();
       }
     };
   }
@@ -1505,6 +1505,82 @@ export function setupCustomPackListeners(): void {
       const count = words.length;
       wordCountEl.textContent = `${count} ${count === 1 ? 'word' : 'words'}`;
     };
+  }
+
+  // Voice input setup
+  const voiceInputBtn = document.getElementById('voiceInputBtn');
+  const voiceInputText = document.getElementById('voiceInputText');
+
+  if (voiceInputBtn && packWords) {
+    // Check if speech recognition is available
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+      // Hide voice button if not supported
+      voiceInputBtn.style.display = 'none';
+      logger.warn('Speech recognition not supported in this browser');
+    } else {
+      let recognition: any = null;
+      let isListening = false;
+
+      voiceInputBtn.onclick = () => {
+        if (isListening) {
+          // Stop listening
+          if (recognition) {
+            recognition.stop();
+          }
+        } else {
+          // Start listening
+          recognition = new SpeechRecognition();
+          recognition.lang = 'en-GB'; // British English
+          recognition.interimResults = false;
+          recognition.continuous = true; // Keep listening for multiple words
+          recognition.maxAlternatives = 1;
+
+          recognition.onstart = () => {
+            isListening = true;
+            voiceInputBtn.classList.add('listening');
+            if (voiceInputText) voiceInputText.textContent = 'Listening...';
+            logger.info('Voice input started');
+          };
+
+          recognition.onresult = (event: any) => {
+            const result = event.results[event.results.length - 1];
+            if (result.isFinal) {
+              const spokenText = result[0].transcript.trim().toLowerCase();
+              logger.info('Voice input received:', spokenText);
+
+              // Add the spoken word(s) to the textarea
+              const currentText = packWords.value.trim();
+              if (currentText) {
+                packWords.value = currentText + '\n' + spokenText;
+              } else {
+                packWords.value = spokenText;
+              }
+
+              // Trigger input event to update word count
+              packWords.dispatchEvent(new Event('input'));
+            }
+          };
+
+          recognition.onerror = (event: any) => {
+            logger.error('Voice input error:', event.error);
+            if (event.error === 'not-allowed') {
+              alert('Microphone access denied. Please allow microphone access to use voice input.');
+            }
+          };
+
+          recognition.onend = () => {
+            isListening = false;
+            voiceInputBtn.classList.remove('listening');
+            if (voiceInputText) voiceInputText.textContent = 'Add by Voice';
+            logger.info('Voice input ended');
+          };
+
+          recognition.start();
+        }
+      };
+    }
   }
 }
 
@@ -1582,6 +1658,32 @@ function closeCustomPackModal(): void {
     modal.style.display = 'none';
   }
   currentEditingPackId = null;
+}
+
+/**
+ * Close modal with confirmation if there are unsaved words
+ */
+function closeCustomPackModalWithConfirm(): void {
+  const packWordsInput = document.getElementById('packWords') as HTMLTextAreaElement;
+  const packNameInput = document.getElementById('packName') as HTMLInputElement;
+
+  if (packWordsInput && (packWordsInput.value.trim() || packNameInput?.value.trim())) {
+    const words = parseWords(packWordsInput.value);
+    const wordCount = words.length;
+
+    let message = 'Are you sure you want to cancel?';
+    if (wordCount > 0) {
+      message = `You have ${wordCount} ${wordCount === 1 ? 'word' : 'words'} entered. Are you sure you want to cancel? Your changes will be lost.`;
+    } else if (packNameInput?.value.trim()) {
+      message = 'You have entered a pack name. Are you sure you want to cancel?';
+    }
+
+    if (confirm(message)) {
+      closeCustomPackModal();
+    }
+  } else {
+    closeCustomPackModal();
+  }
 }
 
 /**
